@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class test : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -434,9 +434,7 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ShopId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ShopId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -449,23 +447,11 @@ namespace Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ProductShops_Products_ProductId1",
-                        column: x => x.ProductId1,
-                        principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_ProductShops_Shops_ShopId",
                         column: x => x.ShopId,
                         principalTable: "Shops",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ProductShops_Shops_ShopId1",
-                        column: x => x.ShopId1,
-                        principalTable: "Shops",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -568,9 +554,7 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IncomingOrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IncomingOrderId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -585,23 +569,11 @@ namespace Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_IncomingOrderProducts_IncomingOrders_IncomingOrderId1",
-                        column: x => x.IncomingOrderId1,
-                        principalTable: "IncomingOrders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_IncomingOrderProducts_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_IncomingOrderProducts_Products_ProductId1",
-                        column: x => x.ProductId1,
-                        principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -634,9 +606,7 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ZoneId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ZoneId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     StaffId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StaffId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -649,23 +619,11 @@ namespace Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ZoneStaffs_Staffs_StaffId1",
-                        column: x => x.StaffId1,
-                        principalTable: "Staffs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_ZoneStaffs_Zones_ZoneId",
                         column: x => x.ZoneId,
                         principalTable: "Zones",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ZoneStaffs_Zones_ZoneId1",
-                        column: x => x.ZoneId1,
-                        principalTable: "Zones",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -674,9 +632,7 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RackId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RackId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -689,23 +645,11 @@ namespace Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ProductRacks_Products_ProductId1",
-                        column: x => x.ProductId1,
-                        principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_ProductRacks_Racks_RackId",
                         column: x => x.RackId,
                         principalTable: "Racks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ProductRacks_Racks_RackId1",
-                        column: x => x.RackId1,
-                        principalTable: "Racks",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -773,19 +717,9 @@ namespace Infrastructure.Migrations
                 column: "IncomingOrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_IncomingOrderProducts_IncomingOrderId1",
-                table: "IncomingOrderProducts",
-                column: "IncomingOrderId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_IncomingOrderProducts_ProductId",
                 table: "IncomingOrderProducts",
                 column: "ProductId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_IncomingOrderProducts_ProductId1",
-                table: "IncomingOrderProducts",
-                column: "ProductId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_IncomingOrders_VendorId",
@@ -804,19 +738,9 @@ namespace Infrastructure.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductRacks_ProductId1",
-                table: "ProductRacks",
-                column: "ProductId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ProductRacks_RackId",
                 table: "ProductRacks",
                 column: "RackId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductRacks_RackId1",
-                table: "ProductRacks",
-                column: "RackId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductShops_ProductId",
@@ -824,19 +748,9 @@ namespace Infrastructure.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductShops_ProductId1",
-                table: "ProductShops",
-                column: "ProductId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ProductShops_ShopId",
                 table: "ProductShops",
                 column: "ShopId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductShops_ShopId1",
-                table: "ProductShops",
-                column: "ShopId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductSkus_ProductId",
@@ -884,19 +798,9 @@ namespace Infrastructure.Migrations
                 column: "StaffId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ZoneStaffs_StaffId1",
-                table: "ZoneStaffs",
-                column: "StaffId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ZoneStaffs_ZoneId",
                 table: "ZoneStaffs",
                 column: "ZoneId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ZoneStaffs_ZoneId1",
-                table: "ZoneStaffs",
-                column: "ZoneId1");
         }
 
         /// <inheritdoc />

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(WmsDbContext))]
-    [Migration("20241006031230_Initial")]
-    partial class Initial
+    [Migration("20241006122007_test")]
+    partial class test
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -229,13 +229,7 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("IncomingOrderId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("IncomingOrderId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ProductId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Quantity")
@@ -249,11 +243,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("IncomingOrderId");
 
-                    b.HasIndex("IncomingOrderId1");
-
                     b.HasIndex("ProductId");
-
-                    b.HasIndex("ProductId1");
 
                     b.ToTable("IncomingOrderProducts");
                 });
@@ -337,24 +327,14 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ProductId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("RackId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("RackId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("ProductId1");
-
                     b.HasIndex("RackId");
-
-                    b.HasIndex("RackId1");
 
                     b.ToTable("ProductRacks");
                 });
@@ -371,24 +351,14 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ProductId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("ShopId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ShopId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("ProductId1");
-
                     b.HasIndex("ShopId");
-
-                    b.HasIndex("ShopId1");
 
                     b.ToTable("ProductShops");
                 });
@@ -681,24 +651,14 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("StaffId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("StaffId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("ZoneId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ZoneId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("StaffId");
 
-                    b.HasIndex("StaffId1");
-
                     b.HasIndex("ZoneId");
-
-                    b.HasIndex("ZoneId1");
 
                     b.ToTable("ZoneStaffs");
                 });
@@ -971,28 +931,16 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.IncomingOrderProduct", b =>
                 {
-                    b.HasOne("Domain.Entities.IncomingOrder", null)
+                    b.HasOne("Domain.Entities.IncomingOrder", "IncomingOrder")
                         .WithMany()
                         .HasForeignKey("IncomingOrderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.IncomingOrder", "IncomingOrder")
-                        .WithMany()
-                        .HasForeignKey("IncomingOrderId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Product", null)
+                    b.HasOne("Domain.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId1")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("IncomingOrder");
@@ -1013,28 +961,16 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.ProductRack", b =>
                 {
-                    b.HasOne("Domain.Entities.Product", null)
+                    b.HasOne("Domain.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Rack", null)
+                    b.HasOne("Domain.Entities.Rack", "Rack")
                         .WithMany()
                         .HasForeignKey("RackId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Rack", "Rack")
-                        .WithMany()
-                        .HasForeignKey("RackId1")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Product");
@@ -1044,28 +980,16 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.ProductShop", b =>
                 {
-                    b.HasOne("Domain.Entities.Product", null)
+                    b.HasOne("Domain.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Shop", null)
+                    b.HasOne("Domain.Entities.Shop", "Shop")
                         .WithMany()
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Shop", "Shop")
-                        .WithMany()
-                        .HasForeignKey("ShopId1")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Product");
@@ -1097,17 +1021,21 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.RefundOrderProduct", b =>
                 {
-                    b.HasOne("Domain.Entities.Product", null)
+                    b.HasOne("Domain.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.RefundOrder", null)
+                    b.HasOne("Domain.Entities.RefundOrder", "RefundOrder")
                         .WithMany()
                         .HasForeignKey("RefundOrderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("RefundOrder");
                 });
 
             modelBuilder.Entity("Domain.Entities.Staff", b =>
@@ -1156,28 +1084,16 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.ZoneStaff", b =>
                 {
-                    b.HasOne("Domain.Entities.Staff", null)
+                    b.HasOne("Domain.Entities.Staff", "Staff")
                         .WithMany()
                         .HasForeignKey("StaffId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Staff", "Staff")
-                        .WithMany()
-                        .HasForeignKey("StaffId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Zone", null)
+                    b.HasOne("Domain.Entities.Zone", "Zone")
                         .WithMany()
                         .HasForeignKey("ZoneId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Zone", "Zone")
-                        .WithMany()
-                        .HasForeignKey("ZoneId1")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Staff");

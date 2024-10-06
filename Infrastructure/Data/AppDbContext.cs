@@ -46,12 +46,12 @@ namespace Infrastructure.Data
                 .WithMany(product => product.IncomingOrders)
                 .UsingEntity<IncomingOrderProduct>(
                     r =>
-                        r.HasOne<Product>()
+                        r.HasOne<Product>(incomingOrderProduct=> incomingOrderProduct.Product)
                             .WithMany()
                             .HasForeignKey(incomingOrderProduct => incomingOrderProduct.ProductId)
                             .OnDelete(DeleteBehavior.Restrict),
                     l =>
-                        l.HasOne<IncomingOrder>()
+                        l.HasOne<IncomingOrder>(incomingOrderProduct => incomingOrderProduct.IncomingOrder)
                             .WithMany()
                             .HasForeignKey(incomingOrderProduct =>
                                 incomingOrderProduct.IncomingOrderId
@@ -65,12 +65,12 @@ namespace Infrastructure.Data
                 .WithMany(product => product.RefundOrders)
                 .UsingEntity<RefundOrderProduct>(
                     r =>
-                        r.HasOne<Product>()
+                        r.HasOne<Product>(refundOrderProduct=>refundOrderProduct.Product)
                             .WithMany()
                             .HasForeignKey(refundOrderProduct => refundOrderProduct.ProductId)
                             .OnDelete(DeleteBehavior.Restrict),
                     l =>
-                        l.HasOne<RefundOrder>()
+                        l.HasOne<RefundOrder>(refundOrderProduct => refundOrderProduct.RefundOrder)
                             .WithMany()
                             .HasForeignKey(refundOrderProduct => refundOrderProduct.RefundOrderId)
                             .OnDelete(DeleteBehavior.Restrict)
@@ -82,12 +82,12 @@ namespace Infrastructure.Data
                 .WithMany(product => product.Shops)
                 .UsingEntity<ProductShop>(
                     r =>
-                        r.HasOne<Product>()
+                        r.HasOne<Product>(productShop=>productShop.Product)
                             .WithMany()
                             .HasForeignKey(productShop => productShop.ProductId)
                             .OnDelete(DeleteBehavior.Restrict),
                     l =>
-                        l.HasOne<Shop>()
+                        l.HasOne<Shop>(productShop => productShop.Shop)
                             .WithMany()
                             .HasForeignKey(productShop => productShop.ShopId)
                             .OnDelete(DeleteBehavior.Restrict)
@@ -99,12 +99,12 @@ namespace Infrastructure.Data
                 .WithMany(rack => rack.Products)
                 .UsingEntity<ProductRack>(
                     r =>
-                        r.HasOne<Rack>()
+                        r.HasOne<Rack>(productRack=>productRack.Rack)
                             .WithMany()
                             .HasForeignKey(productRack => productRack.RackId)
                             .OnDelete(DeleteBehavior.Restrict),
                     l =>
-                        l.HasOne<Product>()
+                        l.HasOne<Product>(productRack => productRack.Product)
                             .WithMany()
                             .HasForeignKey(productRack => productRack.ProductId)
                             .OnDelete(DeleteBehavior.Restrict)
@@ -116,12 +116,12 @@ namespace Infrastructure.Data
                 .WithMany(staff => staff.Zones)
                 .UsingEntity<ZoneStaff>(
                     r =>
-                        r.HasOne<Staff>()
+                        r.HasOne<Staff>(zoneStaff=>zoneStaff.Staff)
                             .WithMany()
                             .HasForeignKey(zoneStaff => zoneStaff.StaffId)
                             .OnDelete(DeleteBehavior.Restrict),
                     l =>
-                        l.HasOne<Zone>()
+                        l.HasOne<Zone>(zoneStaff => zoneStaff.Zone)
                             .WithMany()
                             .HasForeignKey(zoneStaff => zoneStaff.ZoneId)
                             .OnDelete(DeleteBehavior.Restrict)
