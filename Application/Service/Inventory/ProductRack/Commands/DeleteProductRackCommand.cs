@@ -3,6 +3,6 @@ using MediatR;
 
 namespace Application.Service.Commands
 {
-    public record DeleteLocationCommand(Guid Id) : IRequest<ServiceResponse>;
+    public record DeleteProductRackCommand(Guid Id) : IRequest<ServiceResponse>;
 }
     

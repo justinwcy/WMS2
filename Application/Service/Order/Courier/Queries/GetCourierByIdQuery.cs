@@ -3,6 +3,6 @@ using MediatR;
 
 namespace Application.Service.Queries
 {
-    public record GetCourierById(Guid Id) : IRequest<GetCourierResponseDTO>;
+    public record GetCourierByIdQuery(Guid Id) : IRequest<GetCourierResponseDTO>;
 }
     

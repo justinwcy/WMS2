@@ -24,7 +24,7 @@ namespace Infrastructure.Repository.Orders.Handlers
                 .Where(inventory => staffIdsInCompany.Contains(inventory.CreatedBy))
                 .ToListAsync(cancellationToken);
 
-            var inventoriesDto = Inventories.Adapt<List<GetInventoryResponseDTO>>();
+            var inventoriesDto = inventories.Adapt<List<GetInventoryResponseDTO>>();
             return inventoriesDto;
         }
     }

@@ -3,6 +3,6 @@ using MediatR;
 
 namespace Application.Service.Queries
 {
-    public record GetBinById(Guid Id) : IRequest<GetBinResponseDTO>;
+    public record GetBinByIdQuery(Guid Id) : IRequest<GetBinResponseDTO>;
 }
     

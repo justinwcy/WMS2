@@ -3,6 +3,6 @@ using MediatR;
 
 namespace Application.Service.Queries
 {
-    public record GetProductShopById(Guid Id) : IRequest<GetProductShopResponseDTO>;
+    public record GetProductShopByIdQuery(Guid Id) : IRequest<GetProductShopResponseDTO>;
 }
     

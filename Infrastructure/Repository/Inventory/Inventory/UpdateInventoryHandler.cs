@@ -20,7 +20,7 @@ namespace Infrastructure.Repository
             try
             {
                 await using var wmsDbContext = contextFactory.CreateDbContext();
-                var inventoryFound = await wmsDbContext.Inventorys.FirstOrDefaultAsync(
+                var inventoryFound = await wmsDbContext.Inventories.FirstOrDefaultAsync(
                     inventory => inventory.Id.Equals(request.Model.Id),
                     cancellationToken);
                 if (inventoryFound == null)
@@ -30,7 +30,7 @@ namespace Infrastructure.Repository
 
                 wmsDbContext.Entry(inventoryFound).State = EntityState.Detached;
                 var adaptData = request.Model.Adapt<Inventory>();
-                wmsDbContext.Inventorys.Update(adaptData);
+                wmsDbContext.Inventories.Update(adaptData);
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
                 return GeneralDbResponses.ItemUpdated("Inventory");
             }

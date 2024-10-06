@@ -3,6 +3,6 @@ using MediatR;
 
 namespace Application.Service.Queries
 {
-    public record GetZoneStaffById(Guid Id) : IRequest<GetZoneStaffResponseDTO>;
+    public record GetZoneStaffByIdQuery(Guid Id) : IRequest<GetZoneStaffResponseDTO>;
 }
     

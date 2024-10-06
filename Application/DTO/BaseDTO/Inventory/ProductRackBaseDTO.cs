@@ -1,8 +1,8 @@
 ﻿namespace Application.DTO.BaseDTO
 {
-    public class ProductLocationBaseDTO : BaseDTO
+    public class ProductRackBaseDTO : BaseDTO
     {
-        public Guid LocationId { get; set; }
+        public Guid RackId { get; set; }
         public Guid ProductId { get; set; }
     }
 }

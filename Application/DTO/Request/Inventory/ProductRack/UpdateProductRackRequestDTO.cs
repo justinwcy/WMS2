@@ -2,7 +2,7 @@
 
 namespace Application.DTO.Request
 {
-    public class UpdateProductLocationRequestDTO : ProductLocationBaseDTO
+    public class UpdateProductRackRequestDTO : ProductRackBaseDTO
     {
         public Guid Id { get; set; }
     }

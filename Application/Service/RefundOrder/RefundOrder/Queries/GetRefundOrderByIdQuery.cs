@@ -3,6 +3,6 @@ using MediatR;
 
 namespace Application.Service.Queries
 {
-    public record GetRefundOrderById(Guid Id) : IRequest<GetRefundOrderResponseDTO>;
+    public record GetRefundOrderByIdQuery(Guid Id) : IRequest<GetRefundOrderResponseDTO>;
 }
     

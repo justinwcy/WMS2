@@ -42,11 +42,7 @@ namespace Domain.Entities
 
         // one to one relationship
         [JsonIgnore]
-        public Inventory Inventory { get; set; }
-
-        // one to many relationship
-        [JsonIgnore]
-        public List<Location> Locations { get; set; } 
+        public Inventory CurrentInventory { get; set; }
 
         // one to many relationship
         [JsonIgnore]

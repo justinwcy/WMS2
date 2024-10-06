@@ -3,6 +3,6 @@ using MediatR;
 
 namespace Application.Service.Queries
 {
-    public record GetLocationByIdQuery(Guid Id) : IRequest<GetLocationResponseDTO>;
+    public record GetProductRackByIdQuery(Guid Id) : IRequest<GetProductRackResponseDTO>;
 }
     

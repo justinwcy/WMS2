@@ -11,19 +11,19 @@ using MediatR;
 
 namespace Infrastructure.Repository
 {
-    public class CreateProductLocationHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
-        IRequestHandler<CreateProductLocationCommand, ServiceResponse>
+    public class CreateProductRackHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
+        IRequestHandler<CreateProductRackCommand, ServiceResponse>
     {
-        public async Task<ServiceResponse> Handle(CreateProductLocationCommand request, CancellationToken cancellationToken)
+        public async Task<ServiceResponse> Handle(CreateProductRackCommand request, CancellationToken cancellationToken)
         {
             try
             {
                 await using var wmsDbContext = contextFactory.CreateDbContext();
                 
-                var data = request.Model.Adapt<ProductLocation>();
-                wmsDbContext.ProductLocations.Add(data);
+                var data = request.Model.Adapt<ProductRack>();
+                wmsDbContext.ProductRacks.Add(data);
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
-                return GeneralDbResponses.ItemCreated("ProductLocation");
+                return GeneralDbResponses.ItemCreated("ProductRack");
             }
             catch (Exception ex)
             {

@@ -2,7 +2,7 @@
 
 namespace Application.DTO.Request
 {
-    public class CreateProductLocationRequestDTO : ProductLocationBaseDTO
+    public class CreateProductRackRequestDTO : ProductRackBaseDTO
     {
     }
 }
