@@ -1,6 +1,5 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
 using Application.Constants;
 using Application.DependencyInjection;
 using WebUI.Components;
