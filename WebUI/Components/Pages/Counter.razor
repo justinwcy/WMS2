@@ -1,19 +1,61 @@
 ﻿@page "/counter"
-@rendermode InteractiveServer
 
 <PageTitle>Counter</PageTitle>
 
-<h1>Counter</h1>
+<MudText Typo="Typo.h3" GutterBottom="true">Counter</MudText>
 
-<p role="status">Current count: @currentCount</p>
+<MudText Typo="Typo.body1" Class="mb-4">Current count: @currentCount</MudText>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="IncrementCount">Click me</MudButton>
+<MudCheckBox @bind-Value="checkboxValue" Color="Color.Primary" @oninput="UpdateCheckboxText">Toggle me</MudCheckBox>
+<p>@checkboxText</p>
+
+@if (isShowAlert)
+{
+    <MudAlert Severity="Severity.Normal" Variant="Variant.Outlined" ShowCloseIcon="true" CloseIconClicked="CloseShowAlert">The reactor type is RBMK-1000</MudAlert>
+
+}
 
 @code {
     private int currentCount = 0;
+    private bool checkboxValue = true;
+    private string checkboxText = "";
+    private bool isShowAlert = true;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (checkboxValue)
+        {
+            checkboxText = "I am currently being checked";
+        }
+        else
+        {
+            checkboxText = "I am not checked";
+        }
+    }
 
     private void IncrementCount()
     {
         currentCount++;
     }
+
+
+    private void UpdateCheckboxText(ChangeEventArgs changeEventArgs)
+    {
+        if ((bool)changeEventArgs.Value)
+        {
+            checkboxText = "I am currently being checked";
+        }
+        else
+        {
+            checkboxText = "I am not checked";
+        }
+    }
+
+    private void CloseShowAlert()
+    {
+        isShowAlert = false;
+    }
+
 }

@@ -4,10 +4,13 @@ using Application.Constants;
 using Application.DependencyInjection;
 using WebUI.Components;
 using Infrastructure.DependencyInjection;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddInfrastructureService(builder.Configuration);
 builder.Services.AddApplicationService();
+
+builder.Services.AddMudServices();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
