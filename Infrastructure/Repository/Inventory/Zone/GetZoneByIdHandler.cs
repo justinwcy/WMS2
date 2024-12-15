@@ -7,7 +7,7 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repository.Orders.Handlers
+namespace Infrastructure.Repository
 {
     public class GetZoneByIdHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
         IRequestHandler<GetZoneByIdQuery, GetZoneResponseDTO>

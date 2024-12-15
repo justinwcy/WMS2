@@ -9,7 +9,7 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repository.Orders.Handlers
+namespace Infrastructure.Repository
 {
     public class GetAllVendorByCompanyIdHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
         IRequestHandler<GetAllVendorByCompanyIdQuery, IEnumerable<GetVendorResponseDTO>>

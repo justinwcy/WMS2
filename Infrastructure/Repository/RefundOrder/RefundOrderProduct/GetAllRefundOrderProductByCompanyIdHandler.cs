@@ -9,7 +9,7 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repository.Orders.Handlers
+namespace Infrastructure.Repository
 {
     public class GetAllRefundOrderProductByCompanyIdHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
         IRequestHandler<GetAllRefundOrderProductByCompanyIdQuery, IEnumerable<GetRefundOrderProductResponseDTO>>

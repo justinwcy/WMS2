@@ -7,7 +7,7 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repository.Orders.Handlers
+namespace Infrastructure.Repository
 {
     public class GetIncomingOrderProductByIdHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
         IRequestHandler<GetIncomingOrderProductByIdQuery, GetIncomingOrderProductResponseDTO>

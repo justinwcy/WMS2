@@ -8,7 +8,7 @@ using MediatR;
 
 using Microsoft.AspNetCore.Identity;
 
-namespace Infrastructure.Repository.Orders.Handlers
+namespace Infrastructure.Repository
 {
     public class GetAllStaffByCompanyIdHandler(
         UserManager<WmsStaff> userManager,

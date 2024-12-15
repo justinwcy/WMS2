@@ -9,7 +9,7 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repository.Orders.Handlers
+namespace Infrastructure.Repository
 {
     public class GetAllProductRackByCompanyIdHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
         IRequestHandler<GetAllProductRackByCompanyIdQuery, IEnumerable<GetProductRackResponseDTO>>
