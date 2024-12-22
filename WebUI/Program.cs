@@ -1,11 +1,16 @@
 using System.Reflection;
-using Microsoft.AspNetCore.Identity;
+
 using Application.Constants;
 using Application.DependencyInjection;
-using WebUI.Components;
+
 using Infrastructure.DependencyInjection;
-using MudBlazor.Services;
+
+using Microsoft.AspNetCore.Identity;
+
 using MudBlazor;
+using MudBlazor.Services;
+
+using WebUI.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddInfrastructureService(builder.Configuration);

@@ -18,11 +18,11 @@ namespace Domain.Entities
 
         public double Weight { get; set; }
 
-        public double Height { get; set; }
+        public double? Height { get; set; }
 
-        public double Length { get; set; }
+        public double? Length { get; set; }
 
-        public double Width { get; set; }
+        public double? Width { get; set; }
 
         // many to many relationship
         [JsonIgnore]
