@@ -11,11 +11,17 @@ using MudBlazor;
 using MudBlazor.Services;
 
 using WebUI.Components;
+using WebUI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddInfrastructureService(builder.Configuration);
 builder.Services.AddApplicationService();
 
+builder.Services.AddScoped<IdentityRedirectManager>();
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddMudPopoverService();
+builder.Services.AddMudBlazorSnackbar();
+builder.Services.AddMudBlazorDialog();
 builder.Services.AddMudServices(config =>
 {
     config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;

@@ -1,0 +1,43 @@
+﻿<MudAppBar Elevation="1">
+    <MudTooltip Arrow="true" Text="Toggle menu">
+        <MudToggleIconButton Class="mr-3"
+                             Color="@Color.Default"
+                             Icon="@Icons.Material.Filled.MenuOpen"
+                             Size="Size.Medium"
+                             Toggled="NavigationMenuDrawerOpen"
+                             ToggledChanged="ToggleNavigationMenuDrawer"
+                             ToggledColor="@Color.Default"
+                             ToggledIcon="@Icons.Material.Filled.Close" />
+
+    </MudTooltip>
+    <MudSpacer/>
+    <MudText Typo="Typo.h5" Class="ml-3">@Application.Constants.AppDetails.AppName</MudText>
+    <MudDivider Class="mx-3 my-5" DividerType="DividerType.Middle" Vertical="true" FlexItem="true"/>
+    <MudTooltip Arrow="true" Text="Toggle dark mode">
+        <MudToggleIconButton Class="mr-3"
+                             Color="@Color.Default"
+                             Icon="@Icons.Material.Outlined.LightMode"
+                             Size="Size.Medium"
+                             Toggled="IsDarkMode"
+                             ToggledChanged="ToggleDarkMode"
+                             ToggledColor="@Color.Default"
+                             ToggledIcon="@Icons.Material.Filled.DarkMode" />
+
+    </MudTooltip>
+
+</MudAppBar>
+
+@code
+{
+    [Parameter] 
+    public bool IsDarkMode { get; set; }
+
+    [Parameter]
+    public EventCallback ToggleDarkMode { get; set; }
+
+    [Parameter] 
+    public bool NavigationMenuDrawerOpen { get; set; }
+    
+    [Parameter] 
+    public EventCallback ToggleNavigationMenuDrawer { get; set; }
+}

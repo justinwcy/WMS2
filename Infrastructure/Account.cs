@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using System.Threading;
 
 using Application.Constants;
 using Application.DTO.Request.Identity;
@@ -11,10 +10,9 @@ using Domain.Entities;
 
 using Infrastructure.Data;
 using Infrastructure.Extensions.Identity;
-using Mapster;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Infrastructure.Repository
 {

@@ -1,0 +1,72 @@
+﻿@layout MainLayout
+@using Infrastructure.Extensions.Identity
+@inherits LayoutComponentBase
+<MudLayout>
+    <AuthorizeView>
+        <NotAuthorized>
+            <RedirectToLogin/>
+        </NotAuthorized>
+        <Authorized>
+            <HeaderMenu NavigationMenuDrawerOpen="_isNavigationMenuDrawerOpen"
+                        IsDarkMode="_isDarkMode"
+                        ToggleDarkMode="ToggleDarkMode"
+                        ToggleNavigationMenuDrawer="ToggleNavigationMenuDrawer"
+            />
+            
+            <MudDrawer @bind-Open="_isNavigationMenuDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+                <NavMenu />
+            </MudDrawer>
+
+            <MudMainContent>
+                <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mb-4 mt-4">
+                    <ErrorBoundary @ref="_errorBoundary">
+                        <ChildContent>
+                            <CascadingValue Value="@_userProfile">
+                                @Body
+                            </CascadingValue>
+                        </ChildContent>
+                        <ErrorContent Context="exception">
+                            <CustomError Exception="exception"></CustomError>
+                        </ErrorContent>
+                    </ErrorBoundary>
+                </MudContainer>
+            </MudMainContent>
+        </Authorized>
+    </AuthorizeView>
+</MudLayout>
+
+
+@code
+{
+    private bool _isNavigationMenuDrawerOpen = true;
+    private bool _isDarkMode = true;
+    private ErrorBoundary? _errorBoundary { get; set; }
+    private WmsStaff? _userProfile;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    protected void ToggleNavigationMenuDrawer()
+    {
+        _isNavigationMenuDrawerOpen = !_isNavigationMenuDrawerOpen;
+    }
+
+    protected void ToggleDarkMode()
+    {
+        _isDarkMode = !_isDarkMode;
+    }
+
+    protected override void OnParametersSet()
+    {
+        ResetBoundary();
+    }
+
+    private void ResetBoundary()
+    {
+        // On each page navigation, reset any error state
+        _errorBoundary?.Recover();
+    }
+
+}
