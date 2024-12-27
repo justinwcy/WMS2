@@ -2,9 +2,10 @@ using System.Reflection;
 
 using Application.Constants;
 using Application.DependencyInjection;
-
+using Application.Interface.Identity;
+using Application.Service.Identity;
 using Infrastructure.DependencyInjection;
-
+using Infrastructure.Repository;
 using Microsoft.AspNetCore.Identity;
 
 using MudBlazor;
@@ -73,6 +74,9 @@ using (var scope = app.Services.CreateScope())
             await roleManager.CreateAsync(new IdentityRole(role));
         }
     }
+
+    var staffAccountService = scope.ServiceProvider.GetRequiredService<IStaffAccountService>();
+    await staffAccountService.SetUpAsync();
 }
 
 app.Run();

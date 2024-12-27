@@ -1,166 +1,178 @@
 ﻿@page "/pages/authentication/register"
 @using System.ComponentModel.DataAnnotations
-@using Application.Constants
+@using System.Diagnostics
+@using System.Text.RegularExpressions
+@using Application.DTO.Request
+@using Application.Service.Commands
+@using Application.Service.Queries
 @using Infrastructure.Extensions.Identity
 @using Microsoft.AspNetCore.Identity
+@using WebUI.Components.Models
 
 @inject UserManager<WmsStaff> UserManager
-@inject ILogger<Register> Logger
 @inject IUserStore<WmsStaff> UserStore
 @inject SignInManager<WmsStaff> SignInManager
 @inject IdentityRedirectManager RedirectManager
-<PageTitle>@Title</PageTitle>
+<PageTitle>@_title</PageTitle>
 
-<div class="d-flex flex-column gap-y-3">
-    <div class="d-flex flex-column">
-        <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register">
-            <DataAnnotationsValidator />
-            <MudText Typo="Typo.h4" GutterBottom="true">Sign Up</MudText>
-            <MudText>
-                Have an account? <MudLink Href="@Login.PageUrl">Sign In</MudLink>
-            </MudText>
-            <StatusMessage Error="true" Message="@message"></StatusMessage>
-            <div class="mud-input-control mud-input-input-control my-4">
-                <div class="mud-input-control-input-container">
-                    <!--!--><!--!-->
-                    <div class="mud-input mud-input-outlined mud-shrink">
-                        <InputText @bind-Value="Input.UserName" class="mud-input-slot mud-input-root mud-input-root-outlined" type="text" autocomplete="username" aria-required="true" placeholder="Username" />
-                        <div class="mud-input-slot mud-input-root mud-input-root-outlined" style="display:none"></div>
-                        <!--!-->
-                        <div class="mud-input-outlined-border"></div>
-                    </div>
-                    <!--!-->
-                    <label class="mud-input-label mud-input-label-animated mud-input-label-outlined mud-input-label-inputcontrol" for="userName">UserName</label>
-                </div>
-                <div class="mud-input-helper-text mud-input-error">
-                    <div class="d-flex">
-                        <ValidationMessage For="() => Input.UserName" class="mud-input-error" />
-                    </div>
-                </div>
-            </div>
+<MudForm @ref="_form" @bind-IsValid="@_isFormValid">
+    <MudPopoverProvider/>
+    <MudText Typo="Typo.h4" GutterBottom="true">Sign Up</MudText>
+    <MudText Class="mb-3">
+        Have an account? <MudLink Href="@Login.PageUrl">Sign In</MudLink>
+    </MudText>
+    <MudGrid>
+        <MudItem xs="6">
+            <MudTextField @bind-value="_inputModel.FirstName" 
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="First Name"
+                          Required="true" RequiredError="First name is required!"/>
+        </MudItem>
+        <MudItem xs="6">
+            <MudTextField @bind-value="_inputModel.LastName"
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Last Name"
+                          Required="true" RequiredError="Last name is required!"/>
+        </MudItem>
+    </MudGrid>
 
+    <MudTextField @bind-value="_inputModel.Email"
+        Variant="@_defaultVariant"
+        T="string"
+        Label="Email"
+        Required="true" RequiredError="Email is required!"
+        Validation="@(new EmailAddressAttribute() { ErrorMessage = "The email address is invalid" })"/>
 
-            <div class="mud-input-control mud-input-input-control my-4">
-                <div class="mud-input-control-input-container">
-                    <!--!--><!--!-->
-                    <div class="mud-input mud-input-outlined mud-shrink">
-                        <InputText @bind-Value="Input.Email" class="mud-input-slot mud-input-root mud-input-root-outlined" type="text" autocomplete="username" aria-required="true" placeholder="XXX@gmail.com" />
-                        <div class="mud-input-slot mud-input-root mud-input-root-outlined" style="display:none"></div>
-                        <!--!-->
-                        <div class="mud-input-outlined-border"></div>
-                    </div>
-                    <!--!-->
-                    <label class="mud-input-label mud-input-label-animated mud-input-label-outlined mud-input-label-inputcontrol" for="userName">E-mail</label>
-                </div>
-                <div class="mud-input-helper-text mud-input-error">
-                    <div class="d-flex">
-                        <ValidationMessage For="() => Input.Email" class="mud-input-error" />
-                    </div>
-                </div>
-            </div>
+    <MudTextField @bind-value="_inputModel.Password" 
+                  Variant="@_defaultVariant"
+                  T="string" Label="Password" @ref="passwordField"
+                  InputType="InputType.Password"
+                  Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))" Required="true"
+                  RequiredError="Password is required!"/>
 
-            <div class="mud-input-control mud-input-input-control my-4">
-                <div class="mud-input-control-input-container">
-                    <!--!--><!--!-->
-                    <div class="mud-input mud-input-outlined mud-shrink">
-                        <InputText type="password" @bind-Value="Input.Password" class="mud-input-slot mud-input-root mud-input-root-outlined" autocomplete="current-password" aria-required="true" placeholder="Password" />
-                        <div class="mud-input-slot mud-input-root mud-input-root-outlined" style="display:none"></div>
-                        <!--!-->
-                        <div class="mud-input-outlined-border"></div>
-                    </div>
-                    <!--!-->
-                    <label class="mud-input-label mud-input-label-animated mud-input-label-outlined mud-input-label-inputcontrol" for="password">Password</label>
-                </div>
-                <div class="mud-input-helper-text mud-input-error">
-                    <div class="d-flex">
-                        <ValidationMessage For="() => Input.Password" class="mud-input-error" />
-                    </div>
-                </div>
-            </div>
-            <div class="mud-input-control mud-input-input-control my-4">
-                <div class="mud-input-control-input-container">
-                    <!--!--><!--!-->
-                    <div class="mud-input mud-input-outlined mud-shrink">
-                        <InputText type="password" @bind-Value="Input.ConfirmPassword" class="mud-input-slot mud-input-root mud-input-root-outlined" autocomplete="current-password" aria-required="true" placeholder="Confirm Password" />
-                        <div class="mud-input-slot mud-input-root mud-input-root-outlined" style="display:none"></div>
-                        <!--!-->
-                        <div class="mud-input-outlined-border"></div>
-                    </div>
-                    <!--!-->
-                    <label class="mud-input-label mud-input-label-animated mud-input-label-outlined mud-input-label-inputcontrol" for="password">Confirm Password</label>
-                </div>
-                <div class="mud-input-helper-text mud-input-error">
-                    <div class="d-flex">
-                        <ValidationMessage For="() => Input.ConfirmPassword" class="mud-input-error" />
-                    </div>
-                </div>
-            </div>
-            
-            <div Class="d-flex justify-space-between align-center mb-1">
-                <label class="form-label">
-                    <InputCheckbox @bind-Value="Input.AgreeToTerms" class="form-check-input" />
-                    I agree to the terms and privacy
-                </label>
-                <div class="mud-input-helper-text mud-input-error">
-                    <div class="d-flex">
-                        <ValidationMessage For="() => Input.AgreeToTerms" class="mud-input-error" />
-                    </div>
-                </div>
-            </div>
+    <MudTextField @bind-value="_inputModel.ConfirmPassword" 
+                  Variant="@_defaultVariant"
+                  T="string"
+                  Label="Confirm Password" InputType="InputType.Password"
+                  Validation="@(new Func<string, string>(PasswordMatch))"/>
 
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       ButtonType="ButtonType.Submit"
-                       FullWidth="true">
-                <MudText>Register</MudText>
-            </MudButton>
-        </EditForm>
-    </div>
-</div>
+    <MudSelect @bind-Value="_inputModel.Role"
+               Variant="@_defaultVariant"
+               Label="Role"
+               Margin="Margin.Normal"
+               Dense="false"
+               Disabled="false"
+               ReadOnly="false"
+               Placeholder=@("User Role")
+               HelperText=@("Please select a role for the user")
+               HelperTextOnFocus="true"
+               Clearable="false"
+               Required="true"
+               RequiredError="Please select a role for the user">
+        @foreach (var staffRoles in _allStaffRoles)
+        {
+            <MudSelectItem Value="staffRoles">@staffRoles</MudSelectItem>
+        }
+    </MudSelect>
 
+    <MudButton 
+        OnClick="@RegisterUser"
+        Variant="Variant.Filled"
+        Color="Color.Primary"
+        Size="Size.Large"
+        Disabled="@(!_isFormValid)"
+        FullWidth="true">
+        Register
+    </MudButton>
+</MudForm>
 @code {
-
     public const string PageUrl = "/pages/authentication/register";
-    private string Title = "Sign Up";
+    private const string _title = "Sign Up";
 
-    [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
-    private string? message;
+    private bool _isFormValid { get; set; } = false;
+    private MudForm _form;
+    private const Variant _defaultVariant = Variant.Text;
+    private List<string> _allStaffRoles = new();
 
+    private InputModel _inputModel { get; set; } = new();
 
-    [SupplyParameterFromForm] private InputModel Input { get; set; } = new();
+    private MudTextField<string> passwordField;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        Title = "Sign Up";
+        var query = new GetAllStaffRolesQuery();
+        var allStaffRoles = await mediator.Send(query);
+        _allStaffRoles = allStaffRoles.ToList();
     }
 
-    public async Task RegisterUser(EditContext editContext)
+    private IEnumerable<string> PasswordStrength(string passwordString)
     {
-        var user = CreateUser();
-        await UserStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
-        var emailStore = GetEmailStore();
-        await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-        var result = await UserManager.CreateAsync(user, Input.Password);
-        if (!result.Succeeded)
+        if (string.IsNullOrWhiteSpace(passwordString))
         {
-            message = string.Join(", ", result.Errors.Select(error => error.Description));
-            return;
+            yield return "Password is required!";
+            yield break;
         }
 
-        var newUserRole = StaffRole.Admin;
-        result = await UserManager.AddToRoleAsync(user, newUserRole);
-        if (!result.Succeeded)
+        if (passwordString.Length < 6)
+            yield return "Password must be at least of length 6";
+        if (!Regex.IsMatch(passwordString, @"[A-Z]"))
+            yield return "Password must contain at least one capital letter";
+        if (!Regex.IsMatch(passwordString, @"[a-z]"))
+            yield return "Password must contain at least one lowercase letter";
+        if (!Regex.IsMatch(passwordString, @"[0-9]"))
+            yield return "Password must contain at least one digit";
+    }
+
+    private string PasswordMatch(string passwordString)
+    {
+        if (passwordField.Value != passwordString)
+            return "Passwords don't match";
+        return null;
+    }
+
+    public async Task RegisterUser()
+    {
+        var createStaffRequestDTO = new CreateStaffRequestDTO()
         {
-            message = string.Join(", ", result.Errors.Select(error => error.Description));
-            return;
-        }
+            CompanyId = DebugConstants.CompanyId,
+            CreatedBy = DebugConstants.AdminId,
+            FirstName = _inputModel.FirstName,
+            LastName = _inputModel.LastName,
+            Email = _inputModel.Email,
+            Roles = new List<string>() { _inputModel.Role },
+            Password = _inputModel.Password,
+            ConfirmPassword = _inputModel.ConfirmPassword,
+        };
+        var command = new CreateStaffCommand(createStaffRequestDTO);
 
-        var userId = await UserManager.GetUserIdAsync(user);
-        Logger.LogInformation($"New user account created. Username: {Input.UserName}, User ID: {userId}, Assigned Role: {newUserRole}.");
+        var response = await mediator.Send(command);
 
-        await SignInManager.SignInAsync(user, false);
-        RedirectManager.RedirectTo(ReturnUrl);
+        // var user = CreateUser();
+        // await UserStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
+        // var emailStore = GetEmailStore();
+        // await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+        // var result = await UserManager.CreateAsync(user, Input.Password);
+        // if (!result.Succeeded)
+        // {
+        //     message = string.Join(", ", result.Errors.Select(error => error.Description));
+        //     return;
+        // }
+
+        // var newUserRole = StaffRole.Admin;
+        // result = await UserManager.AddToRoleAsync(user, newUserRole);
+        // if (!result.Succeeded)
+        // {
+        //     message = string.Join(", ", result.Errors.Select(error => error.Description));
+        //     return;
+        // }
+
+        // var userId = await UserManager.GetUserIdAsync(user);
+        // Logger.LogInformation($"New user account created. Username: {Input.UserRole}, User ID: {userId}, Assigned Role: {newUserRole}.");
+
+        // await SignInManager.SignInAsync(user, false);
+        // RedirectManager.RedirectTo("/pages/authentication/login");
     }
 
     private WmsStaff CreateUser()
@@ -188,32 +200,19 @@
 
     public sealed class InputModel
     {
-        [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
+        public string FirstName { get; set; } = "";
+
+        public string LastName { get; set; } = "";
+        
         public string UserName { get; set; } = "";
 
-        [Required]
-        [EmailAddress]
-        [Display(Name = "Email")]
         public string Email { get; set; } = "";
 
-        [Required]
-        [StringLength(100, MinimumLength = 6)]
-        [DataType(DataType.Password)]
-        [RegularExpression("^.*(?=.{6,100})(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!*@#$%^&+=]).*$",
-            ErrorMessage = "Password must contain at least one lowercase letter, " +
-                           "one uppercase letter, one digit, one special character, " +
-                           "contain at least 6 to 100 characters")]
-        [Display(Name = "Password")]
         public string Password { get; set; } = "";
 
-        [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-        public string? ConfirmPassword { get; set; } = "";
+        public string ConfirmPassword { get; set; } = "";
 
-        [Range(typeof(bool), "true", "true", ErrorMessage = "You must agree to the terms.")]
-        public bool AgreeToTerms { get; set; } = true;
+        public string Role { get; set; } = "";
     }
 
 }
