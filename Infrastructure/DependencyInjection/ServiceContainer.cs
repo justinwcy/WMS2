@@ -90,7 +90,7 @@ namespace Infrastructure.DependencyInjection
                 });
 
             services.AddCascadingAuthenticationState();
-            services.AddScoped<IAccount, Account>();
+            services.AddScoped<IAccountService, AccountService>();
             services.AddMediatR(config => config.RegisterServicesFromAssemblies(typeof(CreateCompanyHandler).Assembly));
             services.AddScoped<IWmsDbContextFactory<WmsDbContext>, DbContextFactory<WmsDbContext>>();
             

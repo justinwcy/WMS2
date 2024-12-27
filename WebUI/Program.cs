@@ -3,9 +3,9 @@ using System.Reflection;
 using Application.Constants;
 using Application.DependencyInjection;
 using Application.Interface.Identity;
-using Application.Service.Identity;
+
 using Infrastructure.DependencyInjection;
-using Infrastructure.Repository;
+
 using Microsoft.AspNetCore.Identity;
 
 using MudBlazor;
@@ -58,9 +58,10 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-// register all roles
+
 using (var scope = app.Services.CreateScope())
 {
+    // register all roles
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var roles = typeof(StaffRole)
         .GetFields(BindingFlags.Public | BindingFlags.Static)
@@ -75,8 +76,9 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-    var staffAccountService = scope.ServiceProvider.GetRequiredService<IStaffAccountService>();
-    await staffAccountService.SetUpAsync();
+    // create default admin account
+    var accountService = scope.ServiceProvider.GetRequiredService<IAccountService>();
+    await accountService.SetUpAsync();
 }
 
 app.Run();

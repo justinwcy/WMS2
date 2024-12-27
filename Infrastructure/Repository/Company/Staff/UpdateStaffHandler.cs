@@ -23,7 +23,7 @@ namespace Infrastructure.Repository
         {
             try
             {
-                var accountHandler = new Account(userManager, signInManager, roleManager, contextFactory);
+                var accountHandler = new AccountService(userManager, signInManager, roleManager, contextFactory);
                 var changeStaffClaimRequestDTO = request.Model.Adapt<ChangeStaffClaimRequestDTO>();
                 var response = await accountHandler.UpdateStaffAsync(changeStaffClaimRequestDTO);
                 return response;

@@ -21,7 +21,7 @@ namespace Infrastructure.Repository
         {
             try
             {
-                var accountHandler = new Account(userManager, signInManager, roleManager, contextFactory);
+                var accountHandler = new AccountService(userManager, signInManager, roleManager, contextFactory);
                 var createStaffAccountRequestDTO = request.Model.Adapt<CreateStaffAccountRequestDTO>();
                 var response = await accountHandler.CreateStaffAsync(createStaffAccountRequestDTO);
                 return response;

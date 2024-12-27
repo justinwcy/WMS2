@@ -2,9 +2,9 @@
 using Application.DTO.Response;
 using Application.DTO.Response.Identity;
 
-namespace Application.Service.Identity
+namespace Application.Interface.Identity
 {
-    public interface IStaffAccountService
+    public interface IAccountService
     {
         Task<ServiceResponse> StaffLoginAsync(LoginStaffRequestDTO model);
         Task<ServiceResponse> StaffLogoutAsync();

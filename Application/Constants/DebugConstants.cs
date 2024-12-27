@@ -1,4 +1,4 @@
-﻿namespace WebUI.Components.Models
+﻿namespace Application.Constants
 {
     public static class DebugConstants
     {

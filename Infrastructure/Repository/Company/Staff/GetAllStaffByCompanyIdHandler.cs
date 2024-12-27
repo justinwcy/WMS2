@@ -21,7 +21,7 @@ namespace Infrastructure.Repository
         {
             try
             {
-                var accountHandler = new Account(userManager, signInManager, roleManager, contextFactory);
+                var accountHandler = new AccountService(userManager, signInManager, roleManager, contextFactory);
                 var staffsWithClaimResponseDTO = await accountHandler.GetAllStaffWithClaimsAsync(request.CompanyId);
 
                 await using var wmsDbContext = contextFactory.CreateDbContext();

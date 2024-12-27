@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 
 using Application.Constants;
+using Application.DTO.Request;
 using Application.DTO.Request.Identity;
 using Application.DTO.Response;
 using Application.DTO.Response.Identity;
@@ -16,10 +17,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repository
 {
-    public class Account(UserManager<WmsStaff> userManager,
+    public class AccountService(UserManager<WmsStaff> userManager,
         SignInManager<WmsStaff> signInManager,
         RoleManager<IdentityRole> roleManager,
-        IWmsDbContextFactory<WmsDbContext> contextFactory) : IAccount
+        IWmsDbContextFactory<WmsDbContext> contextFactory) : IAccountService
     {
         public async Task<ServiceResponse> StaffLoginAsync(LoginStaffRequestDTO model)
         {
@@ -131,6 +132,18 @@ namespace Infrastructure.Repository
 
         public async Task SetUpAsync()
         {
+            var createStaffRequestDTO = new CreateStaffRequestDTO()
+            {
+                CompanyId = DebugConstants.CompanyId,
+                CreatedBy = DebugConstants.AdminId,
+                FirstName = "Master",
+                LastName = "Control",
+                Email = "master@control.com",
+                Password = "123asd!@#ASD",
+                Roles = new List<string> { StaffRole.MasterControl },
+                ConfirmPassword = "123asd!@#ASD",
+            };
+
             var createStaffAccountRequestDTO = new CreateStaffAccountRequestDTO()
             {
                 FirstName = "Master",

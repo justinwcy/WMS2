@@ -20,7 +20,7 @@ namespace Infrastructure.Repository
         {
             try
             {
-                var accountHandler = new Account(userManager, signInManager, roleManager, contextFactory);
+                var accountHandler = new AccountService(userManager, signInManager, roleManager, contextFactory);
                 var response = await accountHandler.DeleteStaffAsync(request.staffId);
                 return response;
             }

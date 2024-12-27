@@ -1,6 +1,4 @@
-﻿using Application.Service.Identity;
-
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.DependencyInjection
 {
@@ -8,7 +6,6 @@ namespace Application.DependencyInjection
     {
         public static IServiceCollection AddApplicationService(this IServiceCollection services)
         {
-            services.AddScoped<IStaffAccountService, StaffAccountService>();
             return services;
         }
 
