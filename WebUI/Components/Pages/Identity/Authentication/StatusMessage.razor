@@ -1,36 +1,16 @@
-﻿@if (!string.IsNullOrEmpty(DisplayMessage))
+﻿@if (!string.IsNullOrEmpty(Message))
 {
     var statusMessageClass = Error ? "error" : "success";
     <div class="mud-alert mud-alert-text-@statusMessageClass mud-elevation-0" role="alert">
         <div class="mud-alert-position justify-sm-start">
             <div class="mud-alert-message">
-                @DisplayMessage
+                @Message
             </div>
         </div>
     </div>
 }
 
 @code {
-    private string? messageFromCookie;
-
     [Parameter] public string? Message { get; set; }
     [Parameter] public bool Error { get; set; }
-
-    [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
-
-    private string? DisplayMessage => Message ?? messageFromCookie;
-
-    protected override void OnInitialized()
-    {
-        if (HttpContext is not null)
-        {
-            messageFromCookie = HttpContext.Request.Cookies[IdentityRedirectManager.StatusCookieName];
-
-            if (messageFromCookie is not null)
-            {
-                HttpContext.Response.Cookies.Delete(IdentityRedirectManager.StatusCookieName);
-            }
-        }
-    }
-
 }

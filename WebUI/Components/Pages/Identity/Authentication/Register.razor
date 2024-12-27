@@ -1,23 +1,16 @@
 ﻿@page "/pages/authentication/register"
 @using System.ComponentModel.DataAnnotations
-@using System.Diagnostics
 @using System.Text.RegularExpressions
 @using Application.Constants
 @using Application.DTO.Request
 @using Application.Service.Commands
 @using Application.Service.Queries
-@using Infrastructure.Extensions.Identity
-@using Microsoft.AspNetCore.Identity
-@using WebUI.Components.Models
 
-@inject UserManager<WmsStaff> UserManager
-@inject IUserStore<WmsStaff> UserStore
-@inject SignInManager<WmsStaff> SignInManager
-@inject IdentityRedirectManager RedirectManager
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
 <PageTitle>@_title</PageTitle>
 
 <MudForm @ref="_form" @bind-IsValid="@_isFormValid">
-    <MudPopoverProvider/>
     <MudText Typo="Typo.h4" GutterBottom="true">Sign Up</MudText>
     <MudText Class="mb-3">
         Have an account? <MudLink Href="@Login.PageUrl">Sign In</MudLink>
@@ -97,7 +90,7 @@
     private const Variant _defaultVariant = Variant.Text;
     private List<string> _allStaffRoles = new();
 
-    private InputModel _inputModel { get; set; } = new();
+    private RegisterModel _inputModel { get; set; } = new();
 
     private MudTextField<string> passwordField;
 
@@ -149,57 +142,15 @@
         var command = new CreateStaffCommand(createStaffRequestDTO);
 
         var response = await mediator.Send(command);
+        Snackbar.Add(response.Message);
 
-        // var user = CreateUser();
-        // await UserStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
-        // var emailStore = GetEmailStore();
-        // await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-        // var result = await UserManager.CreateAsync(user, Input.Password);
-        // if (!result.Succeeded)
-        // {
-        //     message = string.Join(", ", result.Errors.Select(error => error.Description));
-        //     return;
-        // }
-
-        // var newUserRole = StaffRole.Admin;
-        // result = await UserManager.AddToRoleAsync(user, newUserRole);
-        // if (!result.Succeeded)
-        // {
-        //     message = string.Join(", ", result.Errors.Select(error => error.Description));
-        //     return;
-        // }
-
-        // var userId = await UserManager.GetUserIdAsync(user);
-        // Logger.LogInformation($"New user account created. Username: {Input.UserRole}, User ID: {userId}, Assigned Role: {newUserRole}.");
-
-        // await SignInManager.SignInAsync(user, false);
-        // RedirectManager.RedirectTo("/pages/authentication/login");
-    }
-
-    private WmsStaff CreateUser()
-    {
-        try
+        if (response.Success)
         {
-            return Activator.CreateInstance<WmsStaff>();
-        }
-        catch
-        {
-            throw new InvalidOperationException($"Can't create an instance of '{nameof(WmsStaff)}'. " +
-                                                $"Ensure that '{nameof(WmsStaff)}' is not an abstract class and has a parameterless constructor.");
+            NavigationManager.NavigateTo(Login.PageUrl);
         }
     }
 
-    private IUserEmailStore<WmsStaff> GetEmailStore()
-    {
-        if (!UserManager.SupportsUserEmail)
-        {
-            throw new NotSupportedException("The default UI requires a user store with email support.");
-        }
-
-        return (IUserEmailStore<WmsStaff>)UserStore;
-    }
-
-    public sealed class InputModel
+    public sealed class RegisterModel
     {
         public string FirstName { get; set; } = "";
 

@@ -1,4 +1,5 @@
-﻿using Application.DTO.Request.Identity;
+﻿using Application.DTO.Request;
+using Application.DTO.Request.Identity;
 using Application.DTO.Response;
 using Application.Service.Commands;
 
@@ -22,8 +23,8 @@ namespace Infrastructure.Repository
             try
             {
                 var accountHandler = new AccountService(userManager, signInManager, roleManager, contextFactory);
-                var createStaffAccountRequestDTO = request.Model.Adapt<CreateStaffAccountRequestDTO>();
-                var response = await accountHandler.CreateStaffAsync(createStaffAccountRequestDTO);
+                var createStaffRequestDTO = request.Model.Adapt<CreateStaffRequestDTO>();
+                var response = await accountHandler.CreateStaffAsync(createStaffRequestDTO);
                 return response;
             }
             catch (Exception ex)

@@ -12,13 +12,11 @@ using MudBlazor;
 using MudBlazor.Services;
 
 using WebUI.Components;
-using WebUI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddInfrastructureService(builder.Configuration);
 builder.Services.AddApplicationService();
 
-builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddMudPopoverService();
 builder.Services.AddMudBlazorSnackbar();
@@ -30,7 +28,7 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.PreventDuplicates = false;
     config.SnackbarConfiguration.NewestOnTop = false;
     config.SnackbarConfiguration.ShowCloseIcon = true;
-    config.SnackbarConfiguration.VisibleStateDuration = 10000;
+    config.SnackbarConfiguration.VisibleStateDuration = 2000;
     config.SnackbarConfiguration.HideTransitionDuration = 500;
     config.SnackbarConfiguration.ShowTransitionDuration = 500;
     config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;

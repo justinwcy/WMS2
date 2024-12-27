@@ -51,7 +51,7 @@ namespace Infrastructure.Repository
             return new ServiceResponse(true, "Logout success. Bye!");
         }
 
-        public async Task<ServiceResponse> CreateStaffAsync(CreateStaffAccountRequestDTO model)
+        public async Task<ServiceResponse> CreateStaffAsync(CreateStaffRequestDTO model)
         {
             var result = await CreateStaffIdentityAsync(model);
             if (!result.Success)
@@ -144,15 +144,7 @@ namespace Infrastructure.Repository
                 ConfirmPassword = "123asd!@#ASD",
             };
 
-            var createStaffAccountRequestDTO = new CreateStaffAccountRequestDTO()
-            {
-                FirstName = "Master",
-                LastName = "Control",
-                Email = "master@control.com",
-                Password = "123asd!@#ASD",
-                Roles = new List<string> { StaffRole.MasterControl }
-            };
-            await CreateStaffAsync(createStaffAccountRequestDTO);
+            await CreateStaffAsync(createStaffRequestDTO);
         }
 
         public async Task<ServiceResponse> UpdateStaffAsync(ChangeStaffClaimRequestDTO model)
@@ -289,7 +281,7 @@ namespace Infrastructure.Repository
             return new ServiceResponse(false, errors);
         }
 
-        private async Task<ServiceResponse> AddStaffRole(CreateStaffAccountRequestDTO model)
+        private async Task<ServiceResponse> AddStaffRole(CreateStaffRequestDTO model)
         {
             if (model.Roles.Any(string.IsNullOrEmpty) || !model.Roles.Any())
             {
@@ -324,7 +316,7 @@ namespace Infrastructure.Repository
             return result;
         }
 
-        private async Task<ServiceResponse> CreateStaffIdentityAsync(CreateStaffAccountRequestDTO model)
+        private async Task<ServiceResponse> CreateStaffIdentityAsync(CreateStaffRequestDTO model)
         {
             var user = await FindUserByEmail(model.Email);
             if (user != null)
@@ -356,14 +348,14 @@ namespace Infrastructure.Repository
             return new ServiceResponse(true, $"User {model.FirstName} {model.LastName} added");
         }
 
-        private async Task<ServiceResponse> CreateStaffApplicationAsync(CreateStaffAccountRequestDTO model)
+        private async Task<ServiceResponse> CreateStaffApplicationAsync(CreateStaffRequestDTO model)
         {
             var user = await FindUserByEmail(model.Email);
             try
             {
                 await using var wmsDbContext = contextFactory.CreateDbContext();
                 var foundStaff = await wmsDbContext.Staffs.FirstOrDefaultAsync(
-                    staff => string.Equals(staff.Id.ToString(), user.Id, StringComparison.CurrentCultureIgnoreCase));
+                    staff => string.Equals(staff.Id.ToString(), user.Id));
                 if (foundStaff != null)
                 {
                     return GeneralDbResponses.ItemAlreadyExist($"{model.Email}");
@@ -372,6 +364,7 @@ namespace Infrastructure.Repository
                 var data = new Staff()
                 {
                     Id = new Guid(user.Id),
+                    CompanyId = model.CompanyId,
                     CreatedBy = model.CreatedBy,
                 };
 
