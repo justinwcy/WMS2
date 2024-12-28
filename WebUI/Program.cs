@@ -12,6 +12,7 @@ using MudBlazor;
 using MudBlazor.Services;
 
 using WebUI.Components;
+using WebUI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddInfrastructureService(builder.Configuration);
@@ -49,7 +50,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseMiddleware<BlazorCookieLoginMiddleware>();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
