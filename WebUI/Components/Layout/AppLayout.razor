@@ -7,14 +7,17 @@
             <RedirectToLogin/>
         </NotAuthorized>
         <Authorized>
+            <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
+            <MudPopoverProvider />
+            <MudDialogProvider />
+            <MudSnackbarProvider />
             <HeaderMenu NavigationMenuDrawerOpen="_isNavigationMenuDrawerOpen"
                         IsDarkMode="_isDarkMode"
                         ToggleDarkMode="ToggleDarkMode"
-                        ToggleNavigationMenuDrawer="ToggleNavigationMenuDrawer"
-            />
-            
+                        ToggleNavigationMenuDrawer="ToggleNavigationMenuDrawer"/>
+
             <MudDrawer @bind-Open="_isNavigationMenuDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-                <NavMenu />
+                <NavMenu/>
             </MudDrawer>
 
             <MudMainContent>
@@ -42,10 +45,12 @@
     private bool _isDarkMode = true;
     private ErrorBoundary? _errorBoundary { get; set; }
     private WmsStaff? _userProfile;
+    private MudTheme? _theme = null;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-
+        base.OnInitialized();
+        _theme = Theme.ApplicationTheme();
     }
 
     protected void ToggleNavigationMenuDrawer()
