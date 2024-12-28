@@ -7,7 +7,6 @@
 @using Microsoft.AspNetCore.Identity
 @using WebUI.Services
 
-@inject ILogger<Login> Logger
 @inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
 @inject UserManager<WmsStaff> UserManager
@@ -45,7 +44,7 @@
 @code {
     public const string PageUrl = "/pages/authentication/login";
 
-    private bool _isFormValid { get; set; } = false;
+    private bool _isFormValid { get; set; } = true;
     private const Variant _defaultVariant = Variant.Text;
     [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
     private const string _title = "Sign In";
@@ -66,35 +65,33 @@
         }
     }
 
-    private void RedirectTo(string redirectionUrl)
-    {
-        ArgumentNullException.ThrowIfNull(HttpContext);
-        HttpContext.Response.Headers.Append("blazor-enhanced-nav-redirect-location", redirectionUrl);
-        HttpContext.Response.StatusCode = 200;
-    }
-
     public async Task LoginUser()
     {
-        Guid key = Guid.NewGuid();
-        var createStaffRequestDTO = new LoginStaffRequestDTO()
+        var checkLoginStaffRequestDTO = new CheckLoginStaffRequestDTO()
+        {
+            Email = _loginModel.Email,
+            Password = _loginModel.Password,
+            RememberMe = _loginModel.RememberMe,
+        };
+        var checkLoginStaffCommand = new CheckLoginStaffCommand(checkLoginStaffRequestDTO);
+        var result = await mediator.Send(checkLoginStaffCommand);
+
+        if (result.Success)
+        {
+            var key = Guid.NewGuid();
+            var loginStaffRequestDTO = new LoginStaffRequestDTO()
             {
                 Email = _loginModel.Email,
                 Password = _loginModel.Password,
                 RememberMe = _loginModel.RememberMe,
             };
-        BlazorCookieLoginMiddleware.LoginDetails[key] = createStaffRequestDTO;
-        NavigationManager.NavigateTo($"/login?key={key}", true);
-
-        
-        // var command = new LoginStaffCommand(createStaffRequestDTO);
-
-        // var response = await mediator.Send(command);
-        // Snackbar.Add(response.Message);
-
-        // if (response.Success)
-        // {
-        //     NavigationManager.NavigateTo("/");
-        // }
+            BlazorCookieLoginMiddleware.LoginDetails[key] = loginStaffRequestDTO;
+            NavigationManager.NavigateTo($"/login?key={key}", true);
+        }
+        else
+        {
+            Snackbar.Add(result.Message);
+        }
     }
 
     public sealed class LoginModel

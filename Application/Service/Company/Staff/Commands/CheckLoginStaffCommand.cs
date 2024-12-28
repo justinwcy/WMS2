@@ -5,5 +5,5 @@ using MediatR;
 
 namespace Application.Service.Commands
 {
-    public record LoginStaffCommand(LoginStaffRequestDTO Model) : IRequest<ServiceResponse>;
+    public record CheckLoginStaffCommand(CheckLoginStaffRequestDTO Model) : IRequest<ServiceResponse>;
 }

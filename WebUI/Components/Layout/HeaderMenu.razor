@@ -1,4 +1,10 @@
-﻿<MudAppBar Elevation="1">
+﻿@using Application.DTO.Request.Identity
+@using Application.Service.Commands
+@using WebUI.Services
+
+@inject ISnackbar snackbar
+@inject NavigationManager NavigationManager
+<MudAppBar Elevation="1">
     <MudTooltip Arrow="true" Text="Toggle menu">
         <MudToggleIconButton Class="mr-3"
                              Color="@Color.Default"
@@ -7,7 +13,7 @@
                              Toggled="NavigationMenuDrawerOpen"
                              ToggledChanged="ToggleNavigationMenuDrawer"
                              ToggledColor="@Color.Default"
-                             ToggledIcon="@Icons.Material.Filled.Close" />
+                             ToggledIcon="@Icons.Material.Filled.Close"/>
 
     </MudTooltip>
     <MudSpacer/>
@@ -21,9 +27,18 @@
                              Toggled="IsDarkMode"
                              ToggledChanged="ToggleDarkMode"
                              ToggledColor="@Color.Default"
-                             ToggledIcon="@Icons.Material.Filled.DarkMode" />
+                             ToggledIcon="@Icons.Material.Filled.DarkMode"/>
 
     </MudTooltip>
+
+    <MudMenu Icon="@Icons.Material.Filled.Person"
+             ActivationEvent="@MouseEvent.MouseOver"
+             AnchorOrigin="Origin.BottomRight"
+             TransformOrigin="Origin.TopRight"
+             AriaLabel="Open user menu">
+        <MudMenuItem Icon="@Icons.Material.Filled.PersonOutline">Profile</MudMenuItem>
+        <MudMenuItem Icon="@Icons.Material.Filled.Logout" OnClick="LogoutUser">Logout</MudMenuItem>
+    </MudMenu>
 
 </MudAppBar>
 
@@ -40,4 +55,12 @@
     
     [Parameter] 
     public EventCallback ToggleNavigationMenuDrawer { get; set; }
+
+    private async Task LogoutUser()
+    {
+        var key = Guid.NewGuid();
+        var logoutRequestDTO = new LogoutStaffRequestDTO();
+        BlazorCookieLogoutMiddleware.LogoutDetails[key] = logoutRequestDTO;
+        NavigationManager.NavigateTo($"/logout?key={key}", true);
+    }
 }

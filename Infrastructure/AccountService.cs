@@ -22,7 +22,7 @@ namespace Infrastructure.Repository
         RoleManager<IdentityRole> roleManager,
         IWmsDbContextFactory<WmsDbContext> contextFactory) : IAccountService
     {
-        public async Task<ServiceResponse> StaffLoginAsync(LoginStaffRequestDTO model)
+        public async Task<ServiceResponse> CheckStaffLoginAsync(CheckLoginStaffRequestDTO model)
         {
             var user = await FindUserByEmail(model.Email);
             if (user == null)
@@ -36,8 +36,33 @@ namespace Infrastructure.Repository
                 return new ServiceResponse(false, "Incorrect Password");
             }
 
-            var result = await signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
-            if (!result.Succeeded)
+            return new ServiceResponse(true, $"Welcome {user.FirstName} {user.LastName}");
+        }
+
+        public async Task<ServiceResponse> StaffLoginAsync(LoginStaffRequestDTO model)
+        {
+            var checkLoginStaffRequestDTO = new CheckLoginStaffRequestDTO()
+            {
+                Email = model.Email,
+                Password = model.Password,
+                RememberMe = model.RememberMe,
+            };
+
+            var result = await CheckStaffLoginAsync(checkLoginStaffRequestDTO);
+
+            if (!result.Success)
+            {
+                return new ServiceResponse(false, result.Message);
+            }
+
+            var user = await FindUserByEmail(model.Email);
+            if (user == null)
+            {
+                return new ServiceResponse(false, $"Unable to find email {model.Email}");
+            }
+
+            var signInResult = await signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
+            if (!signInResult.Succeeded)
             {
                 return new ServiceResponse(false, "Unknown error while logging in");
             }

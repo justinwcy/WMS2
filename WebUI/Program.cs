@@ -51,6 +51,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseMiddleware<BlazorCookieLoginMiddleware>();
+app.UseMiddleware<BlazorCookieLogoutMiddleware>();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
