@@ -12,7 +12,9 @@ namespace Application.DTO.Request.Identity
         [Required]
         [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\da-zA-Z]).{8,}$", 
             ErrorMessage = "Your password is too weak!")]
-        [MinLength(8), MaxLength(100)]
+        [MinLength(6), MaxLength(100)]
         public string Password { get; set; }
+
+        public bool RememberMe { get; set; }
     }
 }
