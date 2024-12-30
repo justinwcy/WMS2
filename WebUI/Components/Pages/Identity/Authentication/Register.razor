@@ -5,9 +5,8 @@
 @using Application.DTO.Request
 @using Application.Service.Commands
 @using Application.Service.Queries
+@using WebUI.Components.Models
 
-@inject ISnackbar Snackbar
-@inject NavigationManager NavigationManager
 <PageTitle>@_title</PageTitle>
 
 <MudForm @ref="_form" @bind-IsValid="@_isFormValid">
@@ -52,7 +51,7 @@
                   Label="Confirm Password" InputType="InputType.Password"
                   Validation="@(new Func<string, string>(PasswordMatch))"/>
 
-    <MudSelect @bind-Value="_inputModel.Role"
+    <MudSelect @bind-Value="_inputModel.RolesString"
                Variant="@_defaultVariant"
                Label="Role"
                Margin="Margin.Normal"
@@ -60,6 +59,7 @@
                Disabled="false"
                ReadOnly="false"
                Placeholder=@("User Role")
+               MultiSelection="true"
                HelperText=@("Please select a role for the user")
                HelperTextOnFocus="true"
                Clearable="false"
@@ -90,14 +90,14 @@
     private const Variant _defaultVariant = Variant.Text;
     private List<string> _allStaffRoles = new();
 
-    private RegisterModel _inputModel { get; set; } = new();
+    private WmsStaffUserModel _inputModel { get; set; } = new();
 
     private MudTextField<string> passwordField;
 
     protected override async Task OnInitializedAsync()
     {
         var query = new GetAllStaffRolesQuery();
-        var allStaffRoles = await mediator.Send(query);
+        var allStaffRoles = await Mediator.Send(query);
         _allStaffRoles = allStaffRoles.ToList();
     }
 
@@ -135,36 +135,18 @@
             FirstName = _inputModel.FirstName,
             LastName = _inputModel.LastName,
             Email = _inputModel.Email,
-            Roles = new List<string>() { _inputModel.Role },
+            Roles = _inputModel.GetRoleList(),
             Password = _inputModel.Password,
             ConfirmPassword = _inputModel.ConfirmPassword,
         };
         var command = new CreateStaffCommand(createStaffRequestDTO);
 
-        var response = await mediator.Send(command);
-        Snackbar.Add(response.Message);
+        var response = await Mediator.Send(command);
+        SnackBar.Add(response.Message);
 
         if (response.Success)
         {
             NavigationManager.NavigateTo(Login.PageUrl);
         }
     }
-
-    public sealed class RegisterModel
-    {
-        public string FirstName { get; set; } = "";
-
-        public string LastName { get; set; } = "";
-        
-        public string UserName { get; set; } = "";
-
-        public string Email { get; set; } = "";
-
-        public string Password { get; set; } = "";
-
-        public string ConfirmPassword { get; set; } = "";
-
-        public string Role { get; set; } = "";
-    }
-
 }

@@ -10,6 +10,7 @@ using Mapster;
 using MediatR;
 
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repository
 {
@@ -23,10 +24,25 @@ namespace Infrastructure.Repository
         {
             try
             {
-                var accountHandler = new AccountService(userManager, signInManager, roleManager, contextFactory);
-                var changeStaffClaimRequestDTO = request.Model.Adapt<ChangeStaffClaimRequestDTO>();
-                var response = await accountHandler.UpdateStaffAsync(changeStaffClaimRequestDTO);
-                return response;
+                await using (var wmsDbContext = contextFactory.CreateDbContext())
+                {
+                    var staffFound = await wmsDbContext.Staffs
+                        .FirstOrDefaultAsync(staff => staff.Id == request.Model.Id,
+                            cancellationToken);
+                    if (staffFound == null)
+                    {
+                        return GeneralDbResponses.ItemNotFound(request.Model.Id.ToString());
+                    }
+
+                    staffFound.CompanyId = request.Model.CompanyId;
+                    staffFound.CreatedBy = request.Model.CreatedBy;
+                    wmsDbContext.Staffs.Update(staffFound);
+
+                    var accountHandler = new AccountService(userManager, signInManager, roleManager, contextFactory);
+                    var changeStaffClaimRequestDTO = request.Model.Adapt<ChangeStaffClaimRequestDTO>();
+                    var response = await accountHandler.UpdateStaffAsync(changeStaffClaimRequestDTO);
+                    return response;
+                }
             }
             catch (Exception ex)
             {

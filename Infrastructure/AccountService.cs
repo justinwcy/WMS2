@@ -174,7 +174,7 @@ namespace Infrastructure.Repository
 
         public async Task<ServiceResponse> UpdateStaffAsync(ChangeStaffClaimRequestDTO model)
         {
-            var user = await userManager.FindByIdAsync(model.StaffId);
+            var user = await userManager.FindByIdAsync(model.Id.ToString());
             if (user == null)
             {
                 return new ServiceResponse(false, "User not found");

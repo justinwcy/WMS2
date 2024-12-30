@@ -24,18 +24,11 @@ namespace Infrastructure.Repository
         {
             try
             {
-                var accountHandler = new AccountService(userManager, signInManager, roleManager, contextFactory);
-                var staffWithClaimResponseDTO = await accountHandler.GetStaffWithClaimsByIdAsync(request.staffId);
-                if (staffWithClaimResponseDTO == null)
-                {
-                    return null;
-                }
-
                 await using var wmsDbContext = contextFactory.CreateDbContext();
                 var staffFound = await wmsDbContext.Staffs.AsNoTracking()
                     .FirstAsync(staff => staff.Id == request.staffId, cancellationToken);
 
-                var getStaffResponseDTO = staffWithClaimResponseDTO.Adapt<GetStaffResponseDTO>();
+                var getStaffResponseDTO = staffFound.Adapt<GetStaffResponseDTO>();
                 getStaffResponseDTO.CompanyId = staffFound.CompanyId;
                 
                 return getStaffResponseDTO;

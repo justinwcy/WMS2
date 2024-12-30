@@ -1,9 +1,9 @@
 ﻿@using Application.DTO.Request.Identity
 @using Application.Service.Commands
+@using WebUI.Components.Pages
+@using WebUI.Components.Pages.Identity.Authentication
 @using WebUI.Services
 
-@inject ISnackbar snackbar
-@inject NavigationManager NavigationManager
 <MudAppBar Elevation="1">
     <MudTooltip Arrow="true" Text="Toggle menu">
         <MudToggleIconButton Class="mr-3"
@@ -17,7 +17,6 @@
 
     </MudTooltip>
     <MudSpacer/>
-    <MudText Typo="Typo.h5" Class="ml-3">@Application.Constants.AppDetails.AppName</MudText>
     <MudDivider Class="mx-3 my-5" DividerType="DividerType.Middle" Vertical="true" FlexItem="true"/>
     <MudTooltip Arrow="true" Text="Toggle dark mode">
         <MudToggleIconButton Class="mr-3"
@@ -36,7 +35,7 @@
              AnchorOrigin="Origin.BottomRight"
              TransformOrigin="Origin.TopRight"
              AriaLabel="Open user menu">
-        <MudMenuItem Icon="@Icons.Material.Filled.PersonOutline">Profile</MudMenuItem>
+        <MudMenuItem Icon="@Icons.Material.Filled.PersonOutline" @onclick=GoToProfile>Profile</MudMenuItem>
         <MudMenuItem Icon="@Icons.Material.Filled.Logout" OnClick="LogoutUser">Logout</MudMenuItem>
     </MudMenu>
 
@@ -62,5 +61,10 @@
         var logoutRequestDTO = new LogoutStaffRequestDTO();
         BlazorCookieLogoutMiddleware.LogoutDetails[key] = logoutRequestDTO;
         NavigationManager.NavigateTo($"/logout?key={key}", true);
+    }
+
+    private void GoToProfile()
+    {
+        NavigationManager.NavigateTo(Profile.PageUrl);
     }
 }

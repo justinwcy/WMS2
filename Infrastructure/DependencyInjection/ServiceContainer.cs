@@ -18,7 +18,7 @@ namespace Infrastructure.DependencyInjection
         {
             services.AddDbContextFactory<WmsDbContext>(
                 option => option.UseSqlServer(config.GetConnectionString("Default")),
-                ServiceLifetime.Scoped);
+                ServiceLifetime.Transient);
             
             services.AddAuthentication(options =>
             {
@@ -91,6 +91,7 @@ namespace Infrastructure.DependencyInjection
 
             services.AddCascadingAuthenticationState();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<AccountService>();
             services.AddMediatR(config => config.RegisterServicesFromAssemblies(typeof(CreateCompanyHandler).Assembly));
             services.AddScoped<IWmsDbContextFactory<WmsDbContext>, DbContextFactory<WmsDbContext>>();
             

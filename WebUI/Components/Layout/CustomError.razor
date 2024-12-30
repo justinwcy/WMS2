@@ -69,11 +69,11 @@
         }
 
         StackTrace = Exception.StackTrace;
-        Logger.LogError(Exception, $"{Message}. request url: {Navigation.Uri} {user}");
+        Logger.LogError(Exception, $"{Message}. request url: {NavigationManager.Uri} {user}");
     }
 
     private void OnRefresh()
     {
-        Navigation.NavigateTo(Navigation.Uri, true);
+        NavigationManager.NavigateTo(NavigationManager.Uri, true);
     }
 }

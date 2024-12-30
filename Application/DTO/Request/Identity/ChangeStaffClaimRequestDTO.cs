@@ -4,6 +4,6 @@ namespace Application.DTO.Request.Identity
 {
     public class ChangeStaffClaimRequestDTO : BaseStaffClaimsDTO
     {
-        public string StaffId { get; set; }
+        public Guid Id { get; set; }
     }
 }

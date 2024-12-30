@@ -1,6 +1,9 @@
 ﻿@layout MainLayout
 @using Infrastructure.Extensions.Identity
+@using Microsoft.AspNetCore.Identity
 @inherits LayoutComponentBase
+@inject UserManager<WmsStaff> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 <MudLayout>
     <AuthorizeView>
         <NotAuthorized>
@@ -39,9 +42,7 @@
                 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mb-4 mt-4">
                     <ErrorBoundary @ref="_errorBoundary">
                         <ChildContent>
-                            <CascadingValue Value="@_userProfile">
-                                @Body
-                            </CascadingValue>
+                            @Body
                         </ChildContent>
                         <ErrorContent Context="exception">
                             <CustomError Exception="exception"></CustomError>
@@ -59,12 +60,11 @@
     private bool _isNavigationMenuDrawerOpen = true;
     private bool _isDarkMode = true;
     private ErrorBoundary? _errorBoundary { get; set; }
-    private WmsStaff? _userProfile;
     private MudTheme? _theme = null;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        await base.OnInitializedAsync();
         _theme = Theme.ApplicationTheme();
     }
 
