@@ -76,15 +76,15 @@ namespace Infrastructure.Repository
             return new ServiceResponse(true, "Logout success. Bye!");
         }
 
-        public async Task<ServiceResponse> CreateStaffAsync(CreateStaffRequestDTO model)
+        public async Task<ServiceResponse> CreateStaffAsync(CreateStaffRequestDTO model, bool isDebugAdmin = false)
         {
-            var result = await CreateStaffIdentityAsync(model);
+            var result = await CreateStaffIdentityAsync(model, isDebugAdmin);
             if (!result.Success)
             {
                 return result;
             }
 
-            result = await CreateStaffApplicationAsync(model);
+            result = await CreateStaffApplicationAsync(model, isDebugAdmin);
             return result;
         }
 
@@ -157,19 +157,20 @@ namespace Infrastructure.Repository
 
         public async Task SetUpAsync()
         {
+            var adminEmail = "master@control.com";
             var createStaffRequestDTO = new CreateStaffRequestDTO()
             {
                 CompanyId = DebugConstants.CompanyId,
                 CreatedBy = DebugConstants.AdminId,
                 FirstName = "Master",
                 LastName = "Control",
-                Email = "master@control.com",
+                Email = adminEmail,
                 Password = "123asd!@#ASD",
                 Roles = new List<string> { StaffRole.MasterControl },
                 ConfirmPassword = "123asd!@#ASD",
             };
 
-            await CreateStaffAsync(createStaffRequestDTO);
+            await CreateStaffAsync(createStaffRequestDTO, true);
         }
 
         public async Task<ServiceResponse> UpdateStaffAsync(ChangeStaffClaimRequestDTO model)
@@ -404,7 +405,7 @@ namespace Infrastructure.Repository
             return result;
         }
 
-        private async Task<ServiceResponse> CreateStaffIdentityAsync(CreateStaffRequestDTO model)
+        private async Task<ServiceResponse> CreateStaffIdentityAsync(CreateStaffRequestDTO model, bool isDebugAdmin = false)
         {
             var user = await FindUserByEmail(model.Email);
             if (user != null)
@@ -419,6 +420,11 @@ namespace Infrastructure.Repository
                 UserName = model.Email,
                 Email = model.Email,
             };
+
+            if (isDebugAdmin)
+            {
+                newUser.Id = DebugConstants.AdminId.ToString();
+            }
 
             var serviceResponse = await userManager.CreateAsync(newUser, model.Password);
             var result = CheckResult(serviceResponse);
@@ -436,7 +442,7 @@ namespace Infrastructure.Repository
             return new ServiceResponse(true, $"User {model.FirstName} {model.LastName} added");
         }
 
-        private async Task<ServiceResponse> CreateStaffApplicationAsync(CreateStaffRequestDTO model)
+        private async Task<ServiceResponse> CreateStaffApplicationAsync(CreateStaffRequestDTO model, bool isDebugAdmin = false)
         {
             var user = await FindUserByEmail(model.Email);
             try
@@ -455,6 +461,11 @@ namespace Infrastructure.Repository
                     CompanyId = model.CompanyId,
                     CreatedBy = model.CreatedBy,
                 };
+
+                if (isDebugAdmin)
+                {
+                    data.Id = DebugConstants.AdminId;
+                }
 
                 wmsDbContext.Staffs.Add(data);
                 await wmsDbContext.SaveChangesAsync();

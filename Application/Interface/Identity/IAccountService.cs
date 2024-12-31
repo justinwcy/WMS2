@@ -9,7 +9,7 @@ namespace Application.Interface.Identity
     {
         Task<ServiceResponse> StaffLoginAsync(LoginStaffRequestDTO model);
         Task<ServiceResponse> StaffLogoutAsync();
-        Task<ServiceResponse> CreateStaffAsync(CreateStaffRequestDTO model);
+        Task<ServiceResponse> CreateStaffAsync(CreateStaffRequestDTO model, bool isDebugAdmin);
         Task<IEnumerable<GetStaffWithClaimResponseDTO>> GetAllStaffWithClaimsAsync(Guid companyId);
         Task SetUpAsync();
         Task<ServiceResponse> UpdateStaffAsync(ChangeStaffClaimRequestDTO model);

@@ -37,10 +37,12 @@ namespace Infrastructure.Repository
                     staffFound.CompanyId = request.Model.CompanyId;
                     staffFound.CreatedBy = request.Model.CreatedBy;
                     wmsDbContext.Staffs.Update(staffFound);
-
+                    
                     var accountHandler = new AccountService(userManager, signInManager, roleManager, contextFactory);
                     var changeStaffClaimRequestDTO = request.Model.Adapt<ChangeStaffClaimRequestDTO>();
                     var response = await accountHandler.UpdateStaffAsync(changeStaffClaimRequestDTO);
+
+                    await wmsDbContext.SaveChangesAsync(cancellationToken);
                     return response;
                 }
             }
