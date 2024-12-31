@@ -2,19 +2,18 @@
 @using System.ComponentModel.DataAnnotations
 @using Application.DTO.Request.Identity
 @using Application.Service.Commands
-@using Infrastructure.Extensions.Identity
 @using Microsoft.AspNetCore.Authentication
-@using Microsoft.AspNetCore.Identity
-@using WebUI.Services
+@using WebUI.Middlewares
 
 @inject ISnackbar Snackbar
-@inject NavigationManager NavigationManager
-@inject UserManager<WmsStaff> UserManager
-@inject SignInManager<WmsStaff> SignInManager
 
 <PageTitle>@_title</PageTitle>
 
 <MudForm @bind-IsValid="@_isFormValid">
+    <MudText Typo="Typo.h4" GutterBottom="true">Sign In</MudText>
+    <MudText Class="mb-3">
+        Don't have an account? <MudLink Href="@Register.PageUrl">Sign Up</MudLink>
+    </MudText>
     <MudTextField @bind-value="_loginModel.Email"
                   Variant="@_defaultVariant"
                   T="string"
@@ -28,9 +27,9 @@
                   InputType="InputType.Password"
                   Required="true"
                   RequiredError="Password is required!"/>
-    
+
     <MudSwitch @bind-Value="_loginModel.RememberMe" Label="Remember Me" Color="Color.Primary"/>
-    
+
     <MudButton Variant="Variant.Filled"
                Color="Color.Primary"
                Size="Size.Large"

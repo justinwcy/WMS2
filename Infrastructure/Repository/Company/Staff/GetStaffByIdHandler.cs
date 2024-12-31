@@ -22,21 +22,20 @@ namespace Infrastructure.Repository
     {
         public async Task<GetStaffResponseDTO> Handle(GetStaffByIdQuery request, CancellationToken cancellationToken)
         {
-            try
-            {
-                await using var wmsDbContext = contextFactory.CreateDbContext();
-                var staffFound = await wmsDbContext.Staffs.AsNoTracking()
-                    .FirstAsync(staff => staff.Id == request.staffId, cancellationToken);
+            await using var wmsDbContext = contextFactory.CreateDbContext();
+            var staffFound = await wmsDbContext.Staffs.AsNoTracking()
+                .FirstAsync(staff => staff.Id == request.StaffId, cancellationToken);
 
-                var getStaffResponseDTO = staffFound.Adapt<GetStaffResponseDTO>();
-                getStaffResponseDTO.CompanyId = staffFound.CompanyId;
-                
-                return getStaffResponseDTO;
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
+            var accountService = new AccountService(userManager, signInManager, roleManager, contextFactory);
+            var userFound = await accountService.GetWmsStaffById(request.StaffId);
+
+            var userRoles = await accountService.GetRolesByEmailAsync(userFound.Email);
+            var getStaffResponseDTO = userFound.Adapt<GetStaffResponseDTO>();
+            getStaffResponseDTO.Roles = userRoles;
+
+            getStaffResponseDTO.CompanyId = staffFound.CompanyId;
+            getStaffResponseDTO.CreatedBy = staffFound.CreatedBy;
+            return getStaffResponseDTO;
         }
     }
 }

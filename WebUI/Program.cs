@@ -12,7 +12,7 @@ using MudBlazor;
 using MudBlazor.Services;
 
 using WebUI.Components;
-using WebUI.Services;
+using WebUI.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddInfrastructureService(builder.Configuration);

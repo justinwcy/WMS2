@@ -14,5 +14,9 @@ namespace Application.Interface.Identity
         Task SetUpAsync();
         Task<ServiceResponse> UpdateStaffAsync(ChangeStaffClaimRequestDTO model);
         Task<ServiceResponse> DeleteStaffAsync(string staffEmail);
+        Task<Guid> GetStaffIdByEmailAsync(string staffEmail);
+        Task<Dictionary<string, string>> GetClaimsByEmailAsync(string staffEmail);
+        Task<IEnumerable<string>> GetRolesByEmailAsync(string staffEmail);
+        Task<ServiceResponse> ChangeStaffPasswordAsync(ChangePasswordStaffRequestDTO model);
     }
 }

@@ -289,6 +289,69 @@ namespace Infrastructure.Repository
             return new ServiceResponse(true, $"User {staffId} deleted");
         }
 
+        public async Task<Guid> GetStaffIdByEmailAsync(string staffEmail)
+        {
+            var user = await userManager.FindByEmailAsync(staffEmail);
+            if (user == null)
+            {
+                throw new Exception($"User {staffEmail} not found");
+            }
+
+            return new Guid(user.Id);
+        }
+
+        public async Task<Dictionary<string, string>> GetClaimsByEmailAsync(string staffEmail)
+        {
+            var user = await userManager.FindByEmailAsync(staffEmail);
+            if (user == null)
+            {
+                throw new Exception($"User {staffEmail} not found");
+            }
+
+            var claims = await userManager.GetClaimsAsync(user);
+            return claims.ToDictionary(claim => claim.Type, claim => claim.Value);
+        }
+
+        public async Task<IEnumerable<string>> GetRolesByEmailAsync(string staffEmail)
+        {
+            var user = await userManager.FindByEmailAsync(staffEmail);
+            if (user == null)
+            {
+                throw new Exception($"User {staffEmail} not found");
+            }
+
+            return await userManager.GetRolesAsync(user);
+        }
+
+        public async Task<ServiceResponse> ChangeStaffPasswordAsync(ChangePasswordStaffRequestDTO model)
+        {
+            var user = await userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                throw new Exception($"User {model.Email} not found");
+            }
+
+            var result = await userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            var response = CheckResult(result);
+            if (!response.Success)
+            {
+                return new ServiceResponse(response.Success, response.Message);
+            }
+
+            return new ServiceResponse(true, "Password Changed!");
+        }
+
+        public async Task<WmsStaff> GetWmsStaffById(Guid id)
+        {
+            var user = await userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                throw new Exception($"User {id} not found");
+            }
+
+            return user;
+        }
+
         private async Task<WmsStaff?> FindUserByEmail(string email)
         {
             return await userManager.FindByEmailAsync(email) ?? null;

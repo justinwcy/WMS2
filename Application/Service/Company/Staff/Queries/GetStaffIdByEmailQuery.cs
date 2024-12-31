@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Service.Queries
 {
-    public record GetStaffByIdQuery(Guid StaffId) : IRequest<GetStaffResponseDTO>;
+    public record GetStaffIdByEmailQuery(string StaffEmail) : IRequest<Guid>;
 }

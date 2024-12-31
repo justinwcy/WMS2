@@ -1,0 +1,158 @@
+﻿@using WebUI.Components.Models
+@using Application.Service.Queries
+@using Application.DTO.Request
+@using Application.Service.Commands
+@using System.ComponentModel.DataAnnotations
+<MudForm @bind-IsValid="@_isFormValid">
+    <MudGrid>
+        <MudItem xs="6">
+            <MudTextField @bind-value="_profileModel.FirstName"
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="First Name"
+                          Required="true" RequiredError="First name is required!" />
+        </MudItem>
+        <MudItem xs="6">
+            <MudTextField @bind-value="_profileModel.LastName"
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Last Name"
+                          Required="true" RequiredError="Last name is required!" />
+        </MudItem>
+    </MudGrid>
+
+    <MudTextField @bind-value="_profileModel.Email"
+                  Variant="@_defaultVariant"
+                  T="string"
+                  Label="Email"
+                  Required="true" RequiredError="Email is required!"
+                  Validation="@(new EmailAddressAttribute() { ErrorMessage = "The email address is invalid" })" />
+
+    <MudSelect @bind-Value="_profileModel.RolesString"
+               Variant="@_defaultVariant"
+               Label="Role"
+               Margin="Margin.Normal"
+               Dense="false"
+               Disabled="false"
+               ReadOnly="false"
+               MultiSelection="true"
+               Placeholder=@("User Role")
+               HelperText=@("Please select a role for the user")
+               HelperTextOnFocus="true"
+               Clearable="false"
+               Required="true"
+               RequiredError="Please select a role for the user">
+        @foreach (var staffRoles in _allStaffRoles)
+        {
+            <MudSelectItem Value="staffRoles">@staffRoles</MudSelectItem>
+        }
+    </MudSelect>
+
+    <MudButton OnClick="@UpdateUserDetails"
+               Variant="Variant.Filled"
+               Color="Color.Primary"
+               Size="Size.Large"
+               Disabled="IsUpdateButtonDisabled()"
+               FullWidth="true">
+        Update Details
+    </MudButton>
+</MudForm>
+
+@code {
+    private const Variant _defaultVariant = Variant.Text;
+    private bool _isFormValid { get; set; } = false;
+
+    private WmsStaffUserModel? _profileModel { get; set; }
+    private WmsStaffUserModel? _initialProfileModel { get; set; }
+    private List<string> _allStaffRoles = new();
+
+    private bool IsUpdateButtonDisabled()
+    {
+        if (_initialProfileModel == null || _profileModel == null)
+        {
+            return true;
+        }
+
+        return _initialProfileModel.LastName == _profileModel.LastName &&
+               _initialProfileModel.FirstName == _profileModel.FirstName &&
+               _initialProfileModel.Email == _profileModel.Email &&
+               _initialProfileModel.RolesString == _profileModel.RolesString &&
+               !_isFormValid;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var query = new GetAllStaffRolesQuery();
+        var allStaffRoles = await Mediator.Send(query);
+        _allStaffRoles = allStaffRoles.ToList();
+
+        await base.OnInitializedAsync();
+
+        // fill up the profile
+        _profileModel = new WmsStaffUserModel();
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userIdentity = authenticationState.User.Identity;
+
+        if (userIdentity != null && userIdentity.Name != null)
+        {
+            var getStaffIdByEmailQuery = new GetStaffIdByEmailQuery(userIdentity.Name);
+            var staffId = await Mediator.Send(getStaffIdByEmailQuery);
+
+            var getStaffByIdCommand = new GetStaffByIdQuery(staffId);
+            var getStaffResponseDTO = await Mediator.Send(getStaffByIdCommand);
+
+            _profileModel = new WmsStaffUserModel
+            {
+                FirstName = getStaffResponseDTO.FirstName,
+                LastName = getStaffResponseDTO.LastName,
+                Email = getStaffResponseDTO.Email,
+                RolesString = string.Join(", ", getStaffResponseDTO.Roles)
+            };
+        }
+
+        _initialProfileModel = (WmsStaffUserModel)_profileModel.Clone();
+    }
+
+    private async Task UpdateUserDetails()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userIdentity = authenticationState.User.Identity;
+
+        if (userIdentity != null && userIdentity.Name != null)
+        {
+            var getStaffClaimsByEmailQuery = new GetStaffClaimsByEmailQuery(userIdentity.Name);
+            var claimDictionary = await Mediator.Send(getStaffClaimsByEmailQuery);
+
+            var getStaffIdByEmailQuery = new GetStaffIdByEmailQuery(userIdentity.Name);
+            var staffId = await Mediator.Send(getStaffIdByEmailQuery);
+            var getStaffByIdQuery = new GetStaffByIdQuery(staffId);
+            var getStaffResponseDTO = await Mediator.Send(getStaffByIdQuery);
+
+            var updateStaffRequestDTO = new UpdateStaffRequestDTO()
+            {
+                CompanyId = getStaffResponseDTO.CompanyId,
+                CreatedBy = getStaffResponseDTO.CreatedBy,
+                CustomClaims = claimDictionary,
+                Email = _profileModel.Email,
+                FirstName = _profileModel.FirstName,
+                LastName = _profileModel.LastName,
+                Id = staffId,
+                Roles = _profileModel.GetRoleList(),
+            };
+
+            var updateStaffCommand = new UpdateStaffCommand(updateStaffRequestDTO);
+            var result = await Mediator.Send(updateStaffCommand);
+
+            SnackBar.Add(result.Message);
+
+            if (result.Success)
+            {
+                _initialProfileModel = (WmsStaffUserModel)_profileModel.Clone();
+            }
+        }
+        
+
+        
+    }
+
+}
