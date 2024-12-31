@@ -10,15 +10,16 @@ using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.Repository
 {
     public class GetProductSkuByIdHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
-        IRequestHandler<GetProductSkuByIdQuery, GetProductSkuResponseDTO>
+        IRequestHandler<GetProductSkuByIdQuery, IEnumerable<GetProductSkuResponseDTO>>
     {
-        public async Task<GetProductSkuResponseDTO> Handle(GetProductSkuByIdQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GetProductSkuResponseDTO>> Handle(GetProductSkuByIdQuery request, CancellationToken cancellationToken)
         {
             await using var wmsDbContext = contextFactory.CreateDbContext();
-            var productSkuFound = await wmsDbContext.ProductSkus.AsNoTracking()
-                .FirstAsync(productSku=>productSku.Id == request.Id, cancellationToken);
+            var productSkuFound = wmsDbContext.ProductSkus.AsNoTracking()
+                .Where(productSku=>productSku.Id == request.Id)
+                .ToList();
 
-            var result = productSkuFound.Adapt<GetProductSkuResponseDTO>();
+            var result = productSkuFound.Adapt<IEnumerable<GetProductSkuResponseDTO>>();
             return result;
         }
     }

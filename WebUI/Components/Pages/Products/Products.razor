@@ -1,0 +1,103 @@
+﻿@page "/products"
+@using Application.Service.Queries
+<h3>Products</h3>
+<MudTable Items="@products.Take(4)" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
+    <HeaderContent>
+        <MudTh>No.</MudTh>
+        <MudTh>Name</MudTh>
+        <MudTh>Description</MudTh>
+        <MudTh>Price</MudTh>
+        <MudTh>Tag</MudTh>
+        <MudTh>Weight</MudTh>
+        <MudTh>Height</MudTh>
+        <MudTh>Length</MudTh>
+        <MudTh>Width</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Counter</MudTd>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Description">@context.Description</MudTd>
+        <MudTd DataLabel="Price">@context.Price</MudTd>
+        <MudTd DataLabel="Tag">@context.Tag</MudTd>
+        <MudTd DataLabel="Weight">@context.Weight</MudTd>
+        <MudTd DataLabel="Height">@context.Height</MudTd>
+        <MudTd DataLabel="Length">@context.Length</MudTd>
+        <MudTd DataLabel="Width">@context.Width</MudTd>
+    </RowTemplate>
+</MudTable>
+
+<MudSwitch @bind-Value="_loading" Color="Color.Primary">Show Loading</MudSwitch>
+
+@code {
+
+    private List<ProductModel> products { get; set; } = new List<ProductModel>();
+    private bool _loading { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        await base.OnInitializedAsync();
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userIdentity = authenticationState.User.Identity;
+
+        if (userIdentity != null && userIdentity.Name != null)
+        {
+            var getStaffIdByEmailQuery = new GetStaffIdByEmailQuery(userIdentity.Name);
+            var staffId = await Mediator.Send(getStaffIdByEmailQuery);
+            var getStaffByIdQuery = new GetStaffByIdQuery(staffId);
+            var getStaffResponseDTO = await Mediator.Send(getStaffByIdQuery);
+            
+            var getAllProductByCompanyId = new GetAllProductByCompanyIdQuery(getStaffResponseDTO.CompanyId);
+            var allProductsDTO = await Mediator.Send(getAllProductByCompanyId);
+
+            var counter = 1;
+            foreach (var productDTO in allProductsDTO)
+            {
+                var getProductSkuByIdQuery = new GetProductSkuByIdQuery(productDTO.Id);
+                var productSkus = await Mediator.Send(getProductSkuByIdQuery);
+                productSkus.ToList();
+                var productModel = new ProductModel()
+                {
+                    Counter = counter,
+                    Name = productDTO.Name,
+                    Description = productDTO.Description,
+                    Price = productDTO.Price,
+                    Tag = productDTO.Tag,
+                    Weight = productDTO.Weight,
+                    Height = productDTO.Height,
+                    Length = productDTO.Length,
+                    Width = productDTO.Width,
+                    Skus = productSkus.Select(productSku=>productSku.Sku).ToList(),
+                };
+
+                products.Add(productModel);
+                counter++;
+            }
+        }
+
+        _loading = false;
+    }
+
+    public class ProductModel
+    {
+        public int Counter { get; set; }
+
+        public string Name { get; set; }
+
+        public string Description { get; set; }
+
+        public decimal Price { get; set; }
+
+        public string Tag { get; set; }
+
+        public double Weight { get; set; }
+
+        public double Height { get; set; }
+
+        public double Length { get; set; }
+
+        public double Width { get; set; }
+
+        public List<string> Skus { get; set; }
+    }
+}
