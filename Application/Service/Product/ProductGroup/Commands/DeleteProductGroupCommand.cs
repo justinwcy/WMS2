@@ -3,6 +3,6 @@ using MediatR;
 
 namespace Application.Service.Commands
 {
-    public record DeleteProductSkuCommand(Guid Id) : IRequest<ServiceResponse>;
+    public record DeleteProductGroupCommand(Guid Id) : IRequest<ServiceResponse>;
 }
     

@@ -53,9 +53,6 @@
             var counter = 1;
             foreach (var productDTO in allProductsDTO)
             {
-                var getProductSkuByIdQuery = new GetProductSkuByIdQuery(productDTO.Id);
-                var productSkus = await Mediator.Send(getProductSkuByIdQuery);
-                productSkus.ToList();
                 var productModel = new ProductModel()
                 {
                     Counter = counter,
@@ -67,7 +64,7 @@
                     Height = productDTO.Height,
                     Length = productDTO.Length,
                     Width = productDTO.Width,
-                    Skus = productSkus.Select(productSku=>productSku.Sku).ToList(),
+                    Sku = "",
                 };
 
                 products.Add(productModel);
@@ -98,6 +95,6 @@
 
         public double Width { get; set; }
 
-        public List<string> Skus { get; set; }
+        public string Sku { get; set; }
     }
 }

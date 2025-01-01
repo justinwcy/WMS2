@@ -5,7 +5,7 @@ namespace Domain.Entities
 {
     public class Product : EntityBase
     {
-        public List<ProductSku> ProductSkus { get; set; }
+        public string Sku { get; set; }
 
         public string Name { get; set; }
 
@@ -47,5 +47,7 @@ namespace Domain.Entities
         // one to many relationship
         [JsonIgnore]
         public List<CustomerOrderDetail> CustomerOrderDetails { get; set; }
+        
+        public List<ProductGroup> ProductGroups { get; set; }
     }
 }

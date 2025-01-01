@@ -2,7 +2,7 @@
 
 namespace Application.DTO.Request
 {
-    public class CreateProductSkuRequestDTO : ProductSkuBaseDTO
+    public class CreateProductGroupRequestDTO : ProductGroupBaseDTO
     {
     }
 }

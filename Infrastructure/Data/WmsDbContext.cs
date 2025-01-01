@@ -29,7 +29,7 @@ namespace Infrastructure.Data
         public DbSet<CustomerOrder> CustomerOrders { get; set; }
         public DbSet<CustomerOrderDetail> CustomerOrderDetails { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<ProductSku> ProductSkus { get; set; }
+        public DbSet<ProductGroup> ProductGroups { get; set; }
         public DbSet<RefundOrder> RefundOrders { get; set; }
         public DbSet<RefundOrderProduct> RefundOrderProducts { get; set; }
         public DbSet<ProductShop> ProductShops { get; set; }
@@ -127,6 +127,23 @@ namespace Infrastructure.Data
                             .OnDelete(DeleteBehavior.Restrict)
                 );
 
+            modelBuilder
+                .Entity<ProductGroup>()
+                .HasMany(productGroup => productGroup.Products)
+                .WithMany(product => product.ProductGroups)
+                .UsingEntity<ProductGroupProduct>(
+                    r =>
+                        r.HasOne<Product>(productGroupProduct => productGroupProduct.Product)
+                            .WithMany()
+                            .HasForeignKey(productGroupProduct => productGroupProduct.ProductId)
+                            .OnDelete(DeleteBehavior.Restrict),
+                    l =>
+                        l.HasOne<ProductGroup>(productGroupProduct => productGroupProduct.ProductGroup)
+                            .WithMany()
+                            .HasForeignKey(productGroupProduct => productGroupProduct.ProductGroupId)
+                            .OnDelete(DeleteBehavior.Restrict)
+                );
+
             #endregion
 
             #region OneToManyRelationships
@@ -137,11 +154,6 @@ namespace Infrastructure.Data
                 .HasForeignKey(incomingOrder => incomingOrder.VendorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder
-                .Entity<Product>()
-                .HasMany(product => product.ProductSkus)
-                .WithOne(productSku => productSku.Product)
-                .HasForeignKey(productSku => productSku.ProductId);
 
             modelBuilder
                 .Entity<CustomerOrderDetail>()

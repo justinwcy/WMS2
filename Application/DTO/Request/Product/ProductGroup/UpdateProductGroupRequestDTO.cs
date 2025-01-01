@@ -2,7 +2,7 @@
 
 namespace Application.DTO.Request
 {
-    public class UpdateProductSkuRequestDTO : ProductSkuBaseDTO
+    public class UpdateProductGroupRequestDTO : ProductGroupBaseDTO
     {
         public Guid Id { get; set; }
     }

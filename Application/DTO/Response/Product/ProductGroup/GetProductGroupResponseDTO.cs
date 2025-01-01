@@ -2,7 +2,7 @@
 
 namespace Application.DTO.Response
 {
-    public class GetProductSkuResponseDTO : ProductSkuBaseDTO
+    public class GetProductGroupResponseDTO : ProductGroupBaseDTO
     {
         public Guid Id { get; set; }
     }
