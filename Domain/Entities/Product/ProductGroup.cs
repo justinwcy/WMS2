@@ -8,7 +8,7 @@ namespace Domain.Entities
 
         public string Description { get; set; }
 
-        // one to many relationship
+        // many to many relationship
         [JsonIgnore]
         public List<Product> Products { get; set; }
     }

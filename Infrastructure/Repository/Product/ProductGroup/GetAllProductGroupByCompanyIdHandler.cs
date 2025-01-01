@@ -22,9 +22,16 @@ namespace Infrastructure.Repository
             var productGroups = await wmsDbContext.ProductGroups
                 .AsNoTracking()
                 .Where(productGroup => staffIdsInCompany.Contains(productGroup.CreatedBy))
+                .Include(productGroup => productGroup.Products)
                 .ToListAsync(cancellationToken);
 
             var productGroupsDto = productGroups.Adapt<List<GetProductGroupResponseDTO>>();
+            foreach (var productGroupDto in productGroupsDto)
+            {
+                var matchingProductGroup = productGroups.First(productGroup => productGroup.Id == productGroupDto.Id);
+                productGroupDto.ProductIds = matchingProductGroup.Products.Select(product => product.Id).ToList();
+            }
+
             return productGroupsDto;
         }
     }
