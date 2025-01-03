@@ -4,6 +4,11 @@ namespace WebUI.Themes;
 
 public static class Theme
 {
+    public static Variant DefaultInputVariant()
+    {
+        return Variant.Text;
+    }
+
     public static MudTheme ApplicationTheme()
     {
         var theme = new MudTheme

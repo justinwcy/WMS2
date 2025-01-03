@@ -2,7 +2,7 @@
 
 namespace Application.DTO.Response
 {
-    public class GetStaffResponseDTO : StaffBaseDTO
+    public class GetProductGroupProductResponseDTO : ProductGroupProductBaseDTO
     {
         public Guid Id { get; set; }
     }

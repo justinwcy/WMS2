@@ -87,7 +87,7 @@
 
     private bool _isFormValid { get; set; } = false;
     private MudForm _form;
-    private const Variant _defaultVariant = Variant.Text;
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
     private List<string> _allStaffRoles = new();
 
     private WmsStaffUserModel _inputModel { get; set; } = new();

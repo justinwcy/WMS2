@@ -44,7 +44,8 @@
     public const string PageUrl = "/pages/authentication/login";
 
     private bool _isFormValid { get; set; } = true;
-    private const Variant _defaultVariant = Variant.Text;
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
     [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
     private const string _title = "Sign In";
 

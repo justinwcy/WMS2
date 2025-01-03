@@ -1,9 +1,11 @@
 ﻿@page "/products"
+@inject IDialogService Dialog
 @using Application.Service.Queries
+@using WebUI.Components.Models
 <MudGrid>
     <MudItem xs="11">
         <MudButton 
-            OnClick="@CreateProduct"
+            OnClick="@(OpenCreateProductDialogAsync)"
             Variant="Variant.Filled"
             Color="Color.Primary"
             Size="Size.Large"
@@ -49,16 +51,17 @@
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col style="width:50px;" />
-        <col style="width:80px;" />
-        <col style="width:50%;" />
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+        <col style="min-width: 400px"/>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Counter)">No.</MudTableSortLabel></MudTh>
@@ -73,7 +76,7 @@
         <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Width)">Width (cm)</MudTableSortLabel></MudTh>
     </HeaderContent>
     <GroupHeaderTemplate>
-        <MudTh colspan="10"><b>@($"{context.GroupName}: {context.Key}")</b></MudTh>
+        <MudTh colspan="@_numberOfColumns"><b>@($"{((ProductGroupModel)context.Key!)?.Name} - {((ProductGroupModel)context.Key!)?.Description}")</b></MudTh>
     </GroupHeaderTemplate>
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Counter</MudTd>
@@ -88,7 +91,7 @@
         <MudTd DataLabel="Width (cm)">@context.Width</MudTd>
     </RowTemplate>
     <GroupFooterTemplate>
-        <MudTh Style="text-align: right;" colspan="10"><b>Total Items: @context.Items.Count()</b></MudTh>
+        <MudTh Style="text-align: right;" colspan="@_numberOfColumns"><b>Total Items: @context.Items.Count()</b></MudTh>
     </GroupFooterTemplate>
     
     <PagerContent>
@@ -103,6 +106,7 @@
 
 @code {
 
+    private string _numberOfColumns = "10";
     private List<ProductModel> _products { get; set; } = new List<ProductModel>();
     private HashSet<ProductModel> _selectedProducts = new HashSet<ProductModel>();
 
@@ -113,11 +117,11 @@
     private MudTable<ProductModel> _tableRef;
     private readonly TableGroupDefinition<ProductModel> _groupDefinition = new()
     {
-        GroupName = "Group",
+        GroupName = "",
         Indentation = false,
         Expandable = true,
         IsInitiallyExpanded = false, 
-        Selector = (e) => e.ProductGroupString
+        Selector = (productModel) => productModel.ProductGroup,
     };
 
     protected override async Task OnInitializedAsync()
@@ -140,9 +144,16 @@
             
             foreach (var productGroupDTO in allProductGroupsDTO)
             {
+                var productGroupId = productGroupDTO.Id;
                 var productGroupName = productGroupDTO.Name;
                 var productGroupDescription = productGroupDTO.Description;
                 var productIds = productGroupDTO.ProductIds;
+                var productGroupModel = new ProductGroupModel()
+                {
+                    Id = productGroupId,
+                    Name = productGroupName,
+                    Description = productGroupDescription
+                };
 
                 var counter = 1;
                 foreach (var productId in productIds)
@@ -153,7 +164,7 @@
                     var productModel = new ProductModel()
                     {
                         Counter = counter,
-                        ProductGroupString = $"{productGroupName} - {productGroupDescription}",
+                        ProductGroup = productGroupModel,
                         Description = productDTO.Description,
                         Name = productDTO.Name,
                         Height = productDTO.Height,
@@ -209,11 +220,6 @@
         _isExpandCollapse = !_isExpandCollapse;
     }
 
-    private async Task CreateProduct()
-    {
-        // launch modal window
-    }
-
     private void BackupItem(object element)
     {
         // elementBeforeEdit = new()
@@ -240,33 +246,14 @@
         // AddEditionEvent($"RowEditCommit event: Changes to Element {((Element)element).Name} committed");
     }
 
+    private Task OpenCreateProductDialogAsync()
+    {
+        var maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Small, FullWidth = true };
+        return Dialog.ShowAsync<CreateProductDialog>("Create Product", maxWidth);
+    }
+
     private void AddEditionEvent(string message)
     {
         StateHasChanged();
-    }
-
-    public class ProductModel
-    {
-        public int Counter { get; set; }
-
-        public string ProductGroupString { get; set; }
-
-        public string Name { get; set; }
-
-        public string Description { get; set; }
-
-        public decimal Price { get; set; }
-
-        public string Tag { get; set; }
-
-        public double Weight { get; set; }
-
-        public double Height { get; set; }
-
-        public double Length { get; set; }
-
-        public double Width { get; set; }
-
-        public string Sku { get; set; }
     }
 }

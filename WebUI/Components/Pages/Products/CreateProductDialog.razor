@@ -1,0 +1,191 @@
+﻿@using WebUI.Components.Models
+@using Application.Service.Queries
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+<MudDialog>
+    <TitleContent>
+        Create Product
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="_form" @bind-IsValid="@_isFormValid">
+            <MudSelect @bind-Value="_productModel.ProductGroup"
+                       T="ProductGroupModel"
+                       ToStringFunc="@_convertProductGroupIdToString"
+                       Variant="@_defaultVariant"
+                       Label="Product Group"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Product Group")
+                       MultiSelection="false"
+                       HelperText=@("Please select a product group")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a product group">
+                @foreach (var productGroup in _productGroups)
+                {
+                    <MudSelectItem Value="@productGroup" />
+                }
+            </MudSelect>
+
+            <MudTextField @bind-value="_productModel.Sku"
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="SKU"
+                          Required="true" RequiredError="SKU is required!" />
+
+            <MudTextField @bind-value="_productModel.Name"
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Name"
+                          Required="true" RequiredError="Name is required!" />
+
+            <MudTextField @bind-value="_productModel.Description"
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Description"
+                          Required="true" RequiredError="Description is required!" />
+
+            <MudTextField @bind-value="_productModel.Price"
+                          Variant="@_defaultVariant"
+                          T="decimal"
+                          Label="Price"
+                          Required="true" RequiredError="Price is required!" />
+
+            <MudTextField @bind-value="_productModel.Tag"
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Tag"
+                          Required="true" RequiredError="Tag is required!" />
+
+            <MudTextField @bind-value="_productModel.Weight"
+                          Variant="@_defaultVariant"
+                          T="double"
+                          Label="Weight"
+                          Required="true" RequiredError="Weight is required!" />
+
+            <MudTextField @bind-value="_productModel.Height"
+                          Variant="@_defaultVariant"
+                          T="double"
+                          Label="Height"
+                          Required="true" RequiredError="Height is required!" />
+
+            <MudTextField @bind-value="_productModel.Length"
+                          Variant="@_defaultVariant"
+                          T="double"
+                          Label="Length"
+                          Required="true" RequiredError="Length is required!" />
+
+            <MudTextField @bind-value="_productModel.Width"
+                          Variant="@_defaultVariant"
+                          T="double"
+                          Label="Width"
+                          Required="true" RequiredError="Width is required!" />
+        </MudForm>
+        </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!_isFormValid)">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
+    private bool _isFormValid { get; set; } = false;
+    private MudForm _form;
+
+    private ProductModel _productModel { get; set; } = new ProductModel();
+    private List<ProductGroupModel> _productGroups = new List<ProductGroupModel>();
+    private GetStaffResponseDTO _getStaffResponseDTO { get; set; }
+
+    private async Task Submit()
+    {
+        var createProductDTO = new CreateProductRequestDTO()
+        {
+            CreatedBy = _getStaffResponseDTO.CreatedBy,
+            Description = _productModel.Description,
+            Sku = _productModel.Sku,
+            Height = _productModel.Height,
+            Length = _productModel.Length,
+            Name = _productModel.Name,
+            Price = _productModel.Price,
+            Tag = _productModel.Tag,
+            Weight = _productModel.Weight,
+            Width = _productModel.Width,
+        };
+        var createProductCommand = new CreateProductCommand(createProductDTO);
+        var response = await Mediator.Send(createProductCommand);
+        SnackBar.Add(response.Message);
+
+        var getAllProductByCompanyIdQuery = new GetAllProductByCompanyIdQuery(_getStaffResponseDTO.CompanyId);
+        var allProducts = await Mediator.Send(getAllProductByCompanyIdQuery);
+        var createdProduct = allProducts
+            .First(product => product.CreatedBy == _getStaffResponseDTO.CreatedBy &&
+                              product.Description == _productModel.Description &&
+                              product.Sku == _productModel.Sku &&
+                              product.Height == _productModel.Height &&
+                              product.Length == _productModel.Length &&
+                              product.Name == _productModel.Name &&
+                              product.Price == _productModel.Price &&
+                              product.Tag == _productModel.Tag &&
+                              product.Weight == _productModel.Weight &&
+                              product.Width == _productModel.Width
+                );
+
+        // TODO: check _productModel.ProductGroupString if it stores the guid
+        var createProductGroupProductRequestDTO = new CreateProductGroupProductRequestDTO()
+        {
+            CreatedBy = _getStaffResponseDTO.Id,
+            ProductGroupId = _productModel.ProductGroup.Id,
+            ProductId = createdProduct.Id,
+        };
+
+        var createProductGroupProductCommand = new CreateProductGroupProductCommand(createProductGroupProductRequestDTO);
+        response = await Mediator.Send(createProductGroupProductCommand);
+        SnackBar.Add(response.Message);
+
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private readonly Func<ProductGroupModel?, string?> _convertProductGroupIdToString = 
+        productGroup => $"{productGroup?.Name} - {productGroup?.Description}";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userIdentity = authenticationState.User.Identity;
+
+        if (userIdentity != null && userIdentity.Name != null)
+        {
+            var getStaffIdByEmailQuery = new GetStaffIdByEmailQuery(userIdentity.Name);
+            var staffId = await Mediator.Send(getStaffIdByEmailQuery);
+            var getStaffByIdQuery = new GetStaffByIdQuery(staffId);
+            _getStaffResponseDTO = await Mediator.Send(getStaffByIdQuery);
+
+            var getAllProductGroupByCompanyId = new GetAllProductGroupByCompanyIdQuery(_getStaffResponseDTO.CompanyId);
+            var allProductGroupsDTO = await Mediator.Send(getAllProductGroupByCompanyId);
+
+            foreach (var productGroupDTO in allProductGroupsDTO)
+            {
+                var productGroup = new ProductGroupModel()
+                {
+                    Id = productGroupDTO.Id,
+                    Name = productGroupDTO.Name,
+                    Description = productGroupDTO.Description
+                };
+                _productGroups.Add(productGroup);
+            }
+        }
+    }
+}

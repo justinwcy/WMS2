@@ -5,6 +5,6 @@ using MediatR;
 
 namespace Application.Service.Commands
 {
-    public record UpdateProductGroupCommand(UpdateProductGroupRequestDTO Model) : IRequest<ServiceResponse>;
+    public record CreateProductGroupProductCommand(CreateProductGroupProductRequestDTO Model) : IRequest<ServiceResponse>;
 }
     

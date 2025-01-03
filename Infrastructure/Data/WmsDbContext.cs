@@ -30,6 +30,7 @@ namespace Infrastructure.Data
         public DbSet<CustomerOrderDetail> CustomerOrderDetails { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductGroup> ProductGroups { get; set; }
+        public DbSet<ProductGroupProduct> ProductGroupProducts { get; set; }
         public DbSet<RefundOrder> RefundOrders { get; set; }
         public DbSet<RefundOrderProduct> RefundOrderProducts { get; set; }
         public DbSet<ProductShop> ProductShops { get; set; }
