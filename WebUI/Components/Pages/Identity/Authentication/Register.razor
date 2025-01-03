@@ -141,12 +141,17 @@
         };
         var command = new CreateStaffCommand(createStaffRequestDTO);
 
-        var response = await Mediator.Send(command);
-        SnackBar.Add(response.Message);
-
-        if (response.Success)
+        try
         {
-            NavigationManager.NavigateTo(Login.PageUrl);
+            await Mediator.Send(command);
         }
+        catch (Exception exception)
+        {
+            SnackBar.Add($"{exception.Message}");
+            return;
+        }
+        
+        SnackBar.Add($"{_inputModel.Email} successfully created");
+        NavigationManager.NavigateTo(Login.PageUrl);
     }
 }

@@ -12,23 +12,16 @@ using MediatR;
 namespace Infrastructure.Repository
 {
     public class CreateZoneHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
-        IRequestHandler<CreateZoneCommand, ServiceResponse>
+        IRequestHandler<CreateZoneCommand, CreateZoneResponseDTO>
     {
-        public async Task<ServiceResponse> Handle(CreateZoneCommand request, CancellationToken cancellationToken)
+        public async Task<CreateZoneResponseDTO> Handle(CreateZoneCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                await using var wmsDbContext = contextFactory.CreateDbContext();
-                
-                var data = request.Model.Adapt<Zone>();
-                wmsDbContext.Zones.Add(data);
-                await wmsDbContext.SaveChangesAsync(cancellationToken);
-                return GeneralDbResponses.ItemCreated("Zone");
-            }
-            catch (Exception ex)
-            {
-                return new ServiceResponse(false, ex.Message);
-            }
+            await using var wmsDbContext = contextFactory.CreateDbContext();
+            
+            var data = request.Model.Adapt<Zone>();
+            var zoneCreated = wmsDbContext.Zones.Add(data);
+            await wmsDbContext.SaveChangesAsync(cancellationToken);
+            return new CreateZoneResponseDTO() { Id = zoneCreated.Entity.Id};
         }
     }
 }

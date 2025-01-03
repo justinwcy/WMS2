@@ -81,7 +81,14 @@ namespace Infrastructure.Repository
             var result = await CreateStaffIdentityAsync(model, isDebugAdmin);
             if (!result.Success)
             {
-                throw new Exception(result.Message);
+                if (isDebugAdmin)
+                {
+                    return Guid.Empty;
+                }
+                else
+                {
+                    throw new Exception(result.Message);
+                }
             }
 
             var response = await CreateStaffApplicationAsync(model, isDebugAdmin);

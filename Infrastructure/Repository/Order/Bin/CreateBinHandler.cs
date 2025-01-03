@@ -12,23 +12,16 @@ using MediatR;
 namespace Infrastructure.Repository
 {
     public class CreateBinHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
-        IRequestHandler<CreateBinCommand, ServiceResponse>
+        IRequestHandler<CreateBinCommand, CreateBinResponseDTO>
     {
-        public async Task<ServiceResponse> Handle(CreateBinCommand request, CancellationToken cancellationToken)
+        public async Task<CreateBinResponseDTO> Handle(CreateBinCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                await using var wmsDbContext = contextFactory.CreateDbContext();
-                
-                var data = request.Model.Adapt<Bin>();
-                wmsDbContext.Bins.Add(data);
-                await wmsDbContext.SaveChangesAsync(cancellationToken);
-                return GeneralDbResponses.ItemCreated("Bin");
-            }
-            catch (Exception ex)
-            {
-                return new ServiceResponse(false, ex.Message);
-            }
+            await using var wmsDbContext = contextFactory.CreateDbContext();
+            
+            var data = request.Model.Adapt<Bin>();
+            var binCreated = wmsDbContext.Bins.Add(data);
+            await wmsDbContext.SaveChangesAsync(cancellationToken);
+            return new CreateBinResponseDTO() { Id = binCreated.Entity.Id};
         }
     }
 }

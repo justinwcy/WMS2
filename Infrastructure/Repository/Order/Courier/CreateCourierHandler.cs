@@ -12,23 +12,16 @@ using MediatR;
 namespace Infrastructure.Repository
 {
     public class CreateCourierHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
-        IRequestHandler<CreateCourierCommand, ServiceResponse>
+        IRequestHandler<CreateCourierCommand, CreateCourierResponseDTO>
     {
-        public async Task<ServiceResponse> Handle(CreateCourierCommand request, CancellationToken cancellationToken)
+        public async Task<CreateCourierResponseDTO> Handle(CreateCourierCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                await using var wmsDbContext = contextFactory.CreateDbContext();
-                
-                var data = request.Model.Adapt<Courier>();
-                wmsDbContext.Couriers.Add(data);
-                await wmsDbContext.SaveChangesAsync(cancellationToken);
-                return GeneralDbResponses.ItemCreated("Courier");
-            }
-            catch (Exception ex)
-            {
-                return new ServiceResponse(false, ex.Message);
-            }
+            await using var wmsDbContext = contextFactory.CreateDbContext();
+            
+            var data = request.Model.Adapt<Courier>();
+            var courierCreated = wmsDbContext.Couriers.Add(data);
+            await wmsDbContext.SaveChangesAsync(cancellationToken);
+            return new CreateCourierResponseDTO() { Id = courierCreated.Entity.Id};
         }
     }
 }

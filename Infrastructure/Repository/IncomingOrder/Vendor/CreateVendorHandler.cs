@@ -12,23 +12,16 @@ using MediatR;
 namespace Infrastructure.Repository
 {
     public class CreateVendorHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
-        IRequestHandler<CreateVendorCommand, ServiceResponse>
+        IRequestHandler<CreateVendorCommand, CreateVendorResponseDTO>
     {
-        public async Task<ServiceResponse> Handle(CreateVendorCommand request, CancellationToken cancellationToken)
+        public async Task<CreateVendorResponseDTO> Handle(CreateVendorCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                await using var wmsDbContext = contextFactory.CreateDbContext();
-                
-                var data = request.Model.Adapt<Vendor>();
-                wmsDbContext.Vendors.Add(data);
-                await wmsDbContext.SaveChangesAsync(cancellationToken);
-                return GeneralDbResponses.ItemCreated("Vendor");
-            }
-            catch (Exception ex)
-            {
-                return new ServiceResponse(false, ex.Message);
-            }
+            await using var wmsDbContext = contextFactory.CreateDbContext();
+            
+            var data = request.Model.Adapt<Vendor>();
+            var vendorCreated = wmsDbContext.Vendors.Add(data);
+            await wmsDbContext.SaveChangesAsync(cancellationToken);
+            return new CreateVendorResponseDTO() { Id = vendorCreated.Entity.Id};
         }
     }
 }

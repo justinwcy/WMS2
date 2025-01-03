@@ -12,23 +12,16 @@ using MediatR;
 namespace Infrastructure.Repository
 {
     public class CreateWarehouseHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
-        IRequestHandler<CreateWarehouseCommand, ServiceResponse>
+        IRequestHandler<CreateWarehouseCommand, CreateWarehouseResponseDTO>
     {
-        public async Task<ServiceResponse> Handle(CreateWarehouseCommand request, CancellationToken cancellationToken)
+        public async Task<CreateWarehouseResponseDTO> Handle(CreateWarehouseCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                await using var wmsDbContext = contextFactory.CreateDbContext();
-                
-                var data = request.Model.Adapt<Warehouse>();
-                wmsDbContext.Warehouses.Add(data);
-                await wmsDbContext.SaveChangesAsync(cancellationToken);
-                return GeneralDbResponses.ItemCreated("Warehouse");
-            }
-            catch (Exception ex)
-            {
-                return new ServiceResponse(false, ex.Message);
-            }
+            await using var wmsDbContext = contextFactory.CreateDbContext();
+            
+            var data = request.Model.Adapt<Warehouse>();
+            var warehouseCreated = wmsDbContext.Warehouses.Add(data);
+            await wmsDbContext.SaveChangesAsync(cancellationToken);
+            return new CreateWarehouseResponseDTO() { Id = warehouseCreated.Entity.Id};
         }
     }
 }

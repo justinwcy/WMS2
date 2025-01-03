@@ -12,23 +12,16 @@ using MediatR;
 namespace Infrastructure.Repository
 {
     public class CreateProductShopHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
-        IRequestHandler<CreateProductShopCommand, ServiceResponse>
+        IRequestHandler<CreateProductShopCommand, CreateProductShopResponseDTO>
     {
-        public async Task<ServiceResponse> Handle(CreateProductShopCommand request, CancellationToken cancellationToken)
+        public async Task<CreateProductShopResponseDTO> Handle(CreateProductShopCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                await using var wmsDbContext = contextFactory.CreateDbContext();
-                
-                var data = request.Model.Adapt<ProductShop>();
-                wmsDbContext.ProductShops.Add(data);
-                await wmsDbContext.SaveChangesAsync(cancellationToken);
-                return GeneralDbResponses.ItemCreated("ProductShop");
-            }
-            catch (Exception ex)
-            {
-                return new ServiceResponse(false, ex.Message);
-            }
+            await using var wmsDbContext = contextFactory.CreateDbContext();
+            
+            var data = request.Model.Adapt<ProductShop>();
+            var productShopCreated = wmsDbContext.ProductShops.Add(data);
+            await wmsDbContext.SaveChangesAsync(cancellationToken);
+            return new CreateProductShopResponseDTO() { Id = productShopCreated.Entity.Id};
         }
     }
 }

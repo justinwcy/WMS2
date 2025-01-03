@@ -12,23 +12,16 @@ using MediatR;
 namespace Infrastructure.Repository
 {
     public class CreateCustomerOrderHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
-        IRequestHandler<CreateCustomerOrderCommand, ServiceResponse>
+        IRequestHandler<CreateCustomerOrderCommand, CreateCustomerOrderResponseDTO>
     {
-        public async Task<ServiceResponse> Handle(CreateCustomerOrderCommand request, CancellationToken cancellationToken)
+        public async Task<CreateCustomerOrderResponseDTO> Handle(CreateCustomerOrderCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                await using var wmsDbContext = contextFactory.CreateDbContext();
-                
-                var data = request.Model.Adapt<CustomerOrder>();
-                wmsDbContext.CustomerOrders.Add(data);
-                await wmsDbContext.SaveChangesAsync(cancellationToken);
-                return GeneralDbResponses.ItemCreated("CustomerOrder");
-            }
-            catch (Exception ex)
-            {
-                return new ServiceResponse(false, ex.Message);
-            }
+            await using var wmsDbContext = contextFactory.CreateDbContext();
+            
+            var data = request.Model.Adapt<CustomerOrder>();
+            var customerOrderCreated = wmsDbContext.CustomerOrders.Add(data);
+            await wmsDbContext.SaveChangesAsync(cancellationToken);
+            return new CreateCustomerOrderResponseDTO() { Id = customerOrderCreated.Entity.Id};
         }
     }
 }

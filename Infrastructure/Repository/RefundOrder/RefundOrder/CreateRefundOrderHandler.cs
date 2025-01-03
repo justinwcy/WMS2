@@ -12,23 +12,16 @@ using MediatR;
 namespace Infrastructure.Repository
 {
     public class CreateRefundOrderHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
-        IRequestHandler<CreateRefundOrderCommand, ServiceResponse>
+        IRequestHandler<CreateRefundOrderCommand, CreateRefundOrderResponseDTO>
     {
-        public async Task<ServiceResponse> Handle(CreateRefundOrderCommand request, CancellationToken cancellationToken)
+        public async Task<CreateRefundOrderResponseDTO> Handle(CreateRefundOrderCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                await using var wmsDbContext = contextFactory.CreateDbContext();
-                
-                var data = request.Model.Adapt<RefundOrder>();
-                wmsDbContext.RefundOrders.Add(data);
-                await wmsDbContext.SaveChangesAsync(cancellationToken);
-                return GeneralDbResponses.ItemCreated("RefundOrder");
-            }
-            catch (Exception ex)
-            {
-                return new ServiceResponse(false, ex.Message);
-            }
+            await using var wmsDbContext = contextFactory.CreateDbContext();
+            
+            var data = request.Model.Adapt<RefundOrder>();
+            var refundOrderCreated = wmsDbContext.RefundOrders.Add(data);
+            await wmsDbContext.SaveChangesAsync(cancellationToken);
+            return new CreateRefundOrderResponseDTO() { Id = refundOrderCreated.Entity.Id};
         }
     }
 }

@@ -12,23 +12,16 @@ using MediatR;
 namespace Infrastructure.Repository
 {
     public class CreateRackHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
-        IRequestHandler<CreateRackCommand, ServiceResponse>
+        IRequestHandler<CreateRackCommand, CreateRackResponseDTO>
     {
-        public async Task<ServiceResponse> Handle(CreateRackCommand request, CancellationToken cancellationToken)
+        public async Task<CreateRackResponseDTO> Handle(CreateRackCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                await using var wmsDbContext = contextFactory.CreateDbContext();
-                
-                var data = request.Model.Adapt<Rack>();
-                wmsDbContext.Racks.Add(data);
-                await wmsDbContext.SaveChangesAsync(cancellationToken);
-                return GeneralDbResponses.ItemCreated("Rack");
-            }
-            catch (Exception ex)
-            {
-                return new ServiceResponse(false, ex.Message);
-            }
+            await using var wmsDbContext = contextFactory.CreateDbContext();
+            
+            var data = request.Model.Adapt<Rack>();
+            var rackCreated = wmsDbContext.Racks.Add(data);
+            await wmsDbContext.SaveChangesAsync(cancellationToken);
+            return new CreateRackResponseDTO() { Id = rackCreated.Entity.Id};
         }
     }
 }

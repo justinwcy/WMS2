@@ -3,14 +3,22 @@
 @using Application.Service.Queries
 @using WebUI.Components.Models
 <MudGrid>
-    <MudItem xs="11">
+    <MudItem xs="8">
         <MudButton 
-            OnClick="@(OpenCreateProductDialogAsync)"
+            Color="Color.Error"
             Variant="Variant.Filled"
-            Color="Color.Primary"
             Size="Size.Large"
             FullWidth="false">
-            Create Button
+            Delete Product
+        </MudButton>
+    </MudItem>
+    <MudItem xs="3">
+        <MudButton OnClick="@(OpenCreateProductDialogAsync)"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Size="Size.Large"
+                   FullWidth="false">
+            Create Product
         </MudButton>
     </MudItem>
     <MudItem xs="1">
@@ -178,9 +186,7 @@
 
                     _products.Add(productModel);
                     counter++;
-
                 }
-                
             }
         }
 
@@ -246,10 +252,16 @@
         // AddEditionEvent($"RowEditCommit event: Changes to Element {((Element)element).Name} committed");
     }
 
-    private Task OpenCreateProductDialogAsync()
+    private async Task OpenCreateProductDialogAsync()
     {
         var maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Small, FullWidth = true };
-        return Dialog.ShowAsync<CreateProductDialog>("Create Product", maxWidth);
+        var dialog = await Dialog.ShowAsync<CreateProductDialog>("Create Product", maxWidth);
+        var dialogResult = await dialog.Result;
+        
+        if (dialogResult != null && !dialogResult.Canceled)
+        {
+            NavigationManager.NavigateTo(NavigationManager.Uri, true);
+        }
     }
 
     private void AddEditionEvent(string message)

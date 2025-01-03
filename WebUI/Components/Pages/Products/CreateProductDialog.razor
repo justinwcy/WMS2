@@ -119,35 +119,18 @@
             Width = _productModel.Width,
         };
         var createProductCommand = new CreateProductCommand(createProductDTO);
-        var response = await Mediator.Send(createProductCommand);
-        SnackBar.Add(response.Message);
+        var createdProductResponseDTO = await Mediator.Send(createProductCommand);
 
-        var getAllProductByCompanyIdQuery = new GetAllProductByCompanyIdQuery(_getStaffResponseDTO.CompanyId);
-        var allProducts = await Mediator.Send(getAllProductByCompanyIdQuery);
-        var createdProduct = allProducts
-            .First(product => product.CreatedBy == _getStaffResponseDTO.CreatedBy &&
-                              product.Description == _productModel.Description &&
-                              product.Sku == _productModel.Sku &&
-                              product.Height == _productModel.Height &&
-                              product.Length == _productModel.Length &&
-                              product.Name == _productModel.Name &&
-                              product.Price == _productModel.Price &&
-                              product.Tag == _productModel.Tag &&
-                              product.Weight == _productModel.Weight &&
-                              product.Width == _productModel.Width
-                );
-
-        // TODO: check _productModel.ProductGroupString if it stores the guid
         var createProductGroupProductRequestDTO = new CreateProductGroupProductRequestDTO()
         {
             CreatedBy = _getStaffResponseDTO.Id,
             ProductGroupId = _productModel.ProductGroup.Id,
-            ProductId = createdProduct.Id,
+            ProductId = createdProductResponseDTO.Id,
         };
 
         var createProductGroupProductCommand = new CreateProductGroupProductCommand(createProductGroupProductRequestDTO);
-        response = await Mediator.Send(createProductGroupProductCommand);
-        SnackBar.Add(response.Message);
+        await Mediator.Send(createProductGroupProductCommand);
+        SnackBar.Add($"{_productModel.Name} created");
 
         MudDialog.Close(DialogResult.Ok(true));
     }
