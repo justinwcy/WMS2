@@ -16,21 +16,14 @@ namespace Infrastructure.Repository
         SignInManager<WmsStaff> signInManager,
         RoleManager<IdentityRole> roleManager,
         IWmsDbContextFactory<WmsDbContext> contextFactory) : 
-        IRequestHandler<CreateStaffCommand, ServiceResponse>
+        IRequestHandler<CreateStaffCommand, CreateStaffResponseDTO>
     {
-        public async Task<ServiceResponse> Handle(CreateStaffCommand request, CancellationToken cancellationToken)
+        public async Task<CreateStaffResponseDTO> Handle(CreateStaffCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var accountHandler = new AccountService(userManager, signInManager, roleManager, contextFactory);
-                var createStaffRequestDTO = request.Model.Adapt<CreateStaffRequestDTO>();
-                var response = await accountHandler.CreateStaffAsync(createStaffRequestDTO);
-                return response;
-            }
-            catch (Exception ex)
-            {
-                return new ServiceResponse(false, ex.Message);
-            }
+            var accountHandler = new AccountService(userManager, signInManager, roleManager, contextFactory);
+            var createStaffRequestDTO = request.Model.Adapt<CreateStaffRequestDTO>();
+            var staffId = await accountHandler.CreateStaffAsync(createStaffRequestDTO);
+            return new CreateStaffResponseDTO(){ Id = staffId };
         }
     }
 }

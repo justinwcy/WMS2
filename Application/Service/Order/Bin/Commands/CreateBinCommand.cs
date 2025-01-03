@@ -5,6 +5,6 @@ using MediatR;
 
 namespace Application.Service.Commands
 {
-    public record CreateBinCommand(CreateBinRequestDTO Model) : IRequest<ServiceResponse>;
+    public record CreateBinCommand(CreateBinRequestDTO Model) : IRequest<CreateBinResponseDTO>;
 }
     

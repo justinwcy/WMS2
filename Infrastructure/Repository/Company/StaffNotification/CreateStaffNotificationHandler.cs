@@ -14,30 +14,25 @@ using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.Repository
 {
     public class CreateStaffNotificationHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
-        IRequestHandler<CreateStaffNotificationCommand, ServiceResponse>
+        IRequestHandler<CreateStaffNotificationCommand, CreateStaffNotificationResponseDTO>
     {
-        public async Task<ServiceResponse> Handle(CreateStaffNotificationCommand request, CancellationToken cancellationToken)
+        public async Task<CreateStaffNotificationResponseDTO> Handle(CreateStaffNotificationCommand request, CancellationToken cancellationToken)
         {
-            try
+            
+            await using var wmsDbContext = contextFactory.CreateDbContext();
+            var staffFound = await wmsDbContext.Staffs.FirstOrDefaultAsync(
+                staff => request.Model.StaffId == staff.Id,
+                cancellationToken);
+            if (staffFound != null)
             {
-                await using var wmsDbContext = contextFactory.CreateDbContext();
-                var staffFound = await wmsDbContext.Staffs.FirstOrDefaultAsync(
-                    staff => request.Model.StaffId == staff.Id,
-                    cancellationToken);
-                if (staffFound != null)
-                {
-                    return GeneralDbResponses.ItemAlreadyExist(staffFound.Id.ToString());
-                }
+                throw new Exception(GeneralResponses.ItemAlreadyExist(staffFound.Id.ToString()));
+            }
 
-                var data = request.Model.Adapt(new StaffNotification());
-                wmsDbContext.StaffNotifications.Add(data);
-                await wmsDbContext.SaveChangesAsync(cancellationToken);
-                return GeneralDbResponses.ItemCreated(request.Model.Subject);
-            }
-            catch (Exception ex)
-            {
-                return new ServiceResponse(false, ex.Message);
-            }
+            var data = request.Model.Adapt(new StaffNotification());
+            var staffNotificationCreated = wmsDbContext.StaffNotifications.Add(data);
+            await wmsDbContext.SaveChangesAsync(cancellationToken);
+            return new CreateStaffNotificationResponseDTO() { Id = staffNotificationCreated.Entity.Id };
+
         }
     }
 }

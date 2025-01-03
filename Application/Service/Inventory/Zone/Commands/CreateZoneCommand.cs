@@ -5,6 +5,6 @@ using MediatR;
 
 namespace Application.Service.Commands
 {
-    public record CreateZoneCommand(CreateZoneRequestDTO Model) : IRequest<ServiceResponse>;
+    public record CreateZoneCommand(CreateZoneRequestDTO Model) : IRequest<CreateZoneResponseDTO>;
 }
     

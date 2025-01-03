@@ -5,6 +5,6 @@ using MediatR;
 
 namespace Application.Service.Commands
 {
-    public record CreateCustomerOrderDetailCommand(CreateCustomerOrderDetailRequestDTO Model) : IRequest<ServiceResponse>;
+    public record CreateCustomerOrderDetailCommand(CreateCustomerOrderDetailRequestDTO Model) : IRequest<CreateCustomerOrderDetailResponseDTO>;
 }
     

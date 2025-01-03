@@ -5,6 +5,6 @@ using MediatR;
 
 namespace Application.Service.Commands
 {
-    public record CreateProductShopCommand(CreateProductShopRequestDTO Model) : IRequest<ServiceResponse>;
+    public record CreateProductShopCommand(CreateProductShopRequestDTO Model) : IRequest<CreateProductShopResponseDTO>;
 }
     

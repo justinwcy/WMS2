@@ -5,6 +5,6 @@ using MediatR;
 
 namespace Application.Service.Commands
 {
-    public record CreateInventoryCommand(CreateInventoryRequestDTO Model) : IRequest<ServiceResponse>;
+    public record CreateInventoryCommand(CreateInventoryRequestDTO Model) : IRequest<CreateInventoryResponseDTO>;
 }
     

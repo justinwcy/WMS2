@@ -76,16 +76,16 @@ namespace Infrastructure.Repository
             return new ServiceResponse(true, "Logout success. Bye!");
         }
 
-        public async Task<ServiceResponse> CreateStaffAsync(CreateStaffRequestDTO model, bool isDebugAdmin = false)
+        public async Task<Guid> CreateStaffAsync(CreateStaffRequestDTO model, bool isDebugAdmin = false)
         {
             var result = await CreateStaffIdentityAsync(model, isDebugAdmin);
             if (!result.Success)
             {
-                return result;
+                throw new Exception(result.Message);
             }
 
-            result = await CreateStaffApplicationAsync(model, isDebugAdmin);
-            return result;
+            var response = await CreateStaffApplicationAsync(model, isDebugAdmin);
+            return response;
         }
 
         public async Task<IEnumerable<GetStaffWithClaimResponseDTO>> GetAllStaffWithClaimsAsync(Guid companyId)
@@ -410,7 +410,7 @@ namespace Infrastructure.Repository
             var user = await FindUserByEmail(model.Email);
             if (user != null)
             {
-                return new ServiceResponse(false, "User already exists");
+                return new ServiceResponse(false, $"User {model.Email} already exists");
             }
 
             var newUser = new WmsStaff()
@@ -442,39 +442,32 @@ namespace Infrastructure.Repository
             return new ServiceResponse(true, $"User {model.FirstName} {model.LastName} added");
         }
 
-        private async Task<ServiceResponse> CreateStaffApplicationAsync(CreateStaffRequestDTO model, bool isDebugAdmin = false)
+        private async Task<Guid> CreateStaffApplicationAsync(CreateStaffRequestDTO model, bool isDebugAdmin = false)
         {
             var user = await FindUserByEmail(model.Email);
-            try
+            await using var wmsDbContext = contextFactory.CreateDbContext();
+            var foundStaff = await wmsDbContext.Staffs.FirstOrDefaultAsync(
+                staff => string.Equals(staff.Id.ToString(), user.Id));
+            if (foundStaff != null)
             {
-                await using var wmsDbContext = contextFactory.CreateDbContext();
-                var foundStaff = await wmsDbContext.Staffs.FirstOrDefaultAsync(
-                    staff => string.Equals(staff.Id.ToString(), user.Id));
-                if (foundStaff != null)
-                {
-                    return GeneralDbResponses.ItemAlreadyExist($"{model.Email}");
-                }
-
-                var data = new Staff()
-                {
-                    Id = new Guid(user.Id),
-                    CompanyId = model.CompanyId,
-                    CreatedBy = model.CreatedBy,
-                };
-
-                if (isDebugAdmin)
-                {
-                    data.Id = DebugConstants.AdminId;
-                }
-
-                wmsDbContext.Staffs.Add(data);
-                await wmsDbContext.SaveChangesAsync();
-                return new ServiceResponse(true, $"User {model.FirstName} {model.LastName} added");
+                throw new Exception(GeneralResponses.ItemAlreadyExist(model.Email));
             }
-            catch (Exception ex)
+
+            var data = new Staff()
             {
-                return new ServiceResponse(false, ex.Message);
+                Id = new Guid(user.Id),
+                CompanyId = model.CompanyId,
+                CreatedBy = model.CreatedBy,
+            };
+
+            if (isDebugAdmin)
+            {
+                data.Id = DebugConstants.AdminId;
             }
+
+            var staffCreated = wmsDbContext.Staffs.Add(data);
+            await wmsDbContext.SaveChangesAsync();
+            return staffCreated.Entity.Id;
         }
     }
 }
