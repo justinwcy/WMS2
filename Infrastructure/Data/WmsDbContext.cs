@@ -50,14 +50,14 @@ namespace Infrastructure.Data
                         r.HasOne<Product>(incomingOrderProduct=> incomingOrderProduct.Product)
                             .WithMany()
                             .HasForeignKey(incomingOrderProduct => incomingOrderProduct.ProductId)
-                            .OnDelete(DeleteBehavior.Restrict),
+                            .OnDelete(DeleteBehavior.Cascade),
                     l =>
                         l.HasOne<IncomingOrder>(incomingOrderProduct => incomingOrderProduct.IncomingOrder)
                             .WithMany()
                             .HasForeignKey(incomingOrderProduct =>
                                 incomingOrderProduct.IncomingOrderId
                             )
-                            .OnDelete(DeleteBehavior.Restrict)
+                            .OnDelete(DeleteBehavior.Cascade)
                 );
 
             modelBuilder
@@ -69,12 +69,12 @@ namespace Infrastructure.Data
                         r.HasOne<Product>(refundOrderProduct=>refundOrderProduct.Product)
                             .WithMany()
                             .HasForeignKey(refundOrderProduct => refundOrderProduct.ProductId)
-                            .OnDelete(DeleteBehavior.Restrict),
+                            .OnDelete(DeleteBehavior.Cascade),
                     l =>
                         l.HasOne<RefundOrder>(refundOrderProduct => refundOrderProduct.RefundOrder)
                             .WithMany()
                             .HasForeignKey(refundOrderProduct => refundOrderProduct.RefundOrderId)
-                            .OnDelete(DeleteBehavior.Restrict)
+                            .OnDelete(DeleteBehavior.Cascade)
                 );
 
             modelBuilder
@@ -86,12 +86,12 @@ namespace Infrastructure.Data
                         r.HasOne<Product>(productShop=>productShop.Product)
                             .WithMany()
                             .HasForeignKey(productShop => productShop.ProductId)
-                            .OnDelete(DeleteBehavior.Restrict),
+                            .OnDelete(DeleteBehavior.Cascade),
                     l =>
                         l.HasOne<Shop>(productShop => productShop.Shop)
                             .WithMany()
                             .HasForeignKey(productShop => productShop.ShopId)
-                            .OnDelete(DeleteBehavior.Restrict)
+                            .OnDelete(DeleteBehavior.Cascade)
                 );
 
             modelBuilder
@@ -103,12 +103,12 @@ namespace Infrastructure.Data
                         r.HasOne<Rack>(productRack=>productRack.Rack)
                             .WithMany()
                             .HasForeignKey(productRack => productRack.RackId)
-                            .OnDelete(DeleteBehavior.Restrict),
+                            .OnDelete(DeleteBehavior.Cascade),
                     l =>
                         l.HasOne<Product>(productRack => productRack.Product)
                             .WithMany()
                             .HasForeignKey(productRack => productRack.ProductId)
-                            .OnDelete(DeleteBehavior.Restrict)
+                            .OnDelete(DeleteBehavior.Cascade)
                 );
 
             modelBuilder
@@ -120,12 +120,12 @@ namespace Infrastructure.Data
                         r.HasOne<Staff>(zoneStaff=>zoneStaff.Staff)
                             .WithMany()
                             .HasForeignKey(zoneStaff => zoneStaff.StaffId)
-                            .OnDelete(DeleteBehavior.Restrict),
+                            .OnDelete(DeleteBehavior.Cascade),
                     l =>
                         l.HasOne<Zone>(zoneStaff => zoneStaff.Zone)
                             .WithMany()
                             .HasForeignKey(zoneStaff => zoneStaff.ZoneId)
-                            .OnDelete(DeleteBehavior.Restrict)
+                            .OnDelete(DeleteBehavior.NoAction)
                 );
 
             modelBuilder
@@ -137,12 +137,12 @@ namespace Infrastructure.Data
                         r.HasOne<Product>(productGroupProduct => productGroupProduct.Product)
                             .WithMany()
                             .HasForeignKey(productGroupProduct => productGroupProduct.ProductId)
-                            .OnDelete(DeleteBehavior.NoAction),
+                            .OnDelete(DeleteBehavior.Cascade),
                     l =>
                         l.HasOne<ProductGroup>(productGroupProduct => productGroupProduct.ProductGroup)
                             .WithMany()
                             .HasForeignKey(productGroupProduct => productGroupProduct.ProductGroupId)
-                            .OnDelete(DeleteBehavior.NoAction)
+                            .OnDelete(DeleteBehavior.Cascade)
                 );
 
             #endregion
@@ -153,7 +153,7 @@ namespace Infrastructure.Data
                 .HasMany(vendor => vendor.IncomingOrders)
                 .WithOne(incomingOrder => incomingOrder.Vendor)
                 .HasForeignKey(incomingOrder => incomingOrder.VendorId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
 
             modelBuilder
@@ -161,70 +161,70 @@ namespace Infrastructure.Data
                 .HasOne(customerOrderDetail => customerOrderDetail.Product)
                 .WithMany(product => product.CustomerOrderDetails)
                 .HasForeignKey(product => product.CustomerOrderId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder
                 .Entity<CustomerOrder>()
                 .HasMany(customerOrder => customerOrder.CustomerOrderDetails)
                 .WithOne(customerOrderDetail => customerOrderDetail.CustomerOrder)
                 .HasForeignKey(customerOrderDetail => customerOrderDetail.CustomerOrderId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder
                 .Entity<Customer>()
                 .HasMany(customer => customer.CustomerOrders)
                 .WithOne(customerOrder => customerOrder.Customer)
                 .HasForeignKey(customerOrder => customerOrder.CustomerId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder
                 .Entity<Courier>()
                 .HasMany(courier => courier.CustomerOrders)
                 .WithOne(customerOrder => customerOrder.Courier)
                 .HasForeignKey(customerOrder => customerOrder.CourierId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder
                 .Entity<Bin>()
                 .HasMany(bin => bin.CustomerOrders)
                 .WithOne(customerOrder => customerOrder.Bin)
                 .HasForeignKey(customerOrder => customerOrder.BinId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder
                 .Entity<Zone>()
                 .HasMany(zone => zone.Racks)
                 .WithOne(rack => rack.Zone)
                 .HasForeignKey(rack => rack.ZoneId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder
                 .Entity<Company>()
                 .HasMany(company => company.Staffs)
                 .WithOne(staff => staff.Company)
                 .HasForeignKey(staff => staff.CompanyId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder
                 .Entity<Staff>()
                 .HasMany(staff => staff.StaffNotifications)
                 .WithOne(staffNotification => staffNotification.Staff)
                 .HasForeignKey(staffNotification => staffNotification.StaffId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder
                 .Entity<Company>()
                 .HasMany(company => company.Warehouses)
                 .WithOne(warehouse => warehouse.Company)
                 .HasForeignKey(warehouse => warehouse.CompanyId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder
                 .Entity<Warehouse>()
                 .HasMany(warehouse => warehouse.Zones)
                 .WithOne(zone => zone.Warehouse)
                 .HasForeignKey(zone => zone.WarehouseId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
             #endregion
 
             #region OneToOneRelationships
