@@ -35,55 +35,64 @@
                           Variant="@_defaultVariant"
                           T="string"
                           Label="SKU"
-                          Required="true" RequiredError="SKU is required!" />
+                          Required="true" RequiredError="SKU is required!"
+                          Margin="Margin.Dense"/>
 
             <MudTextField @bind-value="_productModel.Name"
                           Variant="@_defaultVariant"
                           T="string"
                           Label="Name"
-                          Required="true" RequiredError="Name is required!" />
+                          Required="true" RequiredError="Name is required!"
+                          Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_productModel.Description"
                           Variant="@_defaultVariant"
                           T="string"
                           Label="Description"
-                          Required="true" RequiredError="Description is required!" />
+                          Required="true" RequiredError="Description is required!"
+                          Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_productModel.Price"
                           Variant="@_defaultVariant"
                           T="decimal"
                           Label="Price"
-                          Required="true" RequiredError="Price is required!" />
+                          Required="true" RequiredError="Price is required!"
+                          Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_productModel.Tag"
                           Variant="@_defaultVariant"
                           T="string"
                           Label="Tag"
-                          Required="true" RequiredError="Tag is required!" />
+                          Required="true" RequiredError="Tag is required!"
+                          Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_productModel.Weight"
                           Variant="@_defaultVariant"
                           T="double"
                           Label="Weight"
-                          Required="true" RequiredError="Weight is required!" />
+                          Required="true" RequiredError="Weight is required!"
+                          Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_productModel.Height"
                           Variant="@_defaultVariant"
                           T="double"
                           Label="Height"
-                          Required="true" RequiredError="Height is required!" />
+                          Required="true" RequiredError="Height is required!"
+                          Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_productModel.Length"
                           Variant="@_defaultVariant"
                           T="double"
                           Label="Length"
-                          Required="true" RequiredError="Length is required!" />
+                          Required="true" RequiredError="Length is required!"
+                          Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_productModel.Width"
                           Variant="@_defaultVariant"
                           T="double"
                           Label="Width"
-                          Required="true" RequiredError="Width is required!" />
+                          Required="true" RequiredError="Width is required!"
+                          Margin="Margin.Dense" />
         </MudForm>
         </DialogContent>
     <DialogActions>
@@ -132,7 +141,21 @@
         await Mediator.Send(createProductGroupProductCommand);
         SnackBar.Add($"{_productModel.Name} created");
 
-        MudDialog.Close(DialogResult.Ok(true));
+        var createdProductModel = new ProductModel()
+        {
+            Id = createdProductResponseDTO.Id,
+            ProductGroup = _productModel.ProductGroup,
+            Description = _productModel.Description,
+            Sku = _productModel.Sku,
+            Height = _productModel.Height,
+            Length = _productModel.Length,
+            Name = _productModel.Name,
+            Price = _productModel.Price,
+            Tag = _productModel.Tag,
+            Weight = _productModel.Weight,
+            Width = _productModel.Width,
+        };
+        MudDialog.Close(DialogResult.Ok(createdProductModel));
     }
 
     private void Cancel()

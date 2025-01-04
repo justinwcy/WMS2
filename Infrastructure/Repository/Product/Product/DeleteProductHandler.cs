@@ -25,6 +25,30 @@ namespace Infrastructure.Repository
                     return GeneralDbResponses.ItemNotFound("Product");
                 }
 
+                var foundInventory = await wmsDbContext.Inventories.FirstOrDefaultAsync(
+                    inventory => inventory.ProductId == request.Id, cancellationToken
+                );
+                if (foundInventory != null && foundInventory.Quantity != 0)
+                {
+                    return new ServiceResponse(false, "Cannot be deleted because product still in inventory");
+                }
+
+                var foundProductGroupProduct = await wmsDbContext.ProductGroupProducts.FirstOrDefaultAsync(
+                    productGroupProduct => productGroupProduct.ProductId == request.Id,
+                    cancellationToken);
+                if (foundProductGroupProduct != null)
+                {
+                    wmsDbContext.ProductGroupProducts.Remove(foundProductGroupProduct);
+                }
+
+                var foundProductRack = await wmsDbContext.ProductRacks.FirstOrDefaultAsync(
+                    productRack => productRack.ProductId == request.Id,
+                    cancellationToken);
+                if (foundProductRack != null)
+                {
+                    wmsDbContext.ProductRacks.Remove(foundProductRack);
+                }
+
                 wmsDbContext.Products.Remove(foundProduct);
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
                 return GeneralDbResponses.ItemDeleted("Product");

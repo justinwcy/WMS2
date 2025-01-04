@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -111,18 +111,33 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Products",
+                name: "ProductGroups",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductGroups", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Sku = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
                     Tag = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Weight = table.Column<double>(type: "float", nullable: false),
-                    Height = table.Column<double>(type: "float", nullable: false),
-                    Length = table.Column<double>(type: "float", nullable: false),
-                    Width = table.Column<double>(type: "float", nullable: false),
+                    Height = table.Column<double>(type: "float", nullable: true),
+                    Length = table.Column<double>(type: "float", nullable: true),
+                    Width = table.Column<double>(type: "float", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -381,23 +396,29 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductSkus",
+                name: "ProductGroupProducts",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductGroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Sku = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductSkus", x => x.Id);
+                    table.PrimaryKey("PK_ProductGroupProducts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProductSkus_Products_ProductId",
+                        name: "FK_ProductGroupProducts_ProductGroups_ProductGroupId",
+                        column: x => x.ProductGroupId,
+                        principalTable: "ProductGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProductGroupProducts_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -733,6 +754,16 @@ namespace Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProductGroupProducts_ProductGroupId",
+                table: "ProductGroupProducts",
+                column: "ProductGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductGroupProducts_ProductId",
+                table: "ProductGroupProducts",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProductRacks_ProductId",
                 table: "ProductRacks",
                 column: "ProductId");
@@ -751,11 +782,6 @@ namespace Infrastructure.Migrations
                 name: "IX_ProductShops_ShopId",
                 table: "ProductShops",
                 column: "ShopId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductSkus_ProductId",
-                table: "ProductSkus",
-                column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Racks_ZoneId",
@@ -831,13 +857,13 @@ namespace Infrastructure.Migrations
                 name: "Inventories");
 
             migrationBuilder.DropTable(
+                name: "ProductGroupProducts");
+
+            migrationBuilder.DropTable(
                 name: "ProductRacks");
 
             migrationBuilder.DropTable(
                 name: "ProductShops");
-
-            migrationBuilder.DropTable(
-                name: "ProductSkus");
 
             migrationBuilder.DropTable(
                 name: "RefundOrderProducts");
@@ -859,6 +885,9 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "IncomingOrders");
+
+            migrationBuilder.DropTable(
+                name: "ProductGroups");
 
             migrationBuilder.DropTable(
                 name: "Racks");

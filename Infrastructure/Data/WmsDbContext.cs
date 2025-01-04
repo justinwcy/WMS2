@@ -137,12 +137,12 @@ namespace Infrastructure.Data
                         r.HasOne<Product>(productGroupProduct => productGroupProduct.Product)
                             .WithMany()
                             .HasForeignKey(productGroupProduct => productGroupProduct.ProductId)
-                            .OnDelete(DeleteBehavior.Restrict),
+                            .OnDelete(DeleteBehavior.NoAction),
                     l =>
                         l.HasOne<ProductGroup>(productGroupProduct => productGroupProduct.ProductGroup)
                             .WithMany()
                             .HasForeignKey(productGroupProduct => productGroupProduct.ProductGroupId)
-                            .OnDelete(DeleteBehavior.Restrict)
+                            .OnDelete(DeleteBehavior.NoAction)
                 );
 
             #endregion

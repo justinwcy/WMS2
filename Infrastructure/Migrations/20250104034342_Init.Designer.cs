@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(WmsDbContext))]
-    [Migration("20250102151559_ProductGroupProductTable")]
-    partial class ProductGroupProductTable
+    [Migration("20250104034342_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

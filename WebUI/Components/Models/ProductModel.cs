@@ -2,7 +2,7 @@
 {
     public class ProductModel
     {
-        public int Counter { get; set; }
+        public Guid Id { get; set; }
 
         public ProductGroupModel ProductGroup { get; set; }
 

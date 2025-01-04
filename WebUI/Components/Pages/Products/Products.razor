@@ -2,13 +2,15 @@
 @inject IDialogService Dialog
 @using Application.Service.Queries
 @using WebUI.Components.Models
+@using Application.Service.Commands
 <MudGrid>
     <MudItem xs="8">
-        <MudButton 
+        <MudButton OnClick="@DeleteProducts"
             Color="Color.Error"
             Variant="Variant.Filled"
             Size="Size.Large"
-            FullWidth="false">
+            FullWidth="false"
+            Disabled="_disableDelete">
             Delete Product
         </MudButton>
     </MudItem>
@@ -62,7 +64,6 @@
         <col/>
         <col/>
         <col/>
-        <col/>
         <col style="min-width: 400px"/>
         <col/>
         <col/>
@@ -72,7 +73,6 @@
         <col/>
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Counter)">No.</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Sku)">SKU</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Description)">Description</MudTableSortLabel></MudTh>
@@ -87,7 +87,6 @@
         <MudTh colspan="@_numberOfColumns"><b>@($"{((ProductGroupModel)context.Key!)?.Name} - {((ProductGroupModel)context.Key!)?.Description}")</b></MudTh>
     </GroupHeaderTemplate>
     <RowTemplate>
-        <MudTd DataLabel="Name">@context.Counter</MudTd>
         <MudTd DataLabel="SKU">@context.Sku</MudTd>
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Description">@context.Description</MudTd>
@@ -113,10 +112,11 @@
 </MudTable>
 
 @code {
-
-    private string _numberOfColumns = "10";
+    private string _numberOfColumns = "9";
+    private List<ProductGroupModel> _productGroups = new List<ProductGroupModel>();
     private List<ProductModel> _products { get; set; } = new List<ProductModel>();
     private HashSet<ProductModel> _selectedProducts = new HashSet<ProductModel>();
+    private bool _disableDelete => !_selectedProducts.Any();
 
     private bool _isExpandCollapse { get; set; }
     private string _expandCollapseTooltip { get; set; } = "Expand all rows";
@@ -163,15 +163,16 @@
                     Description = productGroupDescription
                 };
 
+                _productGroups.Add(productGroupModel);
                 var counter = 1;
                 foreach (var productId in productIds)
                 {
                     var getProductByIdQuery = new GetProductByIdQuery(productId);
                     var productDTO = await Mediator.Send(getProductByIdQuery);
-
+                    
                     var productModel = new ProductModel()
                     {
-                        Counter = counter,
+                        Id = productDTO.Id,
                         ProductGroup = productGroupModel,
                         Description = productDTO.Description,
                         Name = productDTO.Name,
@@ -226,6 +227,25 @@
         _isExpandCollapse = !_isExpandCollapse;
     }
 
+    private async Task DeleteProducts()
+    {
+        var success = true;
+        foreach (var productModel in _selectedProducts)
+        {
+            var deleteProductCommand = new DeleteProductCommand(productModel.Id);
+            var result = await Mediator.Send(deleteProductCommand);
+
+            if (result.Success)
+            {
+                _products.Remove(productModel);
+            }
+
+            success &= result.Success;
+        }
+
+        SnackBar.Add(success ? "Products Deleted" : "Failed to delete products");
+    }
+
     private void BackupItem(object element)
     {
         // elementBeforeEdit = new()
@@ -260,7 +280,12 @@
         
         if (dialogResult != null && !dialogResult.Canceled)
         {
-            NavigationManager.NavigateTo(NavigationManager.Uri, true);
+            var productModelCreated = (ProductModel)dialogResult.Data;
+            var productGroupId = productModelCreated.ProductGroup.Id;
+            var foundProductGroup = _productGroups.First(productGroup => productGroup.Id == productGroupId);
+            productModelCreated.ProductGroup = foundProductGroup;
+            _products.Add(productModelCreated);
+            StateHasChanged();
         }
     }
 
