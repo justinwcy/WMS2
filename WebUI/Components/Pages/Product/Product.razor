@@ -1,0 +1,355 @@
+﻿@page "/products"
+@inject IDialogService Dialog
+@using Application.Service.Queries
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+@using WebUI.Utilities
+<MudGrid>
+    <MudItem xs="8">
+        <MudButton OnClick="@DeleteProducts"
+        Color="Color.Error"
+        Variant="Variant.Filled"
+        Size="Size.Large"
+        FullWidth="false"
+        Disabled="_disableDelete">
+            Delete Product
+        </MudButton>
+    </MudItem>
+    <MudItem xs="3">
+        <MudButton OnClick="@(OpenCreateProductDialogAsync)"
+        Variant="Variant.Filled"
+        Color="Color.Primary"
+        Size="Size.Large"
+        FullWidth="false">
+            Create Product
+        </MudButton>
+    </MudItem>
+    <MudItem xs="1">
+        <MudTooltip Arrow="true" Text=@_expandCollapseTooltip>
+            <MudToggleIconButton Style="text-align: right;"
+            Color="@Color.Default"
+            Icon="@Icons.Material.Filled.ExpandCircleDown"
+            Size="Size.Medium"
+            Toggled="_isExpandCollapse"
+            ToggledChanged="ToggleExpandCollapse"
+            ToggledColor="@Color.Default"
+            ToggledIcon="@Icons.Material.Filled.ExpandLess"/>
+        </MudTooltip>
+    </MudItem>
+</MudGrid>
+
+<MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
+Filter="new Func<ProductModel,bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@_products"
+GroupBy="@_groupDefinition"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedProducts" 
+SelectOnRowClick="false"
+
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd" 
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
+
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Products</MudText>
+        <MudSpacer/>
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+        <col style="min-width: 400px"/>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Sku)">SKU</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Description)">Description</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Price)">Price (RM)</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Tag)">Tag</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Weight)">Weight (g)</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Height)">Height (cm)</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Length)">Length (cm)</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Width)">Width (cm)</MudTableSortLabel></MudTh>
+    </HeaderContent>
+    <GroupHeaderTemplate>
+        <MudTh colspan="@_numberOfColumns"><b>@($"{_productGroups.First(productGroup => productGroup.Id == (Guid)context.Key).Name} - {_productGroups.First(productGroup => productGroup.Id == (Guid)context.Key).Description}")</b></MudTh>
+    </GroupHeaderTemplate>
+    <RowTemplate>
+        <MudTd DataLabel="SKU">@context.Sku</MudTd>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Description">@context.Description</MudTd>
+        <MudTd DataLabel="Price (RM)">@context.Price</MudTd>
+        <MudTd DataLabel="Tag">@context.Tag</MudTd>
+        <MudTd DataLabel="Weight (g)">@context.Weight</MudTd>
+        <MudTd DataLabel="Height (cm)">@context.Height</MudTd>
+        <MudTd DataLabel="Length (cm)">@context.Length</MudTd>
+        <MudTd DataLabel="Width (cm)">@context.Width</MudTd>
+    </RowTemplate>
+
+    <RowEditingTemplate>
+        <MudTd DataLabel="SKU">
+            <MudTextField @bind-Value="context.Sku" Required/>
+        </MudTd>
+        <MudTd DataLabel="Name">
+            <MudTextField @bind-Value="context.Name" Required />
+        </MudTd>
+        <MudTd DataLabel="Description">
+            <MudTextField @bind-Value="context.Description" Required />
+        </MudTd>
+        <MudTd DataLabel="Price (RM)">
+            <MudTextField @bind-Value="context.Price" Required />
+        </MudTd>
+        <MudTd DataLabel="Tag">
+            <MudTextField @bind-Value="context.Tag" Required />
+        </MudTd>
+        <MudTd DataLabel="Weight (g)">
+            <MudTextField @bind-Value="context.Weight" Required />
+        </MudTd>
+        <MudTd DataLabel="Height (cm)">
+            <MudTextField @bind-Value="context.Height" Required />
+        </MudTd>
+        <MudTd DataLabel="Length (cm)">
+            <MudTextField @bind-Value="context.Length" Required />
+        </MudTd>
+        <MudTd DataLabel="Width (cm)">
+            <MudTextField @bind-Value="context.Width" Required />
+        </MudTd>
+    </RowEditingTemplate>
+
+    <GroupFooterTemplate>
+        <MudTh Style="text-align: right;" colspan="@_numberOfColumns"><b>Total Items: @context.Items.Count()</b></MudTh>
+    </GroupFooterTemplate>
+
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right"
+        />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private string _numberOfColumns = "10";
+    private List<ProductGroupModel> _productGroups = new List<ProductGroupModel>();
+    private List<ProductModel> _products { get; set; } = new List<ProductModel>();
+    private HashSet<ProductModel> _selectedProducts = new HashSet<ProductModel>();
+    private bool _disableDelete => !_selectedProducts.Any();
+    private GetStaffResponseDTO _currentStaff { get; set; }
+    private ProductModel _productModelBeforeEdit = new ProductModel();
+
+    private bool _isExpandCollapse { get; set; }
+    private string _expandCollapseTooltip { get; set; } = "Expand all rows";
+    private bool _loading { get; set; }
+    private string searchString = "";
+    private MudTable<ProductModel> _tableRef;
+    private readonly TableGroupDefinition<ProductModel> _groupDefinition = new()
+    {
+        GroupName = "",
+        Indentation = false,
+        Expandable = true,
+        IsInitiallyExpanded = false, 
+        Selector = (productModel) => productModel.ProductGroupId,
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        await base.OnInitializedAsync();
+        _currentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
+        var getAllProductGroupByCompanyId = new GetAllProductGroupByCompanyIdQuery(_currentStaff.CompanyId);
+        var allProductGroupsDTO = await Mediator.Send(getAllProductGroupByCompanyId);
+
+        foreach (var productGroupDTO in allProductGroupsDTO)
+        {
+            var productGroupId = productGroupDTO.Id;
+            var productGroupName = productGroupDTO.Name;
+            var productGroupDescription = productGroupDTO.Description;
+            var productIds = productGroupDTO.ProductIds;
+            var productGroupModel = new ProductGroupModel()
+            {
+                Id = productGroupId,
+                Name = productGroupName,
+                Description = productGroupDescription,
+                ProductIds = productIds,
+            };
+
+            _productGroups.Add(productGroupModel);
+            foreach (var productId in productIds)
+            {
+                var getProductByIdQuery = new GetProductByIdQuery(productId);
+                var productDTO = await Mediator.Send(getProductByIdQuery);
+
+                var productModel = new ProductModel()
+                {
+                    Id = productDTO.Id,
+                    ProductGroupId = productGroupModel.Id,
+                    Description = productDTO.Description,
+                    Name = productDTO.Name,
+                    Height = productDTO.Height,
+                    Length = productDTO.Length,
+                    Width = productDTO.Width,
+                    Price = decimal.Round(productDTO.Price, 2, MidpointRounding.AwayFromZero),
+                    Sku = productDTO.Sku,
+                    Tag = productDTO.Tag,
+                    Weight = productDTO.Weight,
+                };
+
+                _products.Add(productModel);
+            }
+
+        }
+
+        _loading = false;
+    }
+
+    private bool FilterFunc(ProductModel productModel)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (productModel.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (productModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (productModel.Sku.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (productModel.Tag.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+
+    private void ToggleExpandCollapse()
+    {
+        if (_isExpandCollapse)
+        {
+            _tableRef.CollapseAllGroups();
+            _expandCollapseTooltip = "Collapse all rows";
+        }
+        else
+        {
+
+            _tableRef.ExpandAllGroups();
+            _expandCollapseTooltip = "Expand all rows";
+
+
+        }
+        _isExpandCollapse = !_isExpandCollapse;
+    }
+
+    private async Task DeleteProducts()
+    {
+        var success = true;
+        foreach (var productModel in _selectedProducts)
+        {
+            var deleteProductCommand = new DeleteProductCommand(productModel.Id);
+            var result = await Mediator.Send(deleteProductCommand);
+
+            if (result.Success)
+            {
+                _products.Remove(productModel);
+            }
+
+            success &= result.Success;
+        }
+
+        SnackBar.Add(success ? "Products Deleted" : "Failed to delete products");
+    }
+
+    private void BackupItem(object productModel)
+    {
+
+        _productModelBeforeEdit = new ProductModel()
+        {
+            Id = ((ProductModel)productModel).Id,
+            ProductGroupId = ((ProductModel)productModel).ProductGroupId,
+            Description = ((ProductModel)productModel).Description,
+            Name = ((ProductModel)productModel).Name,
+            Height = ((ProductModel)productModel).Height,
+            Length = ((ProductModel)productModel).Length,
+            Width = ((ProductModel)productModel).Width,
+            Price = ((ProductModel)productModel).Price,
+            Sku = ((ProductModel)productModel).Sku,
+            Tag = ((ProductModel)productModel).Tag,
+            Weight = ((ProductModel)productModel).Weight,
+        };
+        StateHasChanged();
+    }
+
+    private void ResetItemToOriginalValues(object productModel)
+    {
+        ((ProductModel)productModel).Id = _productModelBeforeEdit.Id;
+        ((ProductModel)productModel).ProductGroupId = _productModelBeforeEdit.ProductGroupId;
+        ((ProductModel)productModel).Description = _productModelBeforeEdit.Description;
+        ((ProductModel)productModel).Name = _productModelBeforeEdit.Name;
+        ((ProductModel)productModel).Height = _productModelBeforeEdit.Height;
+        ((ProductModel)productModel).Length = _productModelBeforeEdit.Length;
+        ((ProductModel)productModel).Width = _productModelBeforeEdit.Width;
+        ((ProductModel)productModel).Price = _productModelBeforeEdit.Price;
+        ((ProductModel)productModel).Sku = _productModelBeforeEdit.Sku;
+        ((ProductModel)productModel).Tag = _productModelBeforeEdit.Tag;
+        ((ProductModel)productModel).Weight = _productModelBeforeEdit.Weight;
+
+        StateHasChanged();
+    }
+
+    private async void ItemHasBeenCommitted(object productModel)
+    {
+        var productModelConverted = (ProductModel)productModel;
+        var updateProductDTO = new UpdateProductRequestDTO()
+        {
+            CreatedBy = _currentStaff.Id,
+            Description = productModelConverted.Description,
+            Id = productModelConverted.Id,
+            Name = productModelConverted.Name,
+            Height = productModelConverted.Height,
+            Length = productModelConverted.Length,
+            Width = productModelConverted.Width,
+            Price = productModelConverted.Price,
+            Sku = productModelConverted.Sku,
+            Tag = productModelConverted.Tag,
+            Weight = productModelConverted.Weight,
+        };
+        var updateProductCommand = new UpdateProductCommand(updateProductDTO);
+        var response = await Mediator.Send(updateProductCommand);
+        SnackBar.Add(response.Message);
+        StateHasChanged();
+    }
+
+    private async Task OpenCreateProductDialogAsync()
+    {
+        var maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await Dialog.ShowAsync<CreateProductDialog>("Create Product", maxWidth);
+        var dialogResult = await dialog.Result;
+        
+        if (dialogResult != null && !dialogResult.Canceled)
+        {
+            var productModelCreated = (ProductModel)dialogResult.Data;
+            var productGroupId = productModelCreated.ProductGroupId;
+            var foundProductGroup = _productGroups.First(productGroup => productGroup.Id == productGroupId);
+            productModelCreated.ProductGroupId = foundProductGroup.Id;
+            _products.Add(productModelCreated);
+            StateHasChanged();
+        }
+    }
+}

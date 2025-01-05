@@ -25,14 +25,14 @@ namespace Infrastructure.Repository
                     cancellationToken);
                 if (companyFound == null)
                 {
-                    return GeneralDbResponses.ItemNotFound(request.Model.CompanyName);
+                    return GeneralDbResponses.ItemNotFound(request.Model.Name);
                 }
 
                 wmsDbContext.Entry(companyFound).State = EntityState.Detached;
                 var adaptData = request.Model.Adapt<Company>();
                 wmsDbContext.Companies.Update(adaptData);
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
-                return GeneralDbResponses.ItemUpdated(request.Model.CompanyName);
+                return GeneralDbResponses.ItemUpdated(request.Model.Name);
             }
             catch (Exception ex)
             {

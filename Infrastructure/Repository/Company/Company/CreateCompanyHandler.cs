@@ -20,11 +20,11 @@ namespace Infrastructure.Repository
         {
             await using var wmsDbContext = contextFactory.CreateDbContext();
             var foundCompany = await wmsDbContext.Companies.FirstOrDefaultAsync(
-                company => string.Equals(company.Name, request.Model.CompanyName, StringComparison.CurrentCultureIgnoreCase),
+                company => string.Equals(company.Name, request.Model.Name),
                 cancellationToken);
             if (foundCompany != null)
             {
-                throw new Exception(GeneralResponses.ItemAlreadyExist(request.Model.CompanyName));
+                throw new Exception(GeneralResponses.ItemAlreadyExist(request.Model.Name));
             }
 
             var data = request.Model.Adapt<Company>();

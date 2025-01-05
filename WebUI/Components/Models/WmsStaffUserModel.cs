@@ -2,6 +2,7 @@
 {
     public sealed class WmsStaffUserModel : ICloneable
     {
+        public Guid Id { get; set; }
         public string FirstName { get; set; } = "";
 
         public string LastName { get; set; } = "";
@@ -25,6 +26,7 @@
         {
             return new WmsStaffUserModel
             {
+                Id = Id,
                 FirstName = FirstName, 
                 LastName = LastName, 
                 Email = Email, 

@@ -4,7 +4,7 @@
     {
         public Guid Id { get; set; }
 
-        public ProductGroupModel ProductGroup { get; set; }
+        public Guid ProductGroupId { get; set; }
 
         public string Name { get; set; }
 

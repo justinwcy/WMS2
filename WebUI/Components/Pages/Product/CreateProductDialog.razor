@@ -9,8 +9,8 @@
     </TitleContent>
     <DialogContent>
         <MudForm @ref="_form" @bind-IsValid="@_isFormValid">
-            <MudSelect @bind-Value="_productModel.ProductGroup"
-                       T="ProductGroupModel"
+            <MudSelect @bind-Value="_productModel.ProductGroupId"
+                       T="Guid"
                        ToStringFunc="@_convertProductGroupIdToString"
                        Variant="@_defaultVariant"
                        Label="Product Group"
@@ -27,7 +27,7 @@
                        RequiredError="Please select a product group">
                 @foreach (var productGroup in _productGroups)
                 {
-                    <MudSelectItem Value="@productGroup" />
+                    <MudSelectItem Value="@productGroup.Id" />
                 }
             </MudSelect>
 
@@ -109,7 +109,7 @@
     private MudForm _form;
 
     private ProductModel _productModel { get; set; } = new ProductModel();
-    private List<ProductGroupModel> _productGroups = new List<ProductGroupModel>();
+    private static List<ProductGroupModel> _productGroups = new List<ProductGroupModel>();
     private GetStaffResponseDTO _getStaffResponseDTO { get; set; }
 
     private async Task Submit()
@@ -133,7 +133,7 @@
         var createProductGroupProductRequestDTO = new CreateProductGroupProductRequestDTO()
         {
             CreatedBy = _getStaffResponseDTO.Id,
-            ProductGroupId = _productModel.ProductGroup.Id,
+            ProductGroupId = _productModel.ProductGroupId,
             ProductId = createdProductResponseDTO.Id,
         };
 
@@ -144,7 +144,7 @@
         var createdProductModel = new ProductModel()
         {
             Id = createdProductResponseDTO.Id,
-            ProductGroup = _productModel.ProductGroup,
+            ProductGroupId = _productModel.ProductGroupId,
             Description = _productModel.Description,
             Sku = _productModel.Sku,
             Height = _productModel.Height,
@@ -163,8 +163,12 @@
         MudDialog.Cancel();
     }
 
-    private readonly Func<ProductGroupModel?, string?> _convertProductGroupIdToString = 
-        productGroup => $"{productGroup?.Name} - {productGroup?.Description}";
+    private readonly Func<Guid, string> _convertProductGroupIdToString = 
+        productGroupId =>
+        {
+            var productGroup = _productGroups.FirstOrDefault(group => group.Id == productGroupId);
+            return $"{productGroup?.Name} - {productGroup?.Description}";
+        };
 
     protected override async Task OnInitializedAsync()
     {
@@ -188,7 +192,8 @@
                 {
                     Id = productGroupDTO.Id,
                     Name = productGroupDTO.Name,
-                    Description = productGroupDTO.Description
+                    Description = productGroupDTO.Description,
+                    ProductIds = productGroupDTO.ProductIds,
                 };
                 _productGroups.Add(productGroup);
             }
