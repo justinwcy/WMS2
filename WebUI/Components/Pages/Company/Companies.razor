@@ -56,11 +56,11 @@
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col />
-        <col />
-        <col style="min-width: 400px" />
-        <col />
-        <col />
+        <col style="max-width: 50px" />
+        <col style="max-width: 50px" />
+        <col style="min-width: 450px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 150px" />
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<CompanyModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>

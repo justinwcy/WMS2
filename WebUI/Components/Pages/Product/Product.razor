@@ -1,5 +1,4 @@
-﻿@page "/products"
-@inject IDialogService Dialog
+﻿@inject IDialogService Dialog
 @using Application.Service.Queries
 @using WebUI.Components.Models
 @using Application.Service.Commands
@@ -68,8 +67,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col/>
-        <col/>
+        <col style="max-width: 50px" />
+        <col style="max-width: 50px" />
         <col/>
         <col/>
         <col style="min-width: 400px"/>

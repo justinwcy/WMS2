@@ -1,0 +1,289 @@
+﻿@page "/shops"
+@attribute [Authorize(Roles = StaffRole.MasterControl)]
+@inject IDialogService Dialog
+@using Application.Service.Queries
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+@using WebUI.Utilities
+@using Application.Constants
+@using WebUI.Components.Pages.Product
+<MudGrid Class="mb-3">
+    <MudItem xs="9">
+        <MudButton OnClick="@DeleteShops"
+                   Color="Color.Error"
+                   Variant="Variant.Filled"
+                   Size="Size.Large"
+                   FullWidth="false"
+                   Disabled="_disableDelete">
+            Delete Shop
+        </MudButton>
+    </MudItem>
+    <MudItem xs="3">
+        <MudButton OnClick="@(OpenCreateShopDialogAsync)"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Size="Size.Large"
+                   FullWidth="false">
+            Create Shop
+        </MudButton>
+    </MudItem>
+</MudGrid>
+
+<MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
+          Filter="new Func<ShopModel,bool>(FilterFunc)"
+          CanCancelEdit="true"
+          Items="@_shops"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4"
+          Dense="true"
+          Loading="@_loading" LoadingProgressColor="Color.Info"
+          MultiSelection="true"
+          @bind-SelectedItems="_selectedShops"
+          SelectOnRowClick="false"
+          CommitEditTooltip="Commit Edit"
+          CancelEditTooltip="Cancel Edit"
+          IsEditRowSwitchingBlocked="false"
+          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted"
+          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+          @ref="_tableRef">
+
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Shops</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <col style="max-width: 50px" />
+        <col style="max-width: 50px" />
+        <col style="min-width: 200px" />
+        <col style="min-width: 200px" />
+        <col style="min-width: 200px" />
+        <col style="min-width: 200px" />
+        <col style="min-width: 200px" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<ShopModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ShopModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ShopModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ShopModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
+        <MudTh>Products</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Address">@context.Address</MudTd>
+        <MudTd DataLabel="Website">@context.Website</MudTd>
+        <MudTd DataLabel="Platform">@context.Platform</MudTd>
+        <MudTd DataLabel="Products">
+            <MudButton OnClick="@(OpenProductDialogAsync)"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
+                View Products
+            </MudButton>
+        </MudTd>
+    </RowTemplate>
+
+    <RowEditingTemplate>
+        <MudTd DataLabel="Name">
+            <MudTextField @bind-Value="context.Name" Required />
+        </MudTd>
+        
+        <MudTd DataLabel="Address">
+            <MudTextField @bind-Value="context.Address" Required />
+        </MudTd>
+        
+        <MudTd DataLabel="Website">
+            <MudTextField @bind-Value="context.Website" Required />
+        </MudTd>
+        
+        <MudTd DataLabel="Platform">
+            <MudTextField @bind-Value="context.Platform" Required />
+        </MudTd>
+        
+        <MudTd DataLabel="Products"></MudTd>
+    </RowEditingTemplate>
+
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
+                       RowsPerPageString="Rows per page:"
+                       InfoFormat="{first_item}-{last_item} of {all_items}"
+                       AllItemsText="All"
+                       HorizontalAlignment="HorizontalAlignment.Right" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private List<ShopModel> _shops { get; set; } = new List<ShopModel>();
+    private HashSet<ShopModel> _selectedShops = new HashSet<ShopModel>();
+    private bool _disableDelete => !_selectedShops.Any();
+    private GetStaffResponseDTO _currentStaff { get; set; }
+
+    private bool _loading { get; set; }
+    private string searchString = "";
+    private MudTable<ShopModel> _tableRef;
+    private ShopModel _shopModelBeforeEdit { get; set; }
+
+    private static List<ProductModel> _products = new List<ProductModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        await base.OnInitializedAsync();
+        _currentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
+        var getAllShopQuery = new GetAllShopByCompanyIdQuery(_currentStaff.CompanyId);
+        var allShopResponseDTO = await Mediator.Send(getAllShopQuery);
+
+        foreach (var shopResponseDTO in allShopResponseDTO)
+        {
+            var productIdsString = string.Empty;
+            if (shopResponseDTO.ProductIds != null)
+            {
+                productIdsString = string.Join(", ", shopResponseDTO.ProductIds.Select(productId => productId.ToString()));
+            }
+            var shopModel = new ShopModel
+            {
+                Id = shopResponseDTO.Id,
+                Name = shopResponseDTO.Name,
+                Address = shopResponseDTO.Address,
+                Platform = shopResponseDTO.Platform,
+                Website = shopResponseDTO.Website,
+                ProductIdsString = productIdsString
+            };
+
+            _shops.Add(shopModel);
+        }
+
+        var getAllProductsQuery = new GetAllProductByCompanyIdQuery(_currentStaff.CompanyId);
+        var getAllProductsDTO = await Mediator.Send(getAllProductsQuery);
+
+        foreach (var productDTO in getAllProductsDTO)
+        {
+            var productModel = new ProductModel()
+                {
+                    Description = productDTO.Description,
+                    Height = productDTO.Height,
+                    Id = productDTO.Id,
+                    Length = productDTO.Length,
+                    Name = productDTO.Name,
+                    Price = productDTO.Price,
+                    Sku = productDTO.Sku,
+                    Tag = productDTO.Tag,
+                    Width = productDTO.Width,
+                    Weight = productDTO.Weight,
+                };
+
+            _products.Add(productModel);
+        }
+
+        _loading = false;
+    }
+
+    private bool FilterFunc(ShopModel shopModel)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (shopModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (shopModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (shopModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (shopModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+    
+    private async Task DeleteShops()
+    {
+        var success = true;
+        foreach (var shopModel in _selectedShops)
+        {
+            var deleteShopCommand = new DeleteShopCommand(shopModel.Id);
+            var result = await Mediator.Send(deleteShopCommand);
+
+            if (result.Success)
+            {
+                _shops.Remove(shopModel);
+            }
+
+            success &= result.Success;
+        }
+
+        SnackBar.Add(success ? "Shops Deleted" : "Failed to delete shops");
+    }
+
+    private void BackupItem(object shopModel)
+    {
+
+        _shopModelBeforeEdit = new ShopModel()
+            {
+                Id = ((ShopModel)shopModel).Id,
+                Name = ((ShopModel)shopModel).Name,
+                Address = ((ShopModel)shopModel).Address,
+                Platform = ((ShopModel)shopModel).Platform,
+                Website = ((ShopModel)shopModel).Website,
+                ProductIdsString = ((ShopModel)shopModel).ProductIdsString,
+            };
+        StateHasChanged();
+    }
+
+    private void ResetItemToOriginalValues(object shopModel)
+    {
+        ((ShopModel)shopModel).Id = _shopModelBeforeEdit.Id;
+        ((ShopModel)shopModel).Name = _shopModelBeforeEdit.Name;
+        ((ShopModel)shopModel).Address = _shopModelBeforeEdit.Address;
+        ((ShopModel)shopModel).Platform = _shopModelBeforeEdit.Platform;
+        ((ShopModel)shopModel).Website = _shopModelBeforeEdit.Website;
+        ((ShopModel)shopModel).ProductIdsString = _shopModelBeforeEdit.ProductIdsString;
+
+        StateHasChanged();
+    }
+
+    private async void ItemHasBeenCommitted(object shopModel)
+    {
+        var shopModelConverted = (ShopModel)shopModel;
+        var updateShopDTO = new UpdateShopRequestDTO()
+        {
+            CreatedBy = _currentStaff.Id,
+            Id = shopModelConverted.Id,
+            Name = shopModelConverted.Name,
+            Address = shopModelConverted.Address,
+            Platform = shopModelConverted.Platform,
+            Website = shopModelConverted.Website,
+            ProductIds = shopModelConverted.ProductIds,
+        };
+        var updateShopCommand = new UpdateShopCommand(updateShopDTO);
+        var response = await Mediator.Send(updateShopCommand);
+        SnackBar.Add(response.Message);
+        StateHasChanged();
+    }
+
+    private async Task OpenCreateShopDialogAsync()
+    {
+        var maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await Dialog.ShowAsync<CreateShopDialog>("Create Shop", maxWidth);
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult != null && !dialogResult.Canceled)
+        {
+            var shopModelCreated = (ShopModel)dialogResult.Data;
+            _shops.Add(shopModelCreated);
+            StateHasChanged();
+            SnackBar.Add($"{shopModelCreated.Name} created");
+        }
+    }
+
+    private async Task OpenProductDialogAsync()
+    {
+        var maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Large, FullWidth = true };
+        var dialog = await Dialog.ShowAsync<ProductsDialog>("Products", maxWidth);
+
+        return;
+    }
+}

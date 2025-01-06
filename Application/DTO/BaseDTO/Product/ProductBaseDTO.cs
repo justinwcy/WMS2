@@ -19,5 +19,7 @@
         public double Width { get; set; }
 
         public string Sku { get; set; }
+
+        public List<Guid> ProductGroupIds { get; set; }
     }
 }

@@ -1,0 +1,262 @@
+﻿@page "/zones"
+@inject IDialogService Dialog
+@using Application.Service.Queries
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+@using WebUI.Utilities
+<MudGrid>
+    <MudItem xs="8">
+        <MudButton OnClick="@DeleteZones"
+        Color="Color.Error"
+        Variant="Variant.Filled"
+        Size="Size.Large"
+        FullWidth="false"
+        Disabled="_disableDelete">
+            Delete Zone
+        </MudButton>
+    </MudItem>
+    <MudItem xs="3">
+        <MudButton OnClick="@(OpenCreateZoneDialogAsync)"
+        Variant="Variant.Filled"
+        Color="Color.Primary"
+        Size="Size.Large"
+        FullWidth="false">
+            Create Zone
+        </MudButton>
+    </MudItem>
+    <MudItem xs="1">
+        <MudTooltip Arrow="true" Text=@_expandCollapseTooltip>
+            <MudToggleIconButton Style="text-align: right;"
+            Color="@Color.Default"
+            Icon="@Icons.Material.Filled.ExpandCircleDown"
+            Size="Size.Medium"
+            Toggled="_isExpandCollapse"
+            ToggledChanged="ToggleExpandCollapse"
+            ToggledColor="@Color.Default"
+            ToggledIcon="@Icons.Material.Filled.ExpandLess"/>
+        </MudTooltip>
+    </MudItem>
+</MudGrid>
+
+<MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
+Filter="new Func<ZoneModel,bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@_zones"
+GroupBy="@_groupDefinition"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedZones" 
+SelectOnRowClick="false"
+
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd" 
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
+
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Zones</MudText>
+        <MudSpacer/>
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <col style="max-width: 50px" />
+        <col style="max-width: 50px" />
+        <col style="min-width: 500px" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<ZoneModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+    </HeaderContent>
+    <GroupHeaderTemplate>
+        <MudTh colspan="@_numberOfColumns"><b>@($"{_warehouses.First(warehouse => warehouse.Id == (Guid)context.Key).Name}")</b></MudTh>
+    </GroupHeaderTemplate>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+    </RowTemplate>
+
+    <RowEditingTemplate>
+        <MudTd DataLabel="Name">
+            <MudTextField @bind-Value="context.Name" Required />
+        </MudTd>
+    </RowEditingTemplate>
+
+    <GroupFooterTemplate>
+        <MudTh Style="text-align: right;" colspan="@_numberOfColumns"><b>Total Items: @context.Items.Count()</b></MudTh>
+    </GroupFooterTemplate>
+
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right"
+        />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private string _numberOfColumns = "10";
+    private List<WarehouseModel> _warehouses = new List<WarehouseModel>();
+    private List<ZoneModel> _zones { get; set; } = new List<ZoneModel>();
+    private HashSet<ZoneModel> _selectedZones = new HashSet<ZoneModel>();
+    private bool _disableDelete => !_selectedZones.Any();
+    private GetStaffResponseDTO _currentStaff { get; set; }
+    private ZoneModel _zoneModelBeforeEdit = new ZoneModel();
+
+    private bool _isExpandCollapse { get; set; }
+    private string _expandCollapseTooltip { get; set; } = "Expand all rows";
+    private bool _loading { get; set; }
+    private string searchString = "";
+    private MudTable<ZoneModel> _tableRef;
+    private readonly TableGroupDefinition<ZoneModel> _groupDefinition = new()
+    {
+        GroupName = "",
+        Indentation = false,
+        Expandable = true,
+        IsInitiallyExpanded = false, 
+        Selector = (zoneModel) => zoneModel.WarehouseId,
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        await base.OnInitializedAsync();
+        _currentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
+        var getAllWarehouseByCompanyIdQuery = new GetAllWarehouseByCompanyIdQuery(_currentStaff.CompanyId);
+        var allWarehouseDTO = await Mediator.Send(getAllWarehouseByCompanyIdQuery);
+
+        foreach (var warehouseDTO in allWarehouseDTO)
+        {
+            var warehouseModel = new WarehouseModel()
+            {
+                Id = warehouseDTO.Id,
+                Name = warehouseDTO.Name,
+                CompanyId = warehouseDTO.CompanyId,
+                Address = warehouseDTO.Address,
+                ZoneIds = warehouseDTO.ZoneIds,
+            };
+
+            _warehouses.Add(warehouseModel);
+            foreach (var zoneId in warehouseDTO.ZoneIds)
+            {
+                var getZoneByIdQuery = new GetZoneByIdQuery(zoneId);
+                var zoneDTO = await Mediator.Send(getZoneByIdQuery);
+
+                var zoneModel = new ZoneModel()
+                {
+                    Id = zoneDTO.Id,
+                    Name = zoneDTO.Name,
+                    WarehouseId = warehouseDTO.Id
+                };
+                _zones.Add(zoneModel);
+            }
+        }
+
+        _loading = false;
+    }
+
+    private bool FilterFunc(ZoneModel zoneModel)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (zoneModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+
+    private void ToggleExpandCollapse()
+    {
+        if (_isExpandCollapse)
+        {
+            _tableRef.CollapseAllGroups();
+            _expandCollapseTooltip = "Collapse all rows";
+        }
+        else
+        {
+
+            _tableRef.ExpandAllGroups();
+            _expandCollapseTooltip = "Expand all rows";
+
+
+        }
+        _isExpandCollapse = !_isExpandCollapse;
+    }
+
+    private async Task DeleteZones()
+    {
+        var success = true;
+        foreach (var zoneModel in _selectedZones)
+        {
+            var deleteZoneCommand = new DeleteZoneCommand(zoneModel.Id);
+            var result = await Mediator.Send(deleteZoneCommand);
+
+            if (result.Success)
+            {
+                _zones.Remove(zoneModel);
+            }
+
+            success &= result.Success;
+        }
+
+        SnackBar.Add(success ? "Zones Deleted" : "Failed to delete zones");
+    }
+
+    private void BackupItem(object zoneModel)
+    {
+
+        _zoneModelBeforeEdit = new ZoneModel()
+        {
+            Id = ((ZoneModel)zoneModel).Id,
+            Name = ((ZoneModel)zoneModel).Name,
+            WarehouseId = ((ZoneModel)zoneModel).WarehouseId,
+        };
+        StateHasChanged();
+    }
+
+    private void ResetItemToOriginalValues(object zoneModel)
+    {
+        ((ZoneModel)zoneModel).Id = _zoneModelBeforeEdit.Id;
+        ((ZoneModel)zoneModel).Name = _zoneModelBeforeEdit.Name;
+        ((ZoneModel)zoneModel).WarehouseId = _zoneModelBeforeEdit.WarehouseId;
+
+        StateHasChanged();
+    }
+
+    private async void ItemHasBeenCommitted(object zoneModel)
+    {
+        var zoneModelConverted = (ZoneModel)zoneModel;
+        var updateZoneDTO = new UpdateZoneRequestDTO()
+        {
+            CreatedBy = _currentStaff.Id,
+            Id = zoneModelConverted.Id,
+            Name = zoneModelConverted.Name,
+            WarehouseId = zoneModelConverted.WarehouseId,
+        };
+        var updateZoneCommand = new UpdateZoneCommand(updateZoneDTO);
+        var response = await Mediator.Send(updateZoneCommand);
+        SnackBar.Add(response.Message);
+        StateHasChanged();
+    }
+
+    private async Task OpenCreateZoneDialogAsync()
+    {
+        var maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await Dialog.ShowAsync<CreateZoneDialog>("Create Zone", maxWidth);
+        var dialogResult = await dialog.Result;
+        
+        if (dialogResult != null && !dialogResult.Canceled)
+        {
+            var zoneModelCreated = (ZoneModel)dialogResult.Data;
+            _zones.Add(zoneModelCreated);
+            StateHasChanged();
+        }
+    }
+}
