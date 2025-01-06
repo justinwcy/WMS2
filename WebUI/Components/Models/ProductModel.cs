@@ -4,7 +4,7 @@
     {
         public Guid Id { get; set; }
 
-        public Guid ProductGroupId { get; set; }
+        public List<Guid> ProductGroupIds { get; set; }
 
         public string Name { get; set; }
 

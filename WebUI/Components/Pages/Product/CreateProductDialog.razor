@@ -1,5 +1,4 @@
 ﻿@using WebUI.Components.Models
-@using Application.Service.Queries
 @using Application.Service.Commands
 @using Application.DTO.Request
 @using Application.DTO.Response
@@ -9,28 +8,6 @@
     </TitleContent>
     <DialogContent>
         <MudForm @ref="_form" @bind-IsValid="@_isFormValid">
-            <MudSelect @bind-Value="_productModel.ProductGroupId"
-                       T="Guid"
-                       ToStringFunc="@_convertProductGroupIdToString"
-                       Variant="@_defaultVariant"
-                       Label="Product Group"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Product Group")
-                       MultiSelection="false"
-                       HelperText=@("Please select a product group")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="true"
-                       RequiredError="Please select a product group">
-                @foreach (var productGroup in _productGroups)
-                {
-                    <MudSelectItem Value="@productGroup.Id" />
-                }
-            </MudSelect>
-
             <MudTextField @bind-value="_productModel.Sku"
                           Variant="@_defaultVariant"
                           T="string"
@@ -109,14 +86,15 @@
     private MudForm _form;
 
     private ProductModel _productModel { get; set; } = new ProductModel();
-    private static List<ProductGroupModel> _productGroups = new List<ProductGroupModel>();
-    private GetStaffResponseDTO _getStaffResponseDTO { get; set; }
+
+    [Parameter]
+    public GetStaffResponseDTO StaffResponseDTO { get; set; }
 
     private async Task Submit()
     {
         var createProductDTO = new CreateProductRequestDTO()
         {
-            CreatedBy = _getStaffResponseDTO.CreatedBy,
+            CreatedBy = StaffResponseDTO.CreatedBy,
             Description = _productModel.Description,
             Sku = _productModel.Sku,
             Height = _productModel.Height,
@@ -129,22 +107,12 @@
         };
         var createProductCommand = new CreateProductCommand(createProductDTO);
         var createdProductResponseDTO = await Mediator.Send(createProductCommand);
-
-        var createProductGroupProductRequestDTO = new CreateProductGroupProductRequestDTO()
-        {
-            CreatedBy = _getStaffResponseDTO.Id,
-            ProductGroupId = _productModel.ProductGroupId,
-            ProductId = createdProductResponseDTO.Id,
-        };
-
-        var createProductGroupProductCommand = new CreateProductGroupProductCommand(createProductGroupProductRequestDTO);
-        await Mediator.Send(createProductGroupProductCommand);
         SnackBar.Add($"{_productModel.Name} created");
 
         var createdProductModel = new ProductModel()
         {
             Id = createdProductResponseDTO.Id,
-            ProductGroupId = _productModel.ProductGroupId,
+            ProductGroupIds = _productModel.ProductGroupIds,
             Description = _productModel.Description,
             Sku = _productModel.Sku,
             Height = _productModel.Height,
@@ -161,42 +129,5 @@
     private void Cancel()
     {
         MudDialog.Cancel();
-    }
-
-    private readonly Func<Guid, string> _convertProductGroupIdToString = 
-        productGroupId =>
-        {
-            var productGroup = _productGroups.FirstOrDefault(group => group.Id == productGroupId);
-            return $"{productGroup?.Name} - {productGroup?.Description}";
-        };
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var userIdentity = authenticationState.User.Identity;
-
-        if (userIdentity != null && userIdentity.Name != null)
-        {
-            var getStaffIdByEmailQuery = new GetStaffIdByEmailQuery(userIdentity.Name);
-            var staffId = await Mediator.Send(getStaffIdByEmailQuery);
-            var getStaffByIdQuery = new GetStaffByIdQuery(staffId);
-            _getStaffResponseDTO = await Mediator.Send(getStaffByIdQuery);
-
-            var getAllProductGroupByCompanyId = new GetAllProductGroupByCompanyIdQuery(_getStaffResponseDTO.CompanyId);
-            var allProductGroupsDTO = await Mediator.Send(getAllProductGroupByCompanyId);
-
-            foreach (var productGroupDTO in allProductGroupsDTO)
-            {
-                var productGroup = new ProductGroupModel()
-                {
-                    Id = productGroupDTO.Id,
-                    Name = productGroupDTO.Name,
-                    Description = productGroupDTO.Description,
-                    ProductIds = productGroupDTO.ProductIds,
-                };
-                _productGroups.Add(productGroup);
-            }
-        }
     }
 }

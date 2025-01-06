@@ -4,62 +4,41 @@
 @using WebUI.Components.Models
 @using Application.DTO.Response
 
-<Product/>
+<Product 
+    ProductModels="_productModels" 
+    CurrentStaff="_currentStaff"/>
 
 @code {
 
-    private List<ProductModel> _products { get; set; } = new List<ProductModel>();
-    private bool _loading { get; set; }
+    private List<ProductModel> _productModels { get; set; } = new List<ProductModel>();
     private GetStaffResponseDTO _currentStaff { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        _loading = true;
         await base.OnInitializedAsync();
         _currentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
-        var getAllProductGroupByCompanyId = new GetAllProductGroupByCompanyIdQuery(_currentStaff.CompanyId);
-        var allProductGroupsDTO = await Mediator.Send(getAllProductGroupByCompanyId);
+        var getAllProductByCompanyIdQuery = new GetAllProductByCompanyIdQuery(_currentStaff.CompanyId);
+        var allProductDTO = await Mediator.Send(getAllProductByCompanyIdQuery);
 
-        foreach (var productGroupDTO in allProductGroupsDTO)
+        foreach (var productDTO in allProductDTO)
         {
-            var productGroupId = productGroupDTO.Id;
-            var productGroupName = productGroupDTO.Name;
-            var productGroupDescription = productGroupDTO.Description;
-            var productIds = productGroupDTO.ProductIds;
-            var productGroupModel = new ProductGroupModel()
-                {
-                    Id = productGroupId,
-                    Name = productGroupName,
-                    Description = productGroupDescription,
-                    ProductIds = productIds,
-                };
-
-            _productGroups.Add(productGroupModel);
-            foreach (var productId in productIds)
+            var productModel = new ProductModel()
             {
-                var getProductByIdQuery = new GetProductByIdQuery(productId);
-                var productDTO = await Mediator.Send(getProductByIdQuery);
+                Id = productDTO.Id,
+                ProductGroupIds = productDTO.ProductGroupIds,
+                Description = productDTO.Description,
+                Name = productDTO.Name,
+                Height = productDTO.Height,
+                Length = productDTO.Length,
+                Width = productDTO.Width,
+                Price = decimal.Round(productDTO.Price, 2, MidpointRounding.AwayFromZero),
+                Sku = productDTO.Sku,
+                Tag = productDTO.Tag,
+                Weight = productDTO.Weight,
+            };
 
-                var productModel = new ProductModel()
-                    {
-                        Id = productDTO.Id,
-                        ProductGroupId = productGroupModel.Id,
-                        Description = productDTO.Description,
-                        Name = productDTO.Name,
-                        Height = productDTO.Height,
-                        Length = productDTO.Length,
-                        Width = productDTO.Width,
-                        Price = decimal.Round(productDTO.Price, 2, MidpointRounding.AwayFromZero),
-                        Sku = productDTO.Sku,
-                        Tag = productDTO.Tag,
-                        Weight = productDTO.Weight,
-                    };
-
-                _products.Add(productModel);
+            _productModels.Add(productModel);
             }
-
         }
-
-        _loading = false;
     }
 }
