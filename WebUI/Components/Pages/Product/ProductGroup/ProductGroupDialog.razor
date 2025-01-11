@@ -1,0 +1,21 @@
+
+@using Application.DTO.Response
+<MudDialog>
+    <TitleContent>
+        ProductGroups
+    </TitleContent>
+    <DialogContent>
+        <ProductGroup ProductGroupIds="ProductGroupIds"
+              CurrentStaff="CurrentStaff" />
+    </DialogContent>
+
+</MudDialog>
+@code {
+    [Parameter]
+    public List<Guid> ProductGroupIds { get; set; }
+
+    [Parameter]
+    public GetStaffResponseDTO CurrentStaff { get; set; }
+}
+
+    

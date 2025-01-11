@@ -1,0 +1,265 @@
+
+@inject IDialogService Dialog
+@using Application.Service.Queries
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+@using WebUI.Utilities
+<MudGrid Class="mb-3">
+    <MudItem xs="9">
+        <MudButton OnClick="@DeleteProductGroups"
+        Color="Color.Error"
+        Variant="Variant.Filled"
+        Size="Size.Large"
+        FullWidth="false"
+        Disabled="_disableDelete">
+            Delete ProductGroup
+        </MudButton>
+    </MudItem>
+    <MudItem xs="3">
+        <MudButton OnClick="@(OpenCreateProductGroupDialogAsync)"
+        Variant="Variant.Filled"
+        Color="Color.Primary"
+        Size="Size.Large"
+        FullWidth="false">
+            Create ProductGroup
+        </MudButton>
+    </MudItem>
+</MudGrid>
+
+<MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
+Filter="new Func<ProductGroupModel,bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@ProductGroupModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedProductGroups"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
+
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">ProductGroups</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <col style="max-width: 50px" />
+        <col style="max-width: 50px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 200px" />
+        <col style="min-width: 100px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 100px" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductGroupModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductGroupModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductGroupModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductGroupModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
+        <MudTh>Products</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Address">@context.Address</MudTd>
+        <MudTd DataLabel="Website">@context.Website</MudTd>
+        <MudTd DataLabel="Platform">@context.Platform</MudTd>
+        <MudTd DataLabel="Products">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
+                View (@context.ProductIds.Count)
+            </MudButton>
+        </MudTd>
+    </RowTemplate>
+
+    <RowEditingTemplate>
+        <MudTd DataLabel="Name">
+            <MudTextField @bind-Value="context.Name" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Address">
+            <MudTextField @bind-Value="context.Address" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Website">
+            <MudTextField @bind-Value="context.Website" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Platform">
+            <MudTextField @bind-Value="context.Platform" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Products"></MudTd>
+    </RowEditingTemplate>
+
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public List<Guid> ProductGroupIds { get; set; } = new List<Guid>();
+    public List<ProductGroupModel> ProductGroupModels { get; set; } = new List<ProductGroupModel>();
+
+    [Parameter]
+    public GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private HashSet<ProductGroupModel> _selectedProductGroups = new HashSet<ProductGroupModel>();
+    private bool _disableDelete => !_selectedProductGroups.Any();
+
+    private bool _loading { get; set; }
+    private string searchString = "";
+    private MudTable<ProductGroupModel> _tableRef;
+    private ProductGroupModel _productGroupModelBeforeEdit { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+        await base.OnParametersSetAsync();
+
+        foreach (var productGroupId in ProductGroupIds)
+        {
+            var getProductGroupByIdQuery = new GetProductGroupByIdQuery(productGroupId);
+            var productGroupDTO = await Mediator.Send(getProductGroupByIdQuery);
+
+            var productGroupModel = new ProductGroupModel()
+            {
+                ProductIds = productGroupDTO.ProductIds,
+                Platform = productGroupDTO.Platform,
+                Address = productGroupDTO.Address,
+                Id = productGroupDTO.Id,
+                Name = productGroupDTO.Name,
+                Website = productGroupDTO.Website
+            };
+
+            ProductGroupModels.Add(productGroupModel);
+        }
+        _loading = false;
+    }
+
+    private bool FilterFunc(ProductGroupModel productGroupModel)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (productGroupModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (productGroupModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (productGroupModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (productGroupModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
+    private async Task DeleteProductGroups()
+    {
+        var success = true;
+        foreach (var productGroupModel in _selectedProductGroups)
+        {
+            var deleteProductGroupCommand = new DeleteProductGroupCommand(productGroupModel.Id);
+            var result = await Mediator.Send(deleteProductGroupCommand);
+
+            if (result.Success)
+            {
+                ProductGroupModels.Remove(productGroupModel);
+            }
+
+            success &= result.Success;
+        }
+
+        SnackBar.Add(success ? "ProductGroups Deleted" : "Failed to delete productGroups");
+    }
+
+    private void BackupItem(object productGroupModel)
+    {
+
+        _productGroupModelBeforeEdit = new ProductGroupModel()
+        {
+            Id = ((ProductGroupModel)productGroupModel).Id,
+            Name = ((ProductGroupModel)productGroupModel).Name,
+            Address = ((ProductGroupModel)productGroupModel).Address,
+            Platform = ((ProductGroupModel)productGroupModel).Platform,
+            Website = ((ProductGroupModel)productGroupModel).Website,
+            ProductIds = ((ProductGroupModel)productGroupModel).ProductIds,
+        };
+        StateHasChanged();
+    }
+
+    private void ResetItemToOriginalValues(object productGroupModel)
+    {
+        ((ProductGroupModel)productGroupModel).Id = _productGroupModelBeforeEdit.Id;
+        ((ProductGroupModel)productGroupModel).Name = _productGroupModelBeforeEdit.Name;
+        ((ProductGroupModel)productGroupModel).Address = _productGroupModelBeforeEdit.Address;
+        ((ProductGroupModel)productGroupModel).Platform = _productGroupModelBeforeEdit.Platform;
+        ((ProductGroupModel)productGroupModel).Website = _productGroupModelBeforeEdit.Website;
+        ((ProductGroupModel)productGroupModel).ProductIds = _productGroupModelBeforeEdit.ProductIds;
+
+        StateHasChanged();
+    }
+
+    private async void ItemHasBeenCommitted(object productGroupModel)
+    {
+        var productGroupModelConverted = (ProductGroupModel)productGroupModel;
+        var updateProductGroupDTO = new UpdateProductGroupRequestDTO()
+        {
+            CreatedBy = CurrentStaff.Id,
+            Id = productGroupModelConverted.Id,
+            Name = productGroupModelConverted.Name,
+            Address = productGroupModelConverted.Address,
+            Platform = productGroupModelConverted.Platform,
+            Website = productGroupModelConverted.Website,
+            ProductIds = productGroupModelConverted.ProductIds,
+        };
+        var updateProductGroupCommand = new UpdateProductGroupCommand(updateProductGroupDTO);
+        var response = await Mediator.Send(updateProductGroupCommand);
+        SnackBar.Add(response.Message);
+        StateHasChanged();
+    }
+
+    private async Task OpenCreateProductGroupDialogAsync()
+    {
+        var parameters = new DialogParameters<CreateProductGroupDialog>()
+        {
+            { x => x.CurrentStaff,  CurrentStaff},
+        };
+
+        var options = Theme.DefaultCreateDialogOptions();
+        var dialog = await Dialog.ShowAsync<CreateProductGroupDialog>("Create ProductGroup", parameters, options);
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult != null && !dialogResult.Canceled && dialogResult.Data != null)
+        {
+            var productGroupModelCreated = (ProductGroupModel)dialogResult.Data;
+            if (productGroupModelCreated == null)
+            {
+                throw new Exception("ProductGroup created is not recognized");
+
+            }
+            ProductGroupModels.Add(productGroupModelCreated);
+            StateHasChanged();
+            SnackBar.Add($"{productGroupModelCreated.Name} created");
+        }
+    }
+}
+
+    

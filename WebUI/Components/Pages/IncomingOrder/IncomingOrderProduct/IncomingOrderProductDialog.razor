@@ -1,0 +1,21 @@
+
+@using Application.DTO.Response
+<MudDialog>
+    <TitleContent>
+        IncomingOrderProducts
+    </TitleContent>
+    <DialogContent>
+        <IncomingOrderProduct IncomingOrderProductIds="IncomingOrderProductIds"
+              CurrentStaff="CurrentStaff" />
+    </DialogContent>
+
+</MudDialog>
+@code {
+    [Parameter]
+    public List<Guid> IncomingOrderProductIds { get; set; }
+
+    [Parameter]
+    public GetStaffResponseDTO CurrentStaff { get; set; }
+}
+
+    

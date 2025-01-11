@@ -1,0 +1,21 @@
+
+@using Application.DTO.Response
+<MudDialog>
+    <TitleContent>
+        Staffs
+    </TitleContent>
+    <DialogContent>
+        <Staff StaffIds="StaffIds"
+              CurrentStaff="CurrentStaff" />
+    </DialogContent>
+
+</MudDialog>
+@code {
+    [Parameter]
+    public List<Guid> StaffIds { get; set; }
+
+    [Parameter]
+    public GetStaffResponseDTO CurrentStaff { get; set; }
+}
+
+    

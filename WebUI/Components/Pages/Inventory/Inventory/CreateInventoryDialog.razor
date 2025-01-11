@@ -1,0 +1,65 @@
+
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+<MudDialog>
+    <TitleContent>
+        Create Inventory
+    </TitleContent>
+    <DialogContent>
+        <MudForm @bind-IsValid="@_isFormValid">
+            <MudTextField @bind-value="_inventoryModel.Name"
+            Variant="@_defaultVariant"
+            T="string"
+            Label="Inventory Name"
+            Required="true" RequiredError="Name is required!"
+            Margin="Margin.Dense"/>
+
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!_isFormValid)">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
+    private bool _isFormValid { get; set; } = false;
+
+    private InventoryModel _inventoryModel { get; set; } = new InventoryModel();
+
+    [Parameter]
+    public required GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private async Task Submit()
+    {
+        var createInventoryDTO = new CreateInventoryRequestDTO()
+        {
+            CreatedBy = CurrentStaff.CreatedBy,
+            Name = _inventoryModel.Name,
+            StaffIds = _inventoryModel.StaffIds,
+            WarehouseIds = _inventoryModel.WarehouseIds,
+        };
+        var createInventoryCommand = new CreateInventoryCommand(createInventoryDTO);
+        var createdInventoryResponseDTO = await Mediator.Send(createInventoryCommand);
+
+        var createdInventoryModel = new InventoryModel()
+        {
+            Id = createdInventoryResponseDTO.Id,
+            Name = _inventoryModel.Name,
+            StaffIds = _inventoryModel.StaffIds,
+            WarehouseIds = _inventoryModel.WarehouseIds,
+        };
+        MudDialog.Close(DialogResult.Ok(createdInventoryModel));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
+    

@@ -1,0 +1,23 @@
+
+@page "/productGroup"
+@using Application.DTO.Response
+@using WebUI.Utilities
+@using Application.Service.Queries
+<ProductGroup ProductGroupIds="ProductGroupIds"
+      CurrentStaff="CurrentStaff" />
+
+@code {
+    private List<Guid> ProductGroupIds { get; set; } = new List<Guid>();
+    private GetStaffResponseDTO CurrentStaff { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        CurrentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
+
+        var getAllProductGroupIdsByCompanyIdQuery = new GetAllProductGroupIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        ProductGroupIds = await Mediator.Send(getAllProductGroupIdsByCompanyIdQuery);
+    }
+}
+
+    

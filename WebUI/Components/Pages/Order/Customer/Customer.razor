@@ -1,0 +1,265 @@
+
+@inject IDialogService Dialog
+@using Application.Service.Queries
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+@using WebUI.Utilities
+<MudGrid Class="mb-3">
+    <MudItem xs="9">
+        <MudButton OnClick="@DeleteCustomers"
+        Color="Color.Error"
+        Variant="Variant.Filled"
+        Size="Size.Large"
+        FullWidth="false"
+        Disabled="_disableDelete">
+            Delete Customer
+        </MudButton>
+    </MudItem>
+    <MudItem xs="3">
+        <MudButton OnClick="@(OpenCreateCustomerDialogAsync)"
+        Variant="Variant.Filled"
+        Color="Color.Primary"
+        Size="Size.Large"
+        FullWidth="false">
+            Create Customer
+        </MudButton>
+    </MudItem>
+</MudGrid>
+
+<MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
+Filter="new Func<CustomerModel,bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@CustomerModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedCustomers"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
+
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Customers</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <col style="max-width: 50px" />
+        <col style="max-width: 50px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 200px" />
+        <col style="min-width: 100px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 100px" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
+        <MudTh>Products</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Address">@context.Address</MudTd>
+        <MudTd DataLabel="Website">@context.Website</MudTd>
+        <MudTd DataLabel="Platform">@context.Platform</MudTd>
+        <MudTd DataLabel="Products">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
+                View (@context.ProductIds.Count)
+            </MudButton>
+        </MudTd>
+    </RowTemplate>
+
+    <RowEditingTemplate>
+        <MudTd DataLabel="Name">
+            <MudTextField @bind-Value="context.Name" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Address">
+            <MudTextField @bind-Value="context.Address" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Website">
+            <MudTextField @bind-Value="context.Website" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Platform">
+            <MudTextField @bind-Value="context.Platform" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Products"></MudTd>
+    </RowEditingTemplate>
+
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public List<Guid> CustomerIds { get; set; } = new List<Guid>();
+    public List<CustomerModel> CustomerModels { get; set; } = new List<CustomerModel>();
+
+    [Parameter]
+    public GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private HashSet<CustomerModel> _selectedCustomers = new HashSet<CustomerModel>();
+    private bool _disableDelete => !_selectedCustomers.Any();
+
+    private bool _loading { get; set; }
+    private string searchString = "";
+    private MudTable<CustomerModel> _tableRef;
+    private CustomerModel _customerModelBeforeEdit { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+        await base.OnParametersSetAsync();
+
+        foreach (var customerId in CustomerIds)
+        {
+            var getCustomerByIdQuery = new GetCustomerByIdQuery(customerId);
+            var customerDTO = await Mediator.Send(getCustomerByIdQuery);
+
+            var customerModel = new CustomerModel()
+            {
+                ProductIds = customerDTO.ProductIds,
+                Platform = customerDTO.Platform,
+                Address = customerDTO.Address,
+                Id = customerDTO.Id,
+                Name = customerDTO.Name,
+                Website = customerDTO.Website
+            };
+
+            CustomerModels.Add(customerModel);
+        }
+        _loading = false;
+    }
+
+    private bool FilterFunc(CustomerModel customerModel)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (customerModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (customerModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (customerModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (customerModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
+    private async Task DeleteCustomers()
+    {
+        var success = true;
+        foreach (var customerModel in _selectedCustomers)
+        {
+            var deleteCustomerCommand = new DeleteCustomerCommand(customerModel.Id);
+            var result = await Mediator.Send(deleteCustomerCommand);
+
+            if (result.Success)
+            {
+                CustomerModels.Remove(customerModel);
+            }
+
+            success &= result.Success;
+        }
+
+        SnackBar.Add(success ? "Customers Deleted" : "Failed to delete customers");
+    }
+
+    private void BackupItem(object customerModel)
+    {
+
+        _customerModelBeforeEdit = new CustomerModel()
+        {
+            Id = ((CustomerModel)customerModel).Id,
+            Name = ((CustomerModel)customerModel).Name,
+            Address = ((CustomerModel)customerModel).Address,
+            Platform = ((CustomerModel)customerModel).Platform,
+            Website = ((CustomerModel)customerModel).Website,
+            ProductIds = ((CustomerModel)customerModel).ProductIds,
+        };
+        StateHasChanged();
+    }
+
+    private void ResetItemToOriginalValues(object customerModel)
+    {
+        ((CustomerModel)customerModel).Id = _customerModelBeforeEdit.Id;
+        ((CustomerModel)customerModel).Name = _customerModelBeforeEdit.Name;
+        ((CustomerModel)customerModel).Address = _customerModelBeforeEdit.Address;
+        ((CustomerModel)customerModel).Platform = _customerModelBeforeEdit.Platform;
+        ((CustomerModel)customerModel).Website = _customerModelBeforeEdit.Website;
+        ((CustomerModel)customerModel).ProductIds = _customerModelBeforeEdit.ProductIds;
+
+        StateHasChanged();
+    }
+
+    private async void ItemHasBeenCommitted(object customerModel)
+    {
+        var customerModelConverted = (CustomerModel)customerModel;
+        var updateCustomerDTO = new UpdateCustomerRequestDTO()
+        {
+            CreatedBy = CurrentStaff.Id,
+            Id = customerModelConverted.Id,
+            Name = customerModelConverted.Name,
+            Address = customerModelConverted.Address,
+            Platform = customerModelConverted.Platform,
+            Website = customerModelConverted.Website,
+            ProductIds = customerModelConverted.ProductIds,
+        };
+        var updateCustomerCommand = new UpdateCustomerCommand(updateCustomerDTO);
+        var response = await Mediator.Send(updateCustomerCommand);
+        SnackBar.Add(response.Message);
+        StateHasChanged();
+    }
+
+    private async Task OpenCreateCustomerDialogAsync()
+    {
+        var parameters = new DialogParameters<CreateCustomerDialog>()
+        {
+            { x => x.CurrentStaff,  CurrentStaff},
+        };
+
+        var options = Theme.DefaultCreateDialogOptions();
+        var dialog = await Dialog.ShowAsync<CreateCustomerDialog>("Create Customer", parameters, options);
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult != null && !dialogResult.Canceled && dialogResult.Data != null)
+        {
+            var customerModelCreated = (CustomerModel)dialogResult.Data;
+            if (customerModelCreated == null)
+            {
+                throw new Exception("Customer created is not recognized");
+
+            }
+            CustomerModels.Add(customerModelCreated);
+            StateHasChanged();
+            SnackBar.Add($"{customerModelCreated.Name} created");
+        }
+    }
+}
+
+    

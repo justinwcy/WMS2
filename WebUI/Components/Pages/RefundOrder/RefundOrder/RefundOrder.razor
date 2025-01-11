@@ -1,0 +1,265 @@
+
+@inject IDialogService Dialog
+@using Application.Service.Queries
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+@using WebUI.Utilities
+<MudGrid Class="mb-3">
+    <MudItem xs="9">
+        <MudButton OnClick="@DeleteRefundOrders"
+        Color="Color.Error"
+        Variant="Variant.Filled"
+        Size="Size.Large"
+        FullWidth="false"
+        Disabled="_disableDelete">
+            Delete RefundOrder
+        </MudButton>
+    </MudItem>
+    <MudItem xs="3">
+        <MudButton OnClick="@(OpenCreateRefundOrderDialogAsync)"
+        Variant="Variant.Filled"
+        Color="Color.Primary"
+        Size="Size.Large"
+        FullWidth="false">
+            Create RefundOrder
+        </MudButton>
+    </MudItem>
+</MudGrid>
+
+<MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
+Filter="new Func<RefundOrderModel,bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@RefundOrderModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedRefundOrders"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
+
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">RefundOrders</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <col style="max-width: 50px" />
+        <col style="max-width: 50px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 200px" />
+        <col style="min-width: 100px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 100px" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
+        <MudTh>Products</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Address">@context.Address</MudTd>
+        <MudTd DataLabel="Website">@context.Website</MudTd>
+        <MudTd DataLabel="Platform">@context.Platform</MudTd>
+        <MudTd DataLabel="Products">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
+                View (@context.ProductIds.Count)
+            </MudButton>
+        </MudTd>
+    </RowTemplate>
+
+    <RowEditingTemplate>
+        <MudTd DataLabel="Name">
+            <MudTextField @bind-Value="context.Name" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Address">
+            <MudTextField @bind-Value="context.Address" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Website">
+            <MudTextField @bind-Value="context.Website" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Platform">
+            <MudTextField @bind-Value="context.Platform" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Products"></MudTd>
+    </RowEditingTemplate>
+
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public List<Guid> RefundOrderIds { get; set; } = new List<Guid>();
+    public List<RefundOrderModel> RefundOrderModels { get; set; } = new List<RefundOrderModel>();
+
+    [Parameter]
+    public GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private HashSet<RefundOrderModel> _selectedRefundOrders = new HashSet<RefundOrderModel>();
+    private bool _disableDelete => !_selectedRefundOrders.Any();
+
+    private bool _loading { get; set; }
+    private string searchString = "";
+    private MudTable<RefundOrderModel> _tableRef;
+    private RefundOrderModel _refundOrderModelBeforeEdit { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+        await base.OnParametersSetAsync();
+
+        foreach (var refundOrderId in RefundOrderIds)
+        {
+            var getRefundOrderByIdQuery = new GetRefundOrderByIdQuery(refundOrderId);
+            var refundOrderDTO = await Mediator.Send(getRefundOrderByIdQuery);
+
+            var refundOrderModel = new RefundOrderModel()
+            {
+                ProductIds = refundOrderDTO.ProductIds,
+                Platform = refundOrderDTO.Platform,
+                Address = refundOrderDTO.Address,
+                Id = refundOrderDTO.Id,
+                Name = refundOrderDTO.Name,
+                Website = refundOrderDTO.Website
+            };
+
+            RefundOrderModels.Add(refundOrderModel);
+        }
+        _loading = false;
+    }
+
+    private bool FilterFunc(RefundOrderModel refundOrderModel)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (refundOrderModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (refundOrderModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (refundOrderModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (refundOrderModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
+    private async Task DeleteRefundOrders()
+    {
+        var success = true;
+        foreach (var refundOrderModel in _selectedRefundOrders)
+        {
+            var deleteRefundOrderCommand = new DeleteRefundOrderCommand(refundOrderModel.Id);
+            var result = await Mediator.Send(deleteRefundOrderCommand);
+
+            if (result.Success)
+            {
+                RefundOrderModels.Remove(refundOrderModel);
+            }
+
+            success &= result.Success;
+        }
+
+        SnackBar.Add(success ? "RefundOrders Deleted" : "Failed to delete refundOrders");
+    }
+
+    private void BackupItem(object refundOrderModel)
+    {
+
+        _refundOrderModelBeforeEdit = new RefundOrderModel()
+        {
+            Id = ((RefundOrderModel)refundOrderModel).Id,
+            Name = ((RefundOrderModel)refundOrderModel).Name,
+            Address = ((RefundOrderModel)refundOrderModel).Address,
+            Platform = ((RefundOrderModel)refundOrderModel).Platform,
+            Website = ((RefundOrderModel)refundOrderModel).Website,
+            ProductIds = ((RefundOrderModel)refundOrderModel).ProductIds,
+        };
+        StateHasChanged();
+    }
+
+    private void ResetItemToOriginalValues(object refundOrderModel)
+    {
+        ((RefundOrderModel)refundOrderModel).Id = _refundOrderModelBeforeEdit.Id;
+        ((RefundOrderModel)refundOrderModel).Name = _refundOrderModelBeforeEdit.Name;
+        ((RefundOrderModel)refundOrderModel).Address = _refundOrderModelBeforeEdit.Address;
+        ((RefundOrderModel)refundOrderModel).Platform = _refundOrderModelBeforeEdit.Platform;
+        ((RefundOrderModel)refundOrderModel).Website = _refundOrderModelBeforeEdit.Website;
+        ((RefundOrderModel)refundOrderModel).ProductIds = _refundOrderModelBeforeEdit.ProductIds;
+
+        StateHasChanged();
+    }
+
+    private async void ItemHasBeenCommitted(object refundOrderModel)
+    {
+        var refundOrderModelConverted = (RefundOrderModel)refundOrderModel;
+        var updateRefundOrderDTO = new UpdateRefundOrderRequestDTO()
+        {
+            CreatedBy = CurrentStaff.Id,
+            Id = refundOrderModelConverted.Id,
+            Name = refundOrderModelConverted.Name,
+            Address = refundOrderModelConverted.Address,
+            Platform = refundOrderModelConverted.Platform,
+            Website = refundOrderModelConverted.Website,
+            ProductIds = refundOrderModelConverted.ProductIds,
+        };
+        var updateRefundOrderCommand = new UpdateRefundOrderCommand(updateRefundOrderDTO);
+        var response = await Mediator.Send(updateRefundOrderCommand);
+        SnackBar.Add(response.Message);
+        StateHasChanged();
+    }
+
+    private async Task OpenCreateRefundOrderDialogAsync()
+    {
+        var parameters = new DialogParameters<CreateRefundOrderDialog>()
+        {
+            { x => x.CurrentStaff,  CurrentStaff},
+        };
+
+        var options = Theme.DefaultCreateDialogOptions();
+        var dialog = await Dialog.ShowAsync<CreateRefundOrderDialog>("Create RefundOrder", parameters, options);
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult != null && !dialogResult.Canceled && dialogResult.Data != null)
+        {
+            var refundOrderModelCreated = (RefundOrderModel)dialogResult.Data;
+            if (refundOrderModelCreated == null)
+            {
+                throw new Exception("RefundOrder created is not recognized");
+
+            }
+            RefundOrderModels.Add(refundOrderModelCreated);
+            StateHasChanged();
+            SnackBar.Add($"{refundOrderModelCreated.Name} created");
+        }
+    }
+}
+
+    

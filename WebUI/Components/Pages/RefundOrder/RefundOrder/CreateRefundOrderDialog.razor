@@ -1,0 +1,65 @@
+
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+<MudDialog>
+    <TitleContent>
+        Create RefundOrder
+    </TitleContent>
+    <DialogContent>
+        <MudForm @bind-IsValid="@_isFormValid">
+            <MudTextField @bind-value="_refundOrderModel.Name"
+            Variant="@_defaultVariant"
+            T="string"
+            Label="RefundOrder Name"
+            Required="true" RequiredError="Name is required!"
+            Margin="Margin.Dense"/>
+
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!_isFormValid)">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
+    private bool _isFormValid { get; set; } = false;
+
+    private RefundOrderModel _refundOrderModel { get; set; } = new RefundOrderModel();
+
+    [Parameter]
+    public required GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private async Task Submit()
+    {
+        var createRefundOrderDTO = new CreateRefundOrderRequestDTO()
+        {
+            CreatedBy = CurrentStaff.CreatedBy,
+            Name = _refundOrderModel.Name,
+            StaffIds = _refundOrderModel.StaffIds,
+            WarehouseIds = _refundOrderModel.WarehouseIds,
+        };
+        var createRefundOrderCommand = new CreateRefundOrderCommand(createRefundOrderDTO);
+        var createdRefundOrderResponseDTO = await Mediator.Send(createRefundOrderCommand);
+
+        var createdRefundOrderModel = new RefundOrderModel()
+        {
+            Id = createdRefundOrderResponseDTO.Id,
+            Name = _refundOrderModel.Name,
+            StaffIds = _refundOrderModel.StaffIds,
+            WarehouseIds = _refundOrderModel.WarehouseIds,
+        };
+        MudDialog.Close(DialogResult.Ok(createdRefundOrderModel));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
+    

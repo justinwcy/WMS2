@@ -1,0 +1,265 @@
+
+@inject IDialogService Dialog
+@using Application.Service.Queries
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+@using WebUI.Utilities
+<MudGrid Class="mb-3">
+    <MudItem xs="9">
+        <MudButton OnClick="@DeleteIncomingOrderProducts"
+        Color="Color.Error"
+        Variant="Variant.Filled"
+        Size="Size.Large"
+        FullWidth="false"
+        Disabled="_disableDelete">
+            Delete IncomingOrderProduct
+        </MudButton>
+    </MudItem>
+    <MudItem xs="3">
+        <MudButton OnClick="@(OpenCreateIncomingOrderProductDialogAsync)"
+        Variant="Variant.Filled"
+        Color="Color.Primary"
+        Size="Size.Large"
+        FullWidth="false">
+            Create IncomingOrderProduct
+        </MudButton>
+    </MudItem>
+</MudGrid>
+
+<MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
+Filter="new Func<IncomingOrderProductModel,bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@IncomingOrderProductModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedIncomingOrderProducts"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
+
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">IncomingOrderProducts</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <col style="max-width: 50px" />
+        <col style="max-width: 50px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 200px" />
+        <col style="min-width: 100px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 100px" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderProductModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderProductModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderProductModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderProductModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
+        <MudTh>Products</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Address">@context.Address</MudTd>
+        <MudTd DataLabel="Website">@context.Website</MudTd>
+        <MudTd DataLabel="Platform">@context.Platform</MudTd>
+        <MudTd DataLabel="Products">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
+                View (@context.ProductIds.Count)
+            </MudButton>
+        </MudTd>
+    </RowTemplate>
+
+    <RowEditingTemplate>
+        <MudTd DataLabel="Name">
+            <MudTextField @bind-Value="context.Name" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Address">
+            <MudTextField @bind-Value="context.Address" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Website">
+            <MudTextField @bind-Value="context.Website" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Platform">
+            <MudTextField @bind-Value="context.Platform" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Products"></MudTd>
+    </RowEditingTemplate>
+
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public List<Guid> IncomingOrderProductIds { get; set; } = new List<Guid>();
+    public List<IncomingOrderProductModel> IncomingOrderProductModels { get; set; } = new List<IncomingOrderProductModel>();
+
+    [Parameter]
+    public GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private HashSet<IncomingOrderProductModel> _selectedIncomingOrderProducts = new HashSet<IncomingOrderProductModel>();
+    private bool _disableDelete => !_selectedIncomingOrderProducts.Any();
+
+    private bool _loading { get; set; }
+    private string searchString = "";
+    private MudTable<IncomingOrderProductModel> _tableRef;
+    private IncomingOrderProductModel _incomingOrderProductModelBeforeEdit { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+        await base.OnParametersSetAsync();
+
+        foreach (var incomingOrderProductId in IncomingOrderProductIds)
+        {
+            var getIncomingOrderProductByIdQuery = new GetIncomingOrderProductByIdQuery(incomingOrderProductId);
+            var incomingOrderProductDTO = await Mediator.Send(getIncomingOrderProductByIdQuery);
+
+            var incomingOrderProductModel = new IncomingOrderProductModel()
+            {
+                ProductIds = incomingOrderProductDTO.ProductIds,
+                Platform = incomingOrderProductDTO.Platform,
+                Address = incomingOrderProductDTO.Address,
+                Id = incomingOrderProductDTO.Id,
+                Name = incomingOrderProductDTO.Name,
+                Website = incomingOrderProductDTO.Website
+            };
+
+            IncomingOrderProductModels.Add(incomingOrderProductModel);
+        }
+        _loading = false;
+    }
+
+    private bool FilterFunc(IncomingOrderProductModel incomingOrderProductModel)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (incomingOrderProductModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (incomingOrderProductModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (incomingOrderProductModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (incomingOrderProductModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
+    private async Task DeleteIncomingOrderProducts()
+    {
+        var success = true;
+        foreach (var incomingOrderProductModel in _selectedIncomingOrderProducts)
+        {
+            var deleteIncomingOrderProductCommand = new DeleteIncomingOrderProductCommand(incomingOrderProductModel.Id);
+            var result = await Mediator.Send(deleteIncomingOrderProductCommand);
+
+            if (result.Success)
+            {
+                IncomingOrderProductModels.Remove(incomingOrderProductModel);
+            }
+
+            success &= result.Success;
+        }
+
+        SnackBar.Add(success ? "IncomingOrderProducts Deleted" : "Failed to delete incomingOrderProducts");
+    }
+
+    private void BackupItem(object incomingOrderProductModel)
+    {
+
+        _incomingOrderProductModelBeforeEdit = new IncomingOrderProductModel()
+        {
+            Id = ((IncomingOrderProductModel)incomingOrderProductModel).Id,
+            Name = ((IncomingOrderProductModel)incomingOrderProductModel).Name,
+            Address = ((IncomingOrderProductModel)incomingOrderProductModel).Address,
+            Platform = ((IncomingOrderProductModel)incomingOrderProductModel).Platform,
+            Website = ((IncomingOrderProductModel)incomingOrderProductModel).Website,
+            ProductIds = ((IncomingOrderProductModel)incomingOrderProductModel).ProductIds,
+        };
+        StateHasChanged();
+    }
+
+    private void ResetItemToOriginalValues(object incomingOrderProductModel)
+    {
+        ((IncomingOrderProductModel)incomingOrderProductModel).Id = _incomingOrderProductModelBeforeEdit.Id;
+        ((IncomingOrderProductModel)incomingOrderProductModel).Name = _incomingOrderProductModelBeforeEdit.Name;
+        ((IncomingOrderProductModel)incomingOrderProductModel).Address = _incomingOrderProductModelBeforeEdit.Address;
+        ((IncomingOrderProductModel)incomingOrderProductModel).Platform = _incomingOrderProductModelBeforeEdit.Platform;
+        ((IncomingOrderProductModel)incomingOrderProductModel).Website = _incomingOrderProductModelBeforeEdit.Website;
+        ((IncomingOrderProductModel)incomingOrderProductModel).ProductIds = _incomingOrderProductModelBeforeEdit.ProductIds;
+
+        StateHasChanged();
+    }
+
+    private async void ItemHasBeenCommitted(object incomingOrderProductModel)
+    {
+        var incomingOrderProductModelConverted = (IncomingOrderProductModel)incomingOrderProductModel;
+        var updateIncomingOrderProductDTO = new UpdateIncomingOrderProductRequestDTO()
+        {
+            CreatedBy = CurrentStaff.Id,
+            Id = incomingOrderProductModelConverted.Id,
+            Name = incomingOrderProductModelConverted.Name,
+            Address = incomingOrderProductModelConverted.Address,
+            Platform = incomingOrderProductModelConverted.Platform,
+            Website = incomingOrderProductModelConverted.Website,
+            ProductIds = incomingOrderProductModelConverted.ProductIds,
+        };
+        var updateIncomingOrderProductCommand = new UpdateIncomingOrderProductCommand(updateIncomingOrderProductDTO);
+        var response = await Mediator.Send(updateIncomingOrderProductCommand);
+        SnackBar.Add(response.Message);
+        StateHasChanged();
+    }
+
+    private async Task OpenCreateIncomingOrderProductDialogAsync()
+    {
+        var parameters = new DialogParameters<CreateIncomingOrderProductDialog>()
+        {
+            { x => x.CurrentStaff,  CurrentStaff},
+        };
+
+        var options = Theme.DefaultCreateDialogOptions();
+        var dialog = await Dialog.ShowAsync<CreateIncomingOrderProductDialog>("Create IncomingOrderProduct", parameters, options);
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult != null && !dialogResult.Canceled && dialogResult.Data != null)
+        {
+            var incomingOrderProductModelCreated = (IncomingOrderProductModel)dialogResult.Data;
+            if (incomingOrderProductModelCreated == null)
+            {
+                throw new Exception("IncomingOrderProduct created is not recognized");
+
+            }
+            IncomingOrderProductModels.Add(incomingOrderProductModelCreated);
+            StateHasChanged();
+            SnackBar.Add($"{incomingOrderProductModelCreated.Name} created");
+        }
+    }
+}
+
+    

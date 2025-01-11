@@ -1,0 +1,23 @@
+
+@page "/refundOrder"
+@using Application.DTO.Response
+@using WebUI.Utilities
+@using Application.Service.Queries
+<RefundOrder RefundOrderIds="RefundOrderIds"
+      CurrentStaff="CurrentStaff" />
+
+@code {
+    private List<Guid> RefundOrderIds { get; set; } = new List<Guid>();
+    private GetStaffResponseDTO CurrentStaff { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        CurrentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
+
+        var getAllRefundOrderIdsByCompanyIdQuery = new GetAllRefundOrderIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        RefundOrderIds = await Mediator.Send(getAllRefundOrderIdsByCompanyIdQuery);
+    }
+}
+
+    

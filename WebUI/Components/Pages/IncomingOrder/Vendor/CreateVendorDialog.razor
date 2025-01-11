@@ -1,0 +1,65 @@
+
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+<MudDialog>
+    <TitleContent>
+        Create Vendor
+    </TitleContent>
+    <DialogContent>
+        <MudForm @bind-IsValid="@_isFormValid">
+            <MudTextField @bind-value="_vendorModel.Name"
+            Variant="@_defaultVariant"
+            T="string"
+            Label="Vendor Name"
+            Required="true" RequiredError="Name is required!"
+            Margin="Margin.Dense"/>
+
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!_isFormValid)">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
+    private bool _isFormValid { get; set; } = false;
+
+    private VendorModel _vendorModel { get; set; } = new VendorModel();
+
+    [Parameter]
+    public required GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private async Task Submit()
+    {
+        var createVendorDTO = new CreateVendorRequestDTO()
+        {
+            CreatedBy = CurrentStaff.CreatedBy,
+            Name = _vendorModel.Name,
+            StaffIds = _vendorModel.StaffIds,
+            WarehouseIds = _vendorModel.WarehouseIds,
+        };
+        var createVendorCommand = new CreateVendorCommand(createVendorDTO);
+        var createdVendorResponseDTO = await Mediator.Send(createVendorCommand);
+
+        var createdVendorModel = new VendorModel()
+        {
+            Id = createdVendorResponseDTO.Id,
+            Name = _vendorModel.Name,
+            StaffIds = _vendorModel.StaffIds,
+            WarehouseIds = _vendorModel.WarehouseIds,
+        };
+        MudDialog.Close(DialogResult.Ok(createdVendorModel));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
+    

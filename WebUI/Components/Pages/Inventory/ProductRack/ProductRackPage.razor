@@ -1,0 +1,23 @@
+
+@page "/productRack"
+@using Application.DTO.Response
+@using WebUI.Utilities
+@using Application.Service.Queries
+<ProductRack ProductRackIds="ProductRackIds"
+      CurrentStaff="CurrentStaff" />
+
+@code {
+    private List<Guid> ProductRackIds { get; set; } = new List<Guid>();
+    private GetStaffResponseDTO CurrentStaff { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        CurrentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
+
+        var getAllProductRackIdsByCompanyIdQuery = new GetAllProductRackIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        ProductRackIds = await Mediator.Send(getAllProductRackIdsByCompanyIdQuery);
+    }
+}
+
+    

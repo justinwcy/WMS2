@@ -1,0 +1,265 @@
+
+@inject IDialogService Dialog
+@using Application.Service.Queries
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+@using WebUI.Utilities
+<MudGrid Class="mb-3">
+    <MudItem xs="9">
+        <MudButton OnClick="@DeleteInventorys"
+        Color="Color.Error"
+        Variant="Variant.Filled"
+        Size="Size.Large"
+        FullWidth="false"
+        Disabled="_disableDelete">
+            Delete Inventory
+        </MudButton>
+    </MudItem>
+    <MudItem xs="3">
+        <MudButton OnClick="@(OpenCreateInventoryDialogAsync)"
+        Variant="Variant.Filled"
+        Color="Color.Primary"
+        Size="Size.Large"
+        FullWidth="false">
+            Create Inventory
+        </MudButton>
+    </MudItem>
+</MudGrid>
+
+<MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
+Filter="new Func<InventoryModel,bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@InventoryModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedInventorys"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
+
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Inventorys</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <col style="max-width: 50px" />
+        <col style="max-width: 50px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 200px" />
+        <col style="min-width: 100px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 100px" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<InventoryModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<InventoryModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<InventoryModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<InventoryModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
+        <MudTh>Products</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Address">@context.Address</MudTd>
+        <MudTd DataLabel="Website">@context.Website</MudTd>
+        <MudTd DataLabel="Platform">@context.Platform</MudTd>
+        <MudTd DataLabel="Products">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
+                View (@context.ProductIds.Count)
+            </MudButton>
+        </MudTd>
+    </RowTemplate>
+
+    <RowEditingTemplate>
+        <MudTd DataLabel="Name">
+            <MudTextField @bind-Value="context.Name" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Address">
+            <MudTextField @bind-Value="context.Address" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Website">
+            <MudTextField @bind-Value="context.Website" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Platform">
+            <MudTextField @bind-Value="context.Platform" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Products"></MudTd>
+    </RowEditingTemplate>
+
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public List<Guid> InventoryIds { get; set; } = new List<Guid>();
+    public List<InventoryModel> InventoryModels { get; set; } = new List<InventoryModel>();
+
+    [Parameter]
+    public GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private HashSet<InventoryModel> _selectedInventorys = new HashSet<InventoryModel>();
+    private bool _disableDelete => !_selectedInventorys.Any();
+
+    private bool _loading { get; set; }
+    private string searchString = "";
+    private MudTable<InventoryModel> _tableRef;
+    private InventoryModel _inventoryModelBeforeEdit { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+        await base.OnParametersSetAsync();
+
+        foreach (var inventoryId in InventoryIds)
+        {
+            var getInventoryByIdQuery = new GetInventoryByIdQuery(inventoryId);
+            var inventoryDTO = await Mediator.Send(getInventoryByIdQuery);
+
+            var inventoryModel = new InventoryModel()
+            {
+                ProductIds = inventoryDTO.ProductIds,
+                Platform = inventoryDTO.Platform,
+                Address = inventoryDTO.Address,
+                Id = inventoryDTO.Id,
+                Name = inventoryDTO.Name,
+                Website = inventoryDTO.Website
+            };
+
+            InventoryModels.Add(inventoryModel);
+        }
+        _loading = false;
+    }
+
+    private bool FilterFunc(InventoryModel inventoryModel)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (inventoryModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (inventoryModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (inventoryModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (inventoryModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
+    private async Task DeleteInventorys()
+    {
+        var success = true;
+        foreach (var inventoryModel in _selectedInventorys)
+        {
+            var deleteInventoryCommand = new DeleteInventoryCommand(inventoryModel.Id);
+            var result = await Mediator.Send(deleteInventoryCommand);
+
+            if (result.Success)
+            {
+                InventoryModels.Remove(inventoryModel);
+            }
+
+            success &= result.Success;
+        }
+
+        SnackBar.Add(success ? "Inventorys Deleted" : "Failed to delete inventorys");
+    }
+
+    private void BackupItem(object inventoryModel)
+    {
+
+        _inventoryModelBeforeEdit = new InventoryModel()
+        {
+            Id = ((InventoryModel)inventoryModel).Id,
+            Name = ((InventoryModel)inventoryModel).Name,
+            Address = ((InventoryModel)inventoryModel).Address,
+            Platform = ((InventoryModel)inventoryModel).Platform,
+            Website = ((InventoryModel)inventoryModel).Website,
+            ProductIds = ((InventoryModel)inventoryModel).ProductIds,
+        };
+        StateHasChanged();
+    }
+
+    private void ResetItemToOriginalValues(object inventoryModel)
+    {
+        ((InventoryModel)inventoryModel).Id = _inventoryModelBeforeEdit.Id;
+        ((InventoryModel)inventoryModel).Name = _inventoryModelBeforeEdit.Name;
+        ((InventoryModel)inventoryModel).Address = _inventoryModelBeforeEdit.Address;
+        ((InventoryModel)inventoryModel).Platform = _inventoryModelBeforeEdit.Platform;
+        ((InventoryModel)inventoryModel).Website = _inventoryModelBeforeEdit.Website;
+        ((InventoryModel)inventoryModel).ProductIds = _inventoryModelBeforeEdit.ProductIds;
+
+        StateHasChanged();
+    }
+
+    private async void ItemHasBeenCommitted(object inventoryModel)
+    {
+        var inventoryModelConverted = (InventoryModel)inventoryModel;
+        var updateInventoryDTO = new UpdateInventoryRequestDTO()
+        {
+            CreatedBy = CurrentStaff.Id,
+            Id = inventoryModelConverted.Id,
+            Name = inventoryModelConverted.Name,
+            Address = inventoryModelConverted.Address,
+            Platform = inventoryModelConverted.Platform,
+            Website = inventoryModelConverted.Website,
+            ProductIds = inventoryModelConverted.ProductIds,
+        };
+        var updateInventoryCommand = new UpdateInventoryCommand(updateInventoryDTO);
+        var response = await Mediator.Send(updateInventoryCommand);
+        SnackBar.Add(response.Message);
+        StateHasChanged();
+    }
+
+    private async Task OpenCreateInventoryDialogAsync()
+    {
+        var parameters = new DialogParameters<CreateInventoryDialog>()
+        {
+            { x => x.CurrentStaff,  CurrentStaff},
+        };
+
+        var options = Theme.DefaultCreateDialogOptions();
+        var dialog = await Dialog.ShowAsync<CreateInventoryDialog>("Create Inventory", parameters, options);
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult != null && !dialogResult.Canceled && dialogResult.Data != null)
+        {
+            var inventoryModelCreated = (InventoryModel)dialogResult.Data;
+            if (inventoryModelCreated == null)
+            {
+                throw new Exception("Inventory created is not recognized");
+
+            }
+            InventoryModels.Add(inventoryModelCreated);
+            StateHasChanged();
+            SnackBar.Add($"{inventoryModelCreated.Name} created");
+        }
+    }
+}
+
+    

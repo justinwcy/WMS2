@@ -1,0 +1,65 @@
+
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+<MudDialog>
+    <TitleContent>
+        Create ProductGroup
+    </TitleContent>
+    <DialogContent>
+        <MudForm @bind-IsValid="@_isFormValid">
+            <MudTextField @bind-value="_productGroupModel.Name"
+            Variant="@_defaultVariant"
+            T="string"
+            Label="ProductGroup Name"
+            Required="true" RequiredError="Name is required!"
+            Margin="Margin.Dense"/>
+
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!_isFormValid)">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
+    private bool _isFormValid { get; set; } = false;
+
+    private ProductGroupModel _productGroupModel { get; set; } = new ProductGroupModel();
+
+    [Parameter]
+    public required GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private async Task Submit()
+    {
+        var createProductGroupDTO = new CreateProductGroupRequestDTO()
+        {
+            CreatedBy = CurrentStaff.CreatedBy,
+            Name = _productGroupModel.Name,
+            StaffIds = _productGroupModel.StaffIds,
+            WarehouseIds = _productGroupModel.WarehouseIds,
+        };
+        var createProductGroupCommand = new CreateProductGroupCommand(createProductGroupDTO);
+        var createdProductGroupResponseDTO = await Mediator.Send(createProductGroupCommand);
+
+        var createdProductGroupModel = new ProductGroupModel()
+        {
+            Id = createdProductGroupResponseDTO.Id,
+            Name = _productGroupModel.Name,
+            StaffIds = _productGroupModel.StaffIds,
+            WarehouseIds = _productGroupModel.WarehouseIds,
+        };
+        MudDialog.Close(DialogResult.Ok(createdProductGroupModel));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
+    

@@ -1,0 +1,65 @@
+
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+<MudDialog>
+    <TitleContent>
+        Create IncomingOrder
+    </TitleContent>
+    <DialogContent>
+        <MudForm @bind-IsValid="@_isFormValid">
+            <MudTextField @bind-value="_incomingOrderModel.Name"
+            Variant="@_defaultVariant"
+            T="string"
+            Label="IncomingOrder Name"
+            Required="true" RequiredError="Name is required!"
+            Margin="Margin.Dense"/>
+
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!_isFormValid)">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
+    private bool _isFormValid { get; set; } = false;
+
+    private IncomingOrderModel _incomingOrderModel { get; set; } = new IncomingOrderModel();
+
+    [Parameter]
+    public required GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private async Task Submit()
+    {
+        var createIncomingOrderDTO = new CreateIncomingOrderRequestDTO()
+        {
+            CreatedBy = CurrentStaff.CreatedBy,
+            Name = _incomingOrderModel.Name,
+            StaffIds = _incomingOrderModel.StaffIds,
+            WarehouseIds = _incomingOrderModel.WarehouseIds,
+        };
+        var createIncomingOrderCommand = new CreateIncomingOrderCommand(createIncomingOrderDTO);
+        var createdIncomingOrderResponseDTO = await Mediator.Send(createIncomingOrderCommand);
+
+        var createdIncomingOrderModel = new IncomingOrderModel()
+        {
+            Id = createdIncomingOrderResponseDTO.Id,
+            Name = _incomingOrderModel.Name,
+            StaffIds = _incomingOrderModel.StaffIds,
+            WarehouseIds = _incomingOrderModel.WarehouseIds,
+        };
+        MudDialog.Close(DialogResult.Ok(createdIncomingOrderModel));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
+    

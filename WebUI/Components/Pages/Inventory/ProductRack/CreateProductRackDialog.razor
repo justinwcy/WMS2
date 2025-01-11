@@ -1,0 +1,65 @@
+
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+<MudDialog>
+    <TitleContent>
+        Create ProductRack
+    </TitleContent>
+    <DialogContent>
+        <MudForm @bind-IsValid="@_isFormValid">
+            <MudTextField @bind-value="_productRackModel.Name"
+            Variant="@_defaultVariant"
+            T="string"
+            Label="ProductRack Name"
+            Required="true" RequiredError="Name is required!"
+            Margin="Margin.Dense"/>
+
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!_isFormValid)">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
+    private bool _isFormValid { get; set; } = false;
+
+    private ProductRackModel _productRackModel { get; set; } = new ProductRackModel();
+
+    [Parameter]
+    public required GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private async Task Submit()
+    {
+        var createProductRackDTO = new CreateProductRackRequestDTO()
+        {
+            CreatedBy = CurrentStaff.CreatedBy,
+            Name = _productRackModel.Name,
+            StaffIds = _productRackModel.StaffIds,
+            WarehouseIds = _productRackModel.WarehouseIds,
+        };
+        var createProductRackCommand = new CreateProductRackCommand(createProductRackDTO);
+        var createdProductRackResponseDTO = await Mediator.Send(createProductRackCommand);
+
+        var createdProductRackModel = new ProductRackModel()
+        {
+            Id = createdProductRackResponseDTO.Id,
+            Name = _productRackModel.Name,
+            StaffIds = _productRackModel.StaffIds,
+            WarehouseIds = _productRackModel.WarehouseIds,
+        };
+        MudDialog.Close(DialogResult.Ok(createdProductRackModel));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
+    

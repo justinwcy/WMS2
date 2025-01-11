@@ -1,0 +1,65 @@
+
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+<MudDialog>
+    <TitleContent>
+        Create Zone
+    </TitleContent>
+    <DialogContent>
+        <MudForm @bind-IsValid="@_isFormValid">
+            <MudTextField @bind-value="_zoneModel.Name"
+            Variant="@_defaultVariant"
+            T="string"
+            Label="Zone Name"
+            Required="true" RequiredError="Name is required!"
+            Margin="Margin.Dense"/>
+
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!_isFormValid)">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
+    private bool _isFormValid { get; set; } = false;
+
+    private ZoneModel _zoneModel { get; set; } = new ZoneModel();
+
+    [Parameter]
+    public required GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private async Task Submit()
+    {
+        var createZoneDTO = new CreateZoneRequestDTO()
+        {
+            CreatedBy = CurrentStaff.CreatedBy,
+            Name = _zoneModel.Name,
+            StaffIds = _zoneModel.StaffIds,
+            WarehouseIds = _zoneModel.WarehouseIds,
+        };
+        var createZoneCommand = new CreateZoneCommand(createZoneDTO);
+        var createdZoneResponseDTO = await Mediator.Send(createZoneCommand);
+
+        var createdZoneModel = new ZoneModel()
+        {
+            Id = createdZoneResponseDTO.Id,
+            Name = _zoneModel.Name,
+            StaffIds = _zoneModel.StaffIds,
+            WarehouseIds = _zoneModel.WarehouseIds,
+        };
+        MudDialog.Close(DialogResult.Ok(createdZoneModel));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
+    

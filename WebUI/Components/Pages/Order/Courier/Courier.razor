@@ -1,0 +1,265 @@
+
+@inject IDialogService Dialog
+@using Application.Service.Queries
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+@using WebUI.Utilities
+<MudGrid Class="mb-3">
+    <MudItem xs="9">
+        <MudButton OnClick="@DeleteCouriers"
+        Color="Color.Error"
+        Variant="Variant.Filled"
+        Size="Size.Large"
+        FullWidth="false"
+        Disabled="_disableDelete">
+            Delete Courier
+        </MudButton>
+    </MudItem>
+    <MudItem xs="3">
+        <MudButton OnClick="@(OpenCreateCourierDialogAsync)"
+        Variant="Variant.Filled"
+        Color="Color.Primary"
+        Size="Size.Large"
+        FullWidth="false">
+            Create Courier
+        </MudButton>
+    </MudItem>
+</MudGrid>
+
+<MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
+Filter="new Func<CourierModel,bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@CourierModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedCouriers"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
+
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Couriers</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <col style="max-width: 50px" />
+        <col style="max-width: 50px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 200px" />
+        <col style="min-width: 100px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 100px" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<CourierModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CourierModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CourierModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CourierModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
+        <MudTh>Products</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Address">@context.Address</MudTd>
+        <MudTd DataLabel="Website">@context.Website</MudTd>
+        <MudTd DataLabel="Platform">@context.Platform</MudTd>
+        <MudTd DataLabel="Products">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
+                View (@context.ProductIds.Count)
+            </MudButton>
+        </MudTd>
+    </RowTemplate>
+
+    <RowEditingTemplate>
+        <MudTd DataLabel="Name">
+            <MudTextField @bind-Value="context.Name" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Address">
+            <MudTextField @bind-Value="context.Address" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Website">
+            <MudTextField @bind-Value="context.Website" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Platform">
+            <MudTextField @bind-Value="context.Platform" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Products"></MudTd>
+    </RowEditingTemplate>
+
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public List<Guid> CourierIds { get; set; } = new List<Guid>();
+    public List<CourierModel> CourierModels { get; set; } = new List<CourierModel>();
+
+    [Parameter]
+    public GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private HashSet<CourierModel> _selectedCouriers = new HashSet<CourierModel>();
+    private bool _disableDelete => !_selectedCouriers.Any();
+
+    private bool _loading { get; set; }
+    private string searchString = "";
+    private MudTable<CourierModel> _tableRef;
+    private CourierModel _courierModelBeforeEdit { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+        await base.OnParametersSetAsync();
+
+        foreach (var courierId in CourierIds)
+        {
+            var getCourierByIdQuery = new GetCourierByIdQuery(courierId);
+            var courierDTO = await Mediator.Send(getCourierByIdQuery);
+
+            var courierModel = new CourierModel()
+            {
+                ProductIds = courierDTO.ProductIds,
+                Platform = courierDTO.Platform,
+                Address = courierDTO.Address,
+                Id = courierDTO.Id,
+                Name = courierDTO.Name,
+                Website = courierDTO.Website
+            };
+
+            CourierModels.Add(courierModel);
+        }
+        _loading = false;
+    }
+
+    private bool FilterFunc(CourierModel courierModel)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (courierModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (courierModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (courierModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (courierModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
+    private async Task DeleteCouriers()
+    {
+        var success = true;
+        foreach (var courierModel in _selectedCouriers)
+        {
+            var deleteCourierCommand = new DeleteCourierCommand(courierModel.Id);
+            var result = await Mediator.Send(deleteCourierCommand);
+
+            if (result.Success)
+            {
+                CourierModels.Remove(courierModel);
+            }
+
+            success &= result.Success;
+        }
+
+        SnackBar.Add(success ? "Couriers Deleted" : "Failed to delete couriers");
+    }
+
+    private void BackupItem(object courierModel)
+    {
+
+        _courierModelBeforeEdit = new CourierModel()
+        {
+            Id = ((CourierModel)courierModel).Id,
+            Name = ((CourierModel)courierModel).Name,
+            Address = ((CourierModel)courierModel).Address,
+            Platform = ((CourierModel)courierModel).Platform,
+            Website = ((CourierModel)courierModel).Website,
+            ProductIds = ((CourierModel)courierModel).ProductIds,
+        };
+        StateHasChanged();
+    }
+
+    private void ResetItemToOriginalValues(object courierModel)
+    {
+        ((CourierModel)courierModel).Id = _courierModelBeforeEdit.Id;
+        ((CourierModel)courierModel).Name = _courierModelBeforeEdit.Name;
+        ((CourierModel)courierModel).Address = _courierModelBeforeEdit.Address;
+        ((CourierModel)courierModel).Platform = _courierModelBeforeEdit.Platform;
+        ((CourierModel)courierModel).Website = _courierModelBeforeEdit.Website;
+        ((CourierModel)courierModel).ProductIds = _courierModelBeforeEdit.ProductIds;
+
+        StateHasChanged();
+    }
+
+    private async void ItemHasBeenCommitted(object courierModel)
+    {
+        var courierModelConverted = (CourierModel)courierModel;
+        var updateCourierDTO = new UpdateCourierRequestDTO()
+        {
+            CreatedBy = CurrentStaff.Id,
+            Id = courierModelConverted.Id,
+            Name = courierModelConverted.Name,
+            Address = courierModelConverted.Address,
+            Platform = courierModelConverted.Platform,
+            Website = courierModelConverted.Website,
+            ProductIds = courierModelConverted.ProductIds,
+        };
+        var updateCourierCommand = new UpdateCourierCommand(updateCourierDTO);
+        var response = await Mediator.Send(updateCourierCommand);
+        SnackBar.Add(response.Message);
+        StateHasChanged();
+    }
+
+    private async Task OpenCreateCourierDialogAsync()
+    {
+        var parameters = new DialogParameters<CreateCourierDialog>()
+        {
+            { x => x.CurrentStaff,  CurrentStaff},
+        };
+
+        var options = Theme.DefaultCreateDialogOptions();
+        var dialog = await Dialog.ShowAsync<CreateCourierDialog>("Create Courier", parameters, options);
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult != null && !dialogResult.Canceled && dialogResult.Data != null)
+        {
+            var courierModelCreated = (CourierModel)dialogResult.Data;
+            if (courierModelCreated == null)
+            {
+                throw new Exception("Courier created is not recognized");
+
+            }
+            CourierModels.Add(courierModelCreated);
+            StateHasChanged();
+            SnackBar.Add($"{courierModelCreated.Name} created");
+        }
+    }
+}
+
+    

@@ -1,0 +1,65 @@
+
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+<MudDialog>
+    <TitleContent>
+        Create Staff
+    </TitleContent>
+    <DialogContent>
+        <MudForm @bind-IsValid="@_isFormValid">
+            <MudTextField @bind-value="_staffModel.Name"
+            Variant="@_defaultVariant"
+            T="string"
+            Label="Staff Name"
+            Required="true" RequiredError="Name is required!"
+            Margin="Margin.Dense"/>
+
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!_isFormValid)">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
+    private bool _isFormValid { get; set; } = false;
+
+    private StaffModel _staffModel { get; set; } = new StaffModel();
+
+    [Parameter]
+    public required GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private async Task Submit()
+    {
+        var createStaffDTO = new CreateStaffRequestDTO()
+        {
+            CreatedBy = CurrentStaff.CreatedBy,
+            Name = _staffModel.Name,
+            StaffIds = _staffModel.StaffIds,
+            WarehouseIds = _staffModel.WarehouseIds,
+        };
+        var createStaffCommand = new CreateStaffCommand(createStaffDTO);
+        var createdStaffResponseDTO = await Mediator.Send(createStaffCommand);
+
+        var createdStaffModel = new StaffModel()
+        {
+            Id = createdStaffResponseDTO.Id,
+            Name = _staffModel.Name,
+            StaffIds = _staffModel.StaffIds,
+            WarehouseIds = _staffModel.WarehouseIds,
+        };
+        MudDialog.Close(DialogResult.Ok(createdStaffModel));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
+    

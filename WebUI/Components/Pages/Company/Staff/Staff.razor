@@ -1,0 +1,265 @@
+
+@inject IDialogService Dialog
+@using Application.Service.Queries
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+@using WebUI.Utilities
+<MudGrid Class="mb-3">
+    <MudItem xs="9">
+        <MudButton OnClick="@DeleteStaffs"
+        Color="Color.Error"
+        Variant="Variant.Filled"
+        Size="Size.Large"
+        FullWidth="false"
+        Disabled="_disableDelete">
+            Delete Staff
+        </MudButton>
+    </MudItem>
+    <MudItem xs="3">
+        <MudButton OnClick="@(OpenCreateStaffDialogAsync)"
+        Variant="Variant.Filled"
+        Color="Color.Primary"
+        Size="Size.Large"
+        FullWidth="false">
+            Create Staff
+        </MudButton>
+    </MudItem>
+</MudGrid>
+
+<MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
+Filter="new Func<StaffModel,bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@StaffModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedStaffs"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
+
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Staffs</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <col style="max-width: 50px" />
+        <col style="max-width: 50px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 200px" />
+        <col style="min-width: 100px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 100px" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
+        <MudTh>Products</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Address">@context.Address</MudTd>
+        <MudTd DataLabel="Website">@context.Website</MudTd>
+        <MudTd DataLabel="Platform">@context.Platform</MudTd>
+        <MudTd DataLabel="Products">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
+                View (@context.ProductIds.Count)
+            </MudButton>
+        </MudTd>
+    </RowTemplate>
+
+    <RowEditingTemplate>
+        <MudTd DataLabel="Name">
+            <MudTextField @bind-Value="context.Name" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Address">
+            <MudTextField @bind-Value="context.Address" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Website">
+            <MudTextField @bind-Value="context.Website" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Platform">
+            <MudTextField @bind-Value="context.Platform" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Products"></MudTd>
+    </RowEditingTemplate>
+
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public List<Guid> StaffIds { get; set; } = new List<Guid>();
+    public List<StaffModel> StaffModels { get; set; } = new List<StaffModel>();
+
+    [Parameter]
+    public GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private HashSet<StaffModel> _selectedStaffs = new HashSet<StaffModel>();
+    private bool _disableDelete => !_selectedStaffs.Any();
+
+    private bool _loading { get; set; }
+    private string searchString = "";
+    private MudTable<StaffModel> _tableRef;
+    private StaffModel _staffModelBeforeEdit { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+        await base.OnParametersSetAsync();
+
+        foreach (var staffId in StaffIds)
+        {
+            var getStaffByIdQuery = new GetStaffByIdQuery(staffId);
+            var staffDTO = await Mediator.Send(getStaffByIdQuery);
+
+            var staffModel = new StaffModel()
+            {
+                ProductIds = staffDTO.ProductIds,
+                Platform = staffDTO.Platform,
+                Address = staffDTO.Address,
+                Id = staffDTO.Id,
+                Name = staffDTO.Name,
+                Website = staffDTO.Website
+            };
+
+            StaffModels.Add(staffModel);
+        }
+        _loading = false;
+    }
+
+    private bool FilterFunc(StaffModel staffModel)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (staffModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (staffModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (staffModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (staffModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
+    private async Task DeleteStaffs()
+    {
+        var success = true;
+        foreach (var staffModel in _selectedStaffs)
+        {
+            var deleteStaffCommand = new DeleteStaffCommand(staffModel.Id);
+            var result = await Mediator.Send(deleteStaffCommand);
+
+            if (result.Success)
+            {
+                StaffModels.Remove(staffModel);
+            }
+
+            success &= result.Success;
+        }
+
+        SnackBar.Add(success ? "Staffs Deleted" : "Failed to delete staffs");
+    }
+
+    private void BackupItem(object staffModel)
+    {
+
+        _staffModelBeforeEdit = new StaffModel()
+        {
+            Id = ((StaffModel)staffModel).Id,
+            Name = ((StaffModel)staffModel).Name,
+            Address = ((StaffModel)staffModel).Address,
+            Platform = ((StaffModel)staffModel).Platform,
+            Website = ((StaffModel)staffModel).Website,
+            ProductIds = ((StaffModel)staffModel).ProductIds,
+        };
+        StateHasChanged();
+    }
+
+    private void ResetItemToOriginalValues(object staffModel)
+    {
+        ((StaffModel)staffModel).Id = _staffModelBeforeEdit.Id;
+        ((StaffModel)staffModel).Name = _staffModelBeforeEdit.Name;
+        ((StaffModel)staffModel).Address = _staffModelBeforeEdit.Address;
+        ((StaffModel)staffModel).Platform = _staffModelBeforeEdit.Platform;
+        ((StaffModel)staffModel).Website = _staffModelBeforeEdit.Website;
+        ((StaffModel)staffModel).ProductIds = _staffModelBeforeEdit.ProductIds;
+
+        StateHasChanged();
+    }
+
+    private async void ItemHasBeenCommitted(object staffModel)
+    {
+        var staffModelConverted = (StaffModel)staffModel;
+        var updateStaffDTO = new UpdateStaffRequestDTO()
+        {
+            CreatedBy = CurrentStaff.Id,
+            Id = staffModelConverted.Id,
+            Name = staffModelConverted.Name,
+            Address = staffModelConverted.Address,
+            Platform = staffModelConverted.Platform,
+            Website = staffModelConverted.Website,
+            ProductIds = staffModelConverted.ProductIds,
+        };
+        var updateStaffCommand = new UpdateStaffCommand(updateStaffDTO);
+        var response = await Mediator.Send(updateStaffCommand);
+        SnackBar.Add(response.Message);
+        StateHasChanged();
+    }
+
+    private async Task OpenCreateStaffDialogAsync()
+    {
+        var parameters = new DialogParameters<CreateStaffDialog>()
+        {
+            { x => x.CurrentStaff,  CurrentStaff},
+        };
+
+        var options = Theme.DefaultCreateDialogOptions();
+        var dialog = await Dialog.ShowAsync<CreateStaffDialog>("Create Staff", parameters, options);
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult != null && !dialogResult.Canceled && dialogResult.Data != null)
+        {
+            var staffModelCreated = (StaffModel)dialogResult.Data;
+            if (staffModelCreated == null)
+            {
+                throw new Exception("Staff created is not recognized");
+
+            }
+            StaffModels.Add(staffModelCreated);
+            StateHasChanged();
+            SnackBar.Add($"{staffModelCreated.Name} created");
+        }
+    }
+}
+
+    

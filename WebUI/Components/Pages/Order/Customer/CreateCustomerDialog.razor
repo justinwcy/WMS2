@@ -1,0 +1,65 @@
+
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+<MudDialog>
+    <TitleContent>
+        Create Customer
+    </TitleContent>
+    <DialogContent>
+        <MudForm @bind-IsValid="@_isFormValid">
+            <MudTextField @bind-value="_customerModel.Name"
+            Variant="@_defaultVariant"
+            T="string"
+            Label="Customer Name"
+            Required="true" RequiredError="Name is required!"
+            Margin="Margin.Dense"/>
+
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!_isFormValid)">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
+    private bool _isFormValid { get; set; } = false;
+
+    private CustomerModel _customerModel { get; set; } = new CustomerModel();
+
+    [Parameter]
+    public required GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private async Task Submit()
+    {
+        var createCustomerDTO = new CreateCustomerRequestDTO()
+        {
+            CreatedBy = CurrentStaff.CreatedBy,
+            Name = _customerModel.Name,
+            StaffIds = _customerModel.StaffIds,
+            WarehouseIds = _customerModel.WarehouseIds,
+        };
+        var createCustomerCommand = new CreateCustomerCommand(createCustomerDTO);
+        var createdCustomerResponseDTO = await Mediator.Send(createCustomerCommand);
+
+        var createdCustomerModel = new CustomerModel()
+        {
+            Id = createdCustomerResponseDTO.Id,
+            Name = _customerModel.Name,
+            StaffIds = _customerModel.StaffIds,
+            WarehouseIds = _customerModel.WarehouseIds,
+        };
+        MudDialog.Close(DialogResult.Ok(createdCustomerModel));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
+    

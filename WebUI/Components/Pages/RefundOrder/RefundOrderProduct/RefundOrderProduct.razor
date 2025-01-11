@@ -1,0 +1,265 @@
+
+@inject IDialogService Dialog
+@using Application.Service.Queries
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+@using WebUI.Utilities
+<MudGrid Class="mb-3">
+    <MudItem xs="9">
+        <MudButton OnClick="@DeleteRefundOrderProducts"
+        Color="Color.Error"
+        Variant="Variant.Filled"
+        Size="Size.Large"
+        FullWidth="false"
+        Disabled="_disableDelete">
+            Delete RefundOrderProduct
+        </MudButton>
+    </MudItem>
+    <MudItem xs="3">
+        <MudButton OnClick="@(OpenCreateRefundOrderProductDialogAsync)"
+        Variant="Variant.Filled"
+        Color="Color.Primary"
+        Size="Size.Large"
+        FullWidth="false">
+            Create RefundOrderProduct
+        </MudButton>
+    </MudItem>
+</MudGrid>
+
+<MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
+Filter="new Func<RefundOrderProductModel,bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@RefundOrderProductModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedRefundOrderProducts"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
+
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">RefundOrderProducts</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <col style="max-width: 50px" />
+        <col style="max-width: 50px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 200px" />
+        <col style="min-width: 100px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 100px" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderProductModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderProductModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderProductModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderProductModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
+        <MudTh>Products</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Address">@context.Address</MudTd>
+        <MudTd DataLabel="Website">@context.Website</MudTd>
+        <MudTd DataLabel="Platform">@context.Platform</MudTd>
+        <MudTd DataLabel="Products">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
+                View (@context.ProductIds.Count)
+            </MudButton>
+        </MudTd>
+    </RowTemplate>
+
+    <RowEditingTemplate>
+        <MudTd DataLabel="Name">
+            <MudTextField @bind-Value="context.Name" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Address">
+            <MudTextField @bind-Value="context.Address" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Website">
+            <MudTextField @bind-Value="context.Website" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Platform">
+            <MudTextField @bind-Value="context.Platform" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Products"></MudTd>
+    </RowEditingTemplate>
+
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public List<Guid> RefundOrderProductIds { get; set; } = new List<Guid>();
+    public List<RefundOrderProductModel> RefundOrderProductModels { get; set; } = new List<RefundOrderProductModel>();
+
+    [Parameter]
+    public GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private HashSet<RefundOrderProductModel> _selectedRefundOrderProducts = new HashSet<RefundOrderProductModel>();
+    private bool _disableDelete => !_selectedRefundOrderProducts.Any();
+
+    private bool _loading { get; set; }
+    private string searchString = "";
+    private MudTable<RefundOrderProductModel> _tableRef;
+    private RefundOrderProductModel _refundOrderProductModelBeforeEdit { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+        await base.OnParametersSetAsync();
+
+        foreach (var refundOrderProductId in RefundOrderProductIds)
+        {
+            var getRefundOrderProductByIdQuery = new GetRefundOrderProductByIdQuery(refundOrderProductId);
+            var refundOrderProductDTO = await Mediator.Send(getRefundOrderProductByIdQuery);
+
+            var refundOrderProductModel = new RefundOrderProductModel()
+            {
+                ProductIds = refundOrderProductDTO.ProductIds,
+                Platform = refundOrderProductDTO.Platform,
+                Address = refundOrderProductDTO.Address,
+                Id = refundOrderProductDTO.Id,
+                Name = refundOrderProductDTO.Name,
+                Website = refundOrderProductDTO.Website
+            };
+
+            RefundOrderProductModels.Add(refundOrderProductModel);
+        }
+        _loading = false;
+    }
+
+    private bool FilterFunc(RefundOrderProductModel refundOrderProductModel)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (refundOrderProductModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (refundOrderProductModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (refundOrderProductModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (refundOrderProductModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
+    private async Task DeleteRefundOrderProducts()
+    {
+        var success = true;
+        foreach (var refundOrderProductModel in _selectedRefundOrderProducts)
+        {
+            var deleteRefundOrderProductCommand = new DeleteRefundOrderProductCommand(refundOrderProductModel.Id);
+            var result = await Mediator.Send(deleteRefundOrderProductCommand);
+
+            if (result.Success)
+            {
+                RefundOrderProductModels.Remove(refundOrderProductModel);
+            }
+
+            success &= result.Success;
+        }
+
+        SnackBar.Add(success ? "RefundOrderProducts Deleted" : "Failed to delete refundOrderProducts");
+    }
+
+    private void BackupItem(object refundOrderProductModel)
+    {
+
+        _refundOrderProductModelBeforeEdit = new RefundOrderProductModel()
+        {
+            Id = ((RefundOrderProductModel)refundOrderProductModel).Id,
+            Name = ((RefundOrderProductModel)refundOrderProductModel).Name,
+            Address = ((RefundOrderProductModel)refundOrderProductModel).Address,
+            Platform = ((RefundOrderProductModel)refundOrderProductModel).Platform,
+            Website = ((RefundOrderProductModel)refundOrderProductModel).Website,
+            ProductIds = ((RefundOrderProductModel)refundOrderProductModel).ProductIds,
+        };
+        StateHasChanged();
+    }
+
+    private void ResetItemToOriginalValues(object refundOrderProductModel)
+    {
+        ((RefundOrderProductModel)refundOrderProductModel).Id = _refundOrderProductModelBeforeEdit.Id;
+        ((RefundOrderProductModel)refundOrderProductModel).Name = _refundOrderProductModelBeforeEdit.Name;
+        ((RefundOrderProductModel)refundOrderProductModel).Address = _refundOrderProductModelBeforeEdit.Address;
+        ((RefundOrderProductModel)refundOrderProductModel).Platform = _refundOrderProductModelBeforeEdit.Platform;
+        ((RefundOrderProductModel)refundOrderProductModel).Website = _refundOrderProductModelBeforeEdit.Website;
+        ((RefundOrderProductModel)refundOrderProductModel).ProductIds = _refundOrderProductModelBeforeEdit.ProductIds;
+
+        StateHasChanged();
+    }
+
+    private async void ItemHasBeenCommitted(object refundOrderProductModel)
+    {
+        var refundOrderProductModelConverted = (RefundOrderProductModel)refundOrderProductModel;
+        var updateRefundOrderProductDTO = new UpdateRefundOrderProductRequestDTO()
+        {
+            CreatedBy = CurrentStaff.Id,
+            Id = refundOrderProductModelConverted.Id,
+            Name = refundOrderProductModelConverted.Name,
+            Address = refundOrderProductModelConverted.Address,
+            Platform = refundOrderProductModelConverted.Platform,
+            Website = refundOrderProductModelConverted.Website,
+            ProductIds = refundOrderProductModelConverted.ProductIds,
+        };
+        var updateRefundOrderProductCommand = new UpdateRefundOrderProductCommand(updateRefundOrderProductDTO);
+        var response = await Mediator.Send(updateRefundOrderProductCommand);
+        SnackBar.Add(response.Message);
+        StateHasChanged();
+    }
+
+    private async Task OpenCreateRefundOrderProductDialogAsync()
+    {
+        var parameters = new DialogParameters<CreateRefundOrderProductDialog>()
+        {
+            { x => x.CurrentStaff,  CurrentStaff},
+        };
+
+        var options = Theme.DefaultCreateDialogOptions();
+        var dialog = await Dialog.ShowAsync<CreateRefundOrderProductDialog>("Create RefundOrderProduct", parameters, options);
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult != null && !dialogResult.Canceled && dialogResult.Data != null)
+        {
+            var refundOrderProductModelCreated = (RefundOrderProductModel)dialogResult.Data;
+            if (refundOrderProductModelCreated == null)
+            {
+                throw new Exception("RefundOrderProduct created is not recognized");
+
+            }
+            RefundOrderProductModels.Add(refundOrderProductModelCreated);
+            StateHasChanged();
+            SnackBar.Add($"{refundOrderProductModelCreated.Name} created");
+        }
+    }
+}
+
+    

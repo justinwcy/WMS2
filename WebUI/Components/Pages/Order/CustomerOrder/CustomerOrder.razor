@@ -1,0 +1,265 @@
+
+@inject IDialogService Dialog
+@using Application.Service.Queries
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+@using WebUI.Utilities
+<MudGrid Class="mb-3">
+    <MudItem xs="9">
+        <MudButton OnClick="@DeleteCustomerOrders"
+        Color="Color.Error"
+        Variant="Variant.Filled"
+        Size="Size.Large"
+        FullWidth="false"
+        Disabled="_disableDelete">
+            Delete CustomerOrder
+        </MudButton>
+    </MudItem>
+    <MudItem xs="3">
+        <MudButton OnClick="@(OpenCreateCustomerOrderDialogAsync)"
+        Variant="Variant.Filled"
+        Color="Color.Primary"
+        Size="Size.Large"
+        FullWidth="false">
+            Create CustomerOrder
+        </MudButton>
+    </MudItem>
+</MudGrid>
+
+<MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
+Filter="new Func<CustomerOrderModel,bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@CustomerOrderModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedCustomerOrders"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
+
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">CustomerOrders</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <col style="max-width: 50px" />
+        <col style="max-width: 50px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 200px" />
+        <col style="min-width: 100px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 100px" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<CustomerOrderModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CustomerOrderModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CustomerOrderModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CustomerOrderModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
+        <MudTh>Products</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Address">@context.Address</MudTd>
+        <MudTd DataLabel="Website">@context.Website</MudTd>
+        <MudTd DataLabel="Platform">@context.Platform</MudTd>
+        <MudTd DataLabel="Products">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
+                View (@context.ProductIds.Count)
+            </MudButton>
+        </MudTd>
+    </RowTemplate>
+
+    <RowEditingTemplate>
+        <MudTd DataLabel="Name">
+            <MudTextField @bind-Value="context.Name" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Address">
+            <MudTextField @bind-Value="context.Address" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Website">
+            <MudTextField @bind-Value="context.Website" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Platform">
+            <MudTextField @bind-Value="context.Platform" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Products"></MudTd>
+    </RowEditingTemplate>
+
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public List<Guid> CustomerOrderIds { get; set; } = new List<Guid>();
+    public List<CustomerOrderModel> CustomerOrderModels { get; set; } = new List<CustomerOrderModel>();
+
+    [Parameter]
+    public GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private HashSet<CustomerOrderModel> _selectedCustomerOrders = new HashSet<CustomerOrderModel>();
+    private bool _disableDelete => !_selectedCustomerOrders.Any();
+
+    private bool _loading { get; set; }
+    private string searchString = "";
+    private MudTable<CustomerOrderModel> _tableRef;
+    private CustomerOrderModel _customerOrderModelBeforeEdit { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+        await base.OnParametersSetAsync();
+
+        foreach (var customerOrderId in CustomerOrderIds)
+        {
+            var getCustomerOrderByIdQuery = new GetCustomerOrderByIdQuery(customerOrderId);
+            var customerOrderDTO = await Mediator.Send(getCustomerOrderByIdQuery);
+
+            var customerOrderModel = new CustomerOrderModel()
+            {
+                ProductIds = customerOrderDTO.ProductIds,
+                Platform = customerOrderDTO.Platform,
+                Address = customerOrderDTO.Address,
+                Id = customerOrderDTO.Id,
+                Name = customerOrderDTO.Name,
+                Website = customerOrderDTO.Website
+            };
+
+            CustomerOrderModels.Add(customerOrderModel);
+        }
+        _loading = false;
+    }
+
+    private bool FilterFunc(CustomerOrderModel customerOrderModel)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (customerOrderModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (customerOrderModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (customerOrderModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (customerOrderModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
+    private async Task DeleteCustomerOrders()
+    {
+        var success = true;
+        foreach (var customerOrderModel in _selectedCustomerOrders)
+        {
+            var deleteCustomerOrderCommand = new DeleteCustomerOrderCommand(customerOrderModel.Id);
+            var result = await Mediator.Send(deleteCustomerOrderCommand);
+
+            if (result.Success)
+            {
+                CustomerOrderModels.Remove(customerOrderModel);
+            }
+
+            success &= result.Success;
+        }
+
+        SnackBar.Add(success ? "CustomerOrders Deleted" : "Failed to delete customerOrders");
+    }
+
+    private void BackupItem(object customerOrderModel)
+    {
+
+        _customerOrderModelBeforeEdit = new CustomerOrderModel()
+        {
+            Id = ((CustomerOrderModel)customerOrderModel).Id,
+            Name = ((CustomerOrderModel)customerOrderModel).Name,
+            Address = ((CustomerOrderModel)customerOrderModel).Address,
+            Platform = ((CustomerOrderModel)customerOrderModel).Platform,
+            Website = ((CustomerOrderModel)customerOrderModel).Website,
+            ProductIds = ((CustomerOrderModel)customerOrderModel).ProductIds,
+        };
+        StateHasChanged();
+    }
+
+    private void ResetItemToOriginalValues(object customerOrderModel)
+    {
+        ((CustomerOrderModel)customerOrderModel).Id = _customerOrderModelBeforeEdit.Id;
+        ((CustomerOrderModel)customerOrderModel).Name = _customerOrderModelBeforeEdit.Name;
+        ((CustomerOrderModel)customerOrderModel).Address = _customerOrderModelBeforeEdit.Address;
+        ((CustomerOrderModel)customerOrderModel).Platform = _customerOrderModelBeforeEdit.Platform;
+        ((CustomerOrderModel)customerOrderModel).Website = _customerOrderModelBeforeEdit.Website;
+        ((CustomerOrderModel)customerOrderModel).ProductIds = _customerOrderModelBeforeEdit.ProductIds;
+
+        StateHasChanged();
+    }
+
+    private async void ItemHasBeenCommitted(object customerOrderModel)
+    {
+        var customerOrderModelConverted = (CustomerOrderModel)customerOrderModel;
+        var updateCustomerOrderDTO = new UpdateCustomerOrderRequestDTO()
+        {
+            CreatedBy = CurrentStaff.Id,
+            Id = customerOrderModelConverted.Id,
+            Name = customerOrderModelConverted.Name,
+            Address = customerOrderModelConverted.Address,
+            Platform = customerOrderModelConverted.Platform,
+            Website = customerOrderModelConverted.Website,
+            ProductIds = customerOrderModelConverted.ProductIds,
+        };
+        var updateCustomerOrderCommand = new UpdateCustomerOrderCommand(updateCustomerOrderDTO);
+        var response = await Mediator.Send(updateCustomerOrderCommand);
+        SnackBar.Add(response.Message);
+        StateHasChanged();
+    }
+
+    private async Task OpenCreateCustomerOrderDialogAsync()
+    {
+        var parameters = new DialogParameters<CreateCustomerOrderDialog>()
+        {
+            { x => x.CurrentStaff,  CurrentStaff},
+        };
+
+        var options = Theme.DefaultCreateDialogOptions();
+        var dialog = await Dialog.ShowAsync<CreateCustomerOrderDialog>("Create CustomerOrder", parameters, options);
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult != null && !dialogResult.Canceled && dialogResult.Data != null)
+        {
+            var customerOrderModelCreated = (CustomerOrderModel)dialogResult.Data;
+            if (customerOrderModelCreated == null)
+            {
+                throw new Exception("CustomerOrder created is not recognized");
+
+            }
+            CustomerOrderModels.Add(customerOrderModelCreated);
+            StateHasChanged();
+            SnackBar.Add($"{customerOrderModelCreated.Name} created");
+        }
+    }
+}
+
+    

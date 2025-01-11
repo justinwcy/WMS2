@@ -1,0 +1,265 @@
+
+@inject IDialogService Dialog
+@using Application.Service.Queries
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+@using WebUI.Utilities
+<MudGrid Class="mb-3">
+    <MudItem xs="9">
+        <MudButton OnClick="@DeleteRacks"
+        Color="Color.Error"
+        Variant="Variant.Filled"
+        Size="Size.Large"
+        FullWidth="false"
+        Disabled="_disableDelete">
+            Delete Rack
+        </MudButton>
+    </MudItem>
+    <MudItem xs="3">
+        <MudButton OnClick="@(OpenCreateRackDialogAsync)"
+        Variant="Variant.Filled"
+        Color="Color.Primary"
+        Size="Size.Large"
+        FullWidth="false">
+            Create Rack
+        </MudButton>
+    </MudItem>
+</MudGrid>
+
+<MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
+Filter="new Func<RackModel,bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@RackModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedRacks"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
+
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Racks</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <col style="max-width: 50px" />
+        <col style="max-width: 50px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 200px" />
+        <col style="min-width: 100px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 100px" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<RackModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<RackModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<RackModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<RackModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
+        <MudTh>Products</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Address">@context.Address</MudTd>
+        <MudTd DataLabel="Website">@context.Website</MudTd>
+        <MudTd DataLabel="Platform">@context.Platform</MudTd>
+        <MudTd DataLabel="Products">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
+                View (@context.ProductIds.Count)
+            </MudButton>
+        </MudTd>
+    </RowTemplate>
+
+    <RowEditingTemplate>
+        <MudTd DataLabel="Name">
+            <MudTextField @bind-Value="context.Name" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Address">
+            <MudTextField @bind-Value="context.Address" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Website">
+            <MudTextField @bind-Value="context.Website" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Platform">
+            <MudTextField @bind-Value="context.Platform" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Products"></MudTd>
+    </RowEditingTemplate>
+
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public List<Guid> RackIds { get; set; } = new List<Guid>();
+    public List<RackModel> RackModels { get; set; } = new List<RackModel>();
+
+    [Parameter]
+    public GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private HashSet<RackModel> _selectedRacks = new HashSet<RackModel>();
+    private bool _disableDelete => !_selectedRacks.Any();
+
+    private bool _loading { get; set; }
+    private string searchString = "";
+    private MudTable<RackModel> _tableRef;
+    private RackModel _rackModelBeforeEdit { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+        await base.OnParametersSetAsync();
+
+        foreach (var rackId in RackIds)
+        {
+            var getRackByIdQuery = new GetRackByIdQuery(rackId);
+            var rackDTO = await Mediator.Send(getRackByIdQuery);
+
+            var rackModel = new RackModel()
+            {
+                ProductIds = rackDTO.ProductIds,
+                Platform = rackDTO.Platform,
+                Address = rackDTO.Address,
+                Id = rackDTO.Id,
+                Name = rackDTO.Name,
+                Website = rackDTO.Website
+            };
+
+            RackModels.Add(rackModel);
+        }
+        _loading = false;
+    }
+
+    private bool FilterFunc(RackModel rackModel)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (rackModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rackModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rackModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rackModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
+    private async Task DeleteRacks()
+    {
+        var success = true;
+        foreach (var rackModel in _selectedRacks)
+        {
+            var deleteRackCommand = new DeleteRackCommand(rackModel.Id);
+            var result = await Mediator.Send(deleteRackCommand);
+
+            if (result.Success)
+            {
+                RackModels.Remove(rackModel);
+            }
+
+            success &= result.Success;
+        }
+
+        SnackBar.Add(success ? "Racks Deleted" : "Failed to delete racks");
+    }
+
+    private void BackupItem(object rackModel)
+    {
+
+        _rackModelBeforeEdit = new RackModel()
+        {
+            Id = ((RackModel)rackModel).Id,
+            Name = ((RackModel)rackModel).Name,
+            Address = ((RackModel)rackModel).Address,
+            Platform = ((RackModel)rackModel).Platform,
+            Website = ((RackModel)rackModel).Website,
+            ProductIds = ((RackModel)rackModel).ProductIds,
+        };
+        StateHasChanged();
+    }
+
+    private void ResetItemToOriginalValues(object rackModel)
+    {
+        ((RackModel)rackModel).Id = _rackModelBeforeEdit.Id;
+        ((RackModel)rackModel).Name = _rackModelBeforeEdit.Name;
+        ((RackModel)rackModel).Address = _rackModelBeforeEdit.Address;
+        ((RackModel)rackModel).Platform = _rackModelBeforeEdit.Platform;
+        ((RackModel)rackModel).Website = _rackModelBeforeEdit.Website;
+        ((RackModel)rackModel).ProductIds = _rackModelBeforeEdit.ProductIds;
+
+        StateHasChanged();
+    }
+
+    private async void ItemHasBeenCommitted(object rackModel)
+    {
+        var rackModelConverted = (RackModel)rackModel;
+        var updateRackDTO = new UpdateRackRequestDTO()
+        {
+            CreatedBy = CurrentStaff.Id,
+            Id = rackModelConverted.Id,
+            Name = rackModelConverted.Name,
+            Address = rackModelConverted.Address,
+            Platform = rackModelConverted.Platform,
+            Website = rackModelConverted.Website,
+            ProductIds = rackModelConverted.ProductIds,
+        };
+        var updateRackCommand = new UpdateRackCommand(updateRackDTO);
+        var response = await Mediator.Send(updateRackCommand);
+        SnackBar.Add(response.Message);
+        StateHasChanged();
+    }
+
+    private async Task OpenCreateRackDialogAsync()
+    {
+        var parameters = new DialogParameters<CreateRackDialog>()
+        {
+            { x => x.CurrentStaff,  CurrentStaff},
+        };
+
+        var options = Theme.DefaultCreateDialogOptions();
+        var dialog = await Dialog.ShowAsync<CreateRackDialog>("Create Rack", parameters, options);
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult != null && !dialogResult.Canceled && dialogResult.Data != null)
+        {
+            var rackModelCreated = (RackModel)dialogResult.Data;
+            if (rackModelCreated == null)
+            {
+                throw new Exception("Rack created is not recognized");
+
+            }
+            RackModels.Add(rackModelCreated);
+            StateHasChanged();
+            SnackBar.Add($"{rackModelCreated.Name} created");
+        }
+    }
+}
+
+    
