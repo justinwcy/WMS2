@@ -1,11 +1,12 @@
 
 @inject IDialogService Dialog
+@using System.Reflection
+@using Application.Constants
 @using Application.Service.Queries
 @using WebUI.Components.Models
 @using Application.Service.Commands
 @using Application.DTO.Request
 @using Application.DTO.Response
-@using WebUI.Utilities
 <MudGrid Class="mb-3">
     <MudItem xs="9">
         <MudButton OnClick="@DeleteIncomingOrderProducts"
@@ -23,7 +24,7 @@
         Color="Color.Primary"
         Size="Size.Large"
         FullWidth="false">
-            Create IncomingOrderProduct
+            Create Incoming Order Product
         </MudButton>
     </MudItem>
 </MudGrid>
@@ -49,7 +50,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 @ref="_tableRef">
 
     <ToolBarContent>
-        <MudText Typo="Typo.h6">IncomingOrderProducts</MudText>
+        <MudText Typo="Typo.h6">Incoming Order Products @_incomingOrder.PONumber</MudText>
         <MudSpacer />
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
@@ -57,52 +58,70 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <col style="max-width: 50px" />
         <col style="max-width: 50px" />
         <col style="min-width: 150px" />
-        <col style="min-width: 200px" />
         <col style="min-width: 100px" />
-        <col style="min-width: 150px" />
         <col style="min-width: 100px" />
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderProductModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderProductModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderProductModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderProductModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
-        <MudTh>Products</MudTh>
+        <MudTh>Product</MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderProductModel, object>(x => x.Status)">Status</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderProductModel, object>(x => x.Quantity)">Quantity</MudTableSortLabel></MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Address">@context.Address</MudTd>
-        <MudTd DataLabel="Website">@context.Website</MudTd>
-        <MudTd DataLabel="Platform">@context.Platform</MudTd>
-        <MudTd DataLabel="Products">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
-                View (@context.ProductIds.Count)
-            </MudButton>
-        </MudTd>
+        <MudTd DataLabel="Product">@context.ProductId</MudTd>
+        <MudTd DataLabel="Status">@context.Status</MudTd>
+        <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
     </RowTemplate>
 
     <RowEditingTemplate>
-        <MudTd DataLabel="Name">
-            <MudTextField @bind-Value="context.Name" Required />
+        <MudTd DataLabel="Products">
+            <MudSelect @bind-Value="context.ProductId"
+            T="Guid"
+            ToStringFunc="@(id=> _allProductModels.First(productModel=>productModel.Id == id).Name)"
+            Variant="@_defaultVariant"
+            Label="Status"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Product")
+            MultiSelection="false"
+            HelperText=@("Please select a product")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="true"
+            RequiredError="Please select a product">
+                @foreach (var productModel in _allProductModels)
+                {
+                    <MudSelectItem Value="@productModel"></MudSelectItem>
+                }
+            </MudSelect>
         </MudTd>
 
-        <MudTd DataLabel="Address">
-            <MudTextField @bind-Value="context.Address" Required />
+        <MudTd DataLabel="Status">
+            <MudSelect @bind-Value="context.Status"
+            Variant="@_defaultVariant"
+            Label="Status"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Status")
+            MultiSelection="false"
+            HelperText=@("Please select a status")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="true"
+            RequiredError="Please select a status">
+                @foreach (var orderState in _orderStates)
+                {
+                    <MudSelectItem Value="@orderState"/>
+                }
+            </MudSelect>
         </MudTd>
 
-        <MudTd DataLabel="Website">
-            <MudTextField @bind-Value="context.Website" Required />
+        <MudTd DataLabel="Quantity">
+            <MudTextField @bind-Value="context.Quantity" Required />
         </MudTd>
-
-        <MudTd DataLabel="Platform">
-            <MudTextField @bind-Value="context.Platform" Required />
-        </MudTd>
-
-        <MudTd DataLabel="Products"></MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
@@ -115,6 +134,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 </MudTable>
 
 @code {
+    private readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
     [Parameter]
     public List<Guid> IncomingOrderProductIds { get; set; } = new List<Guid>();
     public List<IncomingOrderProductModel> IncomingOrderProductModels { get; set; } = new List<IncomingOrderProductModel>();
@@ -122,13 +143,53 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     [Parameter]
     public GetStaffResponseDTO CurrentStaff { get; set; }
 
+    private Guid _incomingOrderId { get; set; }
+    private GetIncomingOrderResponseDTO _incomingOrder { get; set; }
+
     private HashSet<IncomingOrderProductModel> _selectedIncomingOrderProducts = new HashSet<IncomingOrderProductModel>();
     private bool _disableDelete => !_selectedIncomingOrderProducts.Any();
+    private List<ProductModel> _allProductModels { get; set; } = [];
+    private List<string> _orderStates { get; set; }
 
     private bool _loading { get; set; }
     private string searchString = "";
     private MudTable<IncomingOrderProductModel> _tableRef;
     private IncomingOrderProductModel _incomingOrderProductModelBeforeEdit { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
+
+        foreach (var productId in productIds)
+        {
+            var getProductByIdQuery = new GetProductByIdQuery(productId);
+            var productDTO = await Mediator.Send(getProductByIdQuery);
+
+            var productModel = new ProductModel()
+            {
+                Id = productDTO.Id,
+                Name = productDTO.Name,
+                Description = productDTO.Description,
+                Height = productDTO.Height,
+                Length = productDTO.Length,
+                Price = productDTO.Price,
+                ProductGroupIds = productDTO.ProductGroupIds,
+                ShopIds = productDTO.ShopIds,
+                Sku = productDTO.Sku,
+                Tag = productDTO.Tag,
+                Weight = productDTO.Weight,
+                Width = productDTO.Width,
+            };
+            _allProductModels.Add(productModel);
+
+            _orderStates = typeof(OrderState)
+                .GetFields(BindingFlags.Public | BindingFlags.Static)
+                .Select(field => field.GetValue(null).ToString())
+                .ToList();
+
+        }
+    }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -142,15 +203,32 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             var incomingOrderProductModel = new IncomingOrderProductModel()
             {
-                ProductIds = incomingOrderProductDTO.ProductIds,
-                Platform = incomingOrderProductDTO.Platform,
-                Address = incomingOrderProductDTO.Address,
                 Id = incomingOrderProductDTO.Id,
-                Name = incomingOrderProductDTO.Name,
-                Website = incomingOrderProductDTO.Website
+                ProductId = incomingOrderProductDTO.ProductId,
+                IncomingOrderId = incomingOrderProductDTO.IncomingOrderId,
+                Quantity = incomingOrderProductDTO.Quantity,
+                Status = incomingOrderProductDTO.Status,
             };
 
             IncomingOrderProductModels.Add(incomingOrderProductModel);
+        }
+
+        var uniqueIncomingOrders = IncomingOrderProductModels
+            .GroupBy(incomingOrderProductModel => incomingOrderProductModel.IncomingOrderId)
+            .Select(x => x.Key)
+            .ToList();
+
+        if (uniqueIncomingOrders.Count != 1)
+        {
+            throw new Exception("Incoming orders passed is not unique");
+        }
+        else
+        {
+            _incomingOrderId = uniqueIncomingOrders.First();
+            var getIncomingOrderByIdQuery = new GetIncomingOrderByIdQuery(_incomingOrderId);
+            var incomingOrderDTO = await Mediator.Send(getIncomingOrderByIdQuery);
+
+            _incomingOrder = incomingOrderDTO;
         }
         _loading = false;
     }
@@ -159,13 +237,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
-        if (incomingOrderProductModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (incomingOrderProductModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (incomingOrderProductModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (incomingOrderProductModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (incomingOrderProductModel.Status.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
 
         return false;
@@ -187,7 +259,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             success &= result.Success;
         }
 
-        SnackBar.Add(success ? "IncomingOrderProducts Deleted" : "Failed to delete incomingOrderProducts");
+        SnackBar.Add(success ? "Incoming Order Products Deleted" : "Failed to delete Incoming Order Products");
     }
 
     private void BackupItem(object incomingOrderProductModel)
@@ -196,11 +268,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         _incomingOrderProductModelBeforeEdit = new IncomingOrderProductModel()
         {
             Id = ((IncomingOrderProductModel)incomingOrderProductModel).Id,
-            Name = ((IncomingOrderProductModel)incomingOrderProductModel).Name,
-            Address = ((IncomingOrderProductModel)incomingOrderProductModel).Address,
-            Platform = ((IncomingOrderProductModel)incomingOrderProductModel).Platform,
-            Website = ((IncomingOrderProductModel)incomingOrderProductModel).Website,
-            ProductIds = ((IncomingOrderProductModel)incomingOrderProductModel).ProductIds,
+            ProductId = ((IncomingOrderProductModel)incomingOrderProductModel).ProductId,
+            IncomingOrderId = ((IncomingOrderProductModel)incomingOrderProductModel).IncomingOrderId,
+            Quantity = ((IncomingOrderProductModel)incomingOrderProductModel).Quantity,
+            Status = ((IncomingOrderProductModel)incomingOrderProductModel).Status,
         };
         StateHasChanged();
     }
@@ -208,11 +279,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private void ResetItemToOriginalValues(object incomingOrderProductModel)
     {
         ((IncomingOrderProductModel)incomingOrderProductModel).Id = _incomingOrderProductModelBeforeEdit.Id;
-        ((IncomingOrderProductModel)incomingOrderProductModel).Name = _incomingOrderProductModelBeforeEdit.Name;
-        ((IncomingOrderProductModel)incomingOrderProductModel).Address = _incomingOrderProductModelBeforeEdit.Address;
-        ((IncomingOrderProductModel)incomingOrderProductModel).Platform = _incomingOrderProductModelBeforeEdit.Platform;
-        ((IncomingOrderProductModel)incomingOrderProductModel).Website = _incomingOrderProductModelBeforeEdit.Website;
-        ((IncomingOrderProductModel)incomingOrderProductModel).ProductIds = _incomingOrderProductModelBeforeEdit.ProductIds;
+        ((IncomingOrderProductModel)incomingOrderProductModel).ProductId = _incomingOrderProductModelBeforeEdit.ProductId;
+        ((IncomingOrderProductModel)incomingOrderProductModel).IncomingOrderId = _incomingOrderProductModelBeforeEdit.IncomingOrderId;
+        ((IncomingOrderProductModel)incomingOrderProductModel).Quantity = _incomingOrderProductModelBeforeEdit.Quantity;
+        ((IncomingOrderProductModel)incomingOrderProductModel).Status = _incomingOrderProductModelBeforeEdit.Status;
 
         StateHasChanged();
     }
@@ -224,11 +294,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         {
             CreatedBy = CurrentStaff.Id,
             Id = incomingOrderProductModelConverted.Id,
-            Name = incomingOrderProductModelConverted.Name,
-            Address = incomingOrderProductModelConverted.Address,
-            Platform = incomingOrderProductModelConverted.Platform,
-            Website = incomingOrderProductModelConverted.Website,
-            ProductIds = incomingOrderProductModelConverted.ProductIds,
+            ProductId = incomingOrderProductModelConverted.ProductId,
+            IncomingOrderId = incomingOrderProductModelConverted.IncomingOrderId,
+            Quantity = incomingOrderProductModelConverted.Quantity,
+            Status = incomingOrderProductModelConverted.Status,
         };
         var updateIncomingOrderProductCommand = new UpdateIncomingOrderProductCommand(updateIncomingOrderProductDTO);
         var response = await Mediator.Send(updateIncomingOrderProductCommand);
@@ -241,10 +310,11 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         var parameters = new DialogParameters<CreateIncomingOrderProductDialog>()
         {
             { x => x.CurrentStaff,  CurrentStaff},
+            { x => x.IncomingOrderId, _incomingOrderId},
         };
 
         var options = Theme.DefaultCreateDialogOptions();
-        var dialog = await Dialog.ShowAsync<CreateIncomingOrderProductDialog>("Create IncomingOrderProduct", parameters, options);
+        var dialog = await Dialog.ShowAsync<CreateIncomingOrderProductDialog>("Create Incoming Order Product", parameters, options);
         var dialogResult = await dialog.Result;
 
         if (dialogResult != null && !dialogResult.Canceled && dialogResult.Data != null)
@@ -252,12 +322,12 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             var incomingOrderProductModelCreated = (IncomingOrderProductModel)dialogResult.Data;
             if (incomingOrderProductModelCreated == null)
             {
-                throw new Exception("IncomingOrderProduct created is not recognized");
+                throw new Exception("Incoming Order Product created is not recognized");
 
             }
             IncomingOrderProductModels.Add(incomingOrderProductModelCreated);
             StateHasChanged();
-            SnackBar.Add($"{incomingOrderProductModelCreated.Name} created");
+            SnackBar.Add("Product created in order");
         }
     }
 }

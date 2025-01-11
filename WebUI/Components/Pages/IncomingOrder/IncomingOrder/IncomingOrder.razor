@@ -1,5 +1,6 @@
-
 @inject IDialogService Dialog
+@using System.Reflection
+@using Application.Constants
 @using Application.Service.Queries
 @using WebUI.Components.Models
 @using Application.Service.Commands
@@ -23,7 +24,7 @@
         Color="Color.Primary"
         Size="Size.Large"
         FullWidth="false">
-            Create IncomingOrder
+            Create Incoming Order
         </MudButton>
     </MudItem>
 </MudGrid>
@@ -56,53 +57,108 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     <ColGroup>
         <col style="max-width: 50px" />
         <col style="max-width: 50px" />
-        <col style="min-width: 150px" />
-        <col style="min-width: 200px" />
         <col style="min-width: 100px" />
-        <col style="min-width: 150px" />
+        <col style="min-width: 100px" />
+        <col style="min-width: 100px" />
+        <col style="min-width: 80px" />
+        <col style="min-width: 100px" />
         <col style="min-width: 100px" />
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
-        <MudTh>Products</MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderModel, object>(x=>x.PONumber)">PO Number</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderModel, object>(x=>x.IncomingDate)">Incoming Date</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderModel, object>(x=>x.ReceivingDate)">Receiving Date</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderModel, object>(x=>x.Status)">Status</MudTableSortLabel></MudTh>
+        <MudTh>Vendor</MudTh>
+        <MudTh>Details</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Address">@context.Address</MudTd>
-        <MudTd DataLabel="Website">@context.Website</MudTd>
-        <MudTd DataLabel="Platform">@context.Platform</MudTd>
-        <MudTd DataLabel="Products">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
-                View (@context.ProductIds.Count)
+        <MudTd DataLabel="PO Number">@context.PONumber</MudTd>
+        <MudTd DataLabel="Incoming Date">@context.IncomingDate</MudTd>
+        <MudTd DataLabel="Receiving Date">@context.ReceivingDate</MudTd>
+        <MudTd DataLabel="Status">@context.Status</MudTd>
+        <MudTd DataLabel="Vendor">
+            @context.VendorId
+        </MudTd>
+        
+        <MudTd DataLabel="Details">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenIncomingOrderProductDialogAsync(@context.IncomingOrderProductIds, CurrentStaff, Dialog))"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
+                View (@context.IncomingOrderProductIds.Count)
             </MudButton>
         </MudTd>
     </RowTemplate>
 
     <RowEditingTemplate>
-        <MudTd DataLabel="Name">
-            <MudTextField @bind-Value="context.Name" Required />
+        <MudTd DataLabel="PO Number">
+            <MudTextField @bind-Value="context.PONumber" Required />
         </MudTd>
 
-        <MudTd DataLabel="Address">
-            <MudTextField @bind-Value="context.Address" Required />
+        <MudTd DataLabel="Incoming Date">
+            <MudDatePicker Label="Incoming Order Date"
+                           Editable="true"
+                           @bind-Date="context.IncomingDate"
+                           Placeholder="Incoming Order Date" />
+        </MudTd>
+        
+        <MudTd DataLabel="Receiving Date">
+            <MudDatePicker Label="Receiving Date"
+                           Editable="true"
+                           @bind-Date="context.ReceivingDate"
+                           Placeholder="Receiving Date" />
+        </MudTd>
+        
+        <MudTd DataLabel="Status">
+            <MudSelect @bind-Value="context.Status"
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Status")
+                       MultiSelection="false"
+                       HelperText=@("Please select a status")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a status">
+                @foreach (var orderState in _orderStates)
+                {
+                    <MudSelectItem Value="@orderState">@orderState</MudSelectItem>
+                }
+            </MudSelect>
+        </MudTd>
+        
+        <MudTd DataLabel="Vendor">
+            <MudSelect @bind-Value="context.VendorId"
+                       T="Guid"
+                       ToStringFunc="@(id=> $"{_allVendorModels.First(companyModel=>companyModel.Id == id).FirstName} {_allVendorModels.First(companyModel=>companyModel.Id == id).LastName}")"
+                       Variant="@_defaultVariant"
+                       Label="Vendor"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Vendor")
+                       MultiSelection="false"
+                       HelperText=@("Please select a vendor")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a vendor">
+                @foreach (var vendorModel in _allVendorModels)
+                {
+                    <MudSelectItem Value="vendorModel.Id"></MudSelectItem>
+                }
+            </MudSelect>
         </MudTd>
 
-        <MudTd DataLabel="Website">
-            <MudTextField @bind-Value="context.Website" Required />
-        </MudTd>
+        <MudTd DataLabel="Details"></MudTd>
 
-        <MudTd DataLabel="Platform">
-            <MudTextField @bind-Value="context.Platform" Required />
-        </MudTd>
-
-        <MudTd DataLabel="Products"></MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
@@ -122,6 +178,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     [Parameter]
     public GetStaffResponseDTO CurrentStaff { get; set; }
 
+    private Variant _defaultVariant = Theme.DefaultInputVariant();
+    private List<string> _orderStates { get; set; }
+    private List<VendorModel> _allVendorModels { get; set; } = [];
+
     private HashSet<IncomingOrderModel> _selectedIncomingOrders = new HashSet<IncomingOrderModel>();
     private bool _disableDelete => !_selectedIncomingOrders.Any();
 
@@ -129,6 +189,35 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private string searchString = "";
     private MudTable<IncomingOrderModel> _tableRef;
     private IncomingOrderModel _incomingOrderModelBeforeEdit { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _orderStates = typeof(OrderState)
+            .GetFields(BindingFlags.Public | BindingFlags.Static)
+            .Select(field => field.GetValue(null).ToString())
+            .ToList();
+
+        var getAllVendorIdsByCompanyIdQuery = new GetAllVendorIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var vendorIds = await Mediator.Send(getAllVendorIdsByCompanyIdQuery);
+
+        foreach (var vendorId in vendorIds)
+        {
+            var getVendorByIdQuery = new GetVendorByIdQuery(vendorId);
+            var vendorDTO = await Mediator.Send(getVendorByIdQuery);
+
+            var vendorModel = new VendorModel()
+            {
+                Id = vendorDTO.Id,
+                Address = vendorDTO.Address,
+                Email = vendorDTO.Email,
+                FirstName = vendorDTO.FirstName,
+                LastName = vendorDTO.LastName,
+                PhoneNumber = vendorDTO.PhoneNumber,
+                IncomingOrderIds = vendorDTO.IncomingOrderIds,
+            };
+            _allVendorModels.Add(vendorModel);
+        }
+    }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -142,12 +231,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             var incomingOrderModel = new IncomingOrderModel()
             {
-                ProductIds = incomingOrderDTO.ProductIds,
-                Platform = incomingOrderDTO.Platform,
-                Address = incomingOrderDTO.Address,
                 Id = incomingOrderDTO.Id,
-                Name = incomingOrderDTO.Name,
-                Website = incomingOrderDTO.Website
+                IncomingOrderProductIds = incomingOrderDTO.IncomingOrderProductIds,
+                IncomingDate = incomingOrderDTO.IncomingDate,
+                PONumber = incomingOrderDTO.PONumber,
+                ReceivingDate = incomingOrderDTO.ReceivingDate,
+                Status = incomingOrderDTO.Status,
+                VendorId = incomingOrderDTO.VendorId,
             };
 
             IncomingOrderModels.Add(incomingOrderModel);
@@ -159,13 +249,9 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
-        if (incomingOrderModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (incomingOrderModel.PONumber.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (incomingOrderModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (incomingOrderModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (incomingOrderModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (incomingOrderModel.Status.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
 
         return false;
@@ -195,12 +281,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
         _incomingOrderModelBeforeEdit = new IncomingOrderModel()
         {
-            Id = ((IncomingOrderModel)incomingOrderModel).Id,
-            Name = ((IncomingOrderModel)incomingOrderModel).Name,
-            Address = ((IncomingOrderModel)incomingOrderModel).Address,
-            Platform = ((IncomingOrderModel)incomingOrderModel).Platform,
-            Website = ((IncomingOrderModel)incomingOrderModel).Website,
-            ProductIds = ((IncomingOrderModel)incomingOrderModel).ProductIds,
+            Id = ((IncomingOrderModel)incomingOrderModel).Id, 
+            IncomingOrderProductIds = ((IncomingOrderModel)incomingOrderModel).IncomingOrderProductIds, 
+            IncomingDate = ((IncomingOrderModel)incomingOrderModel).IncomingDate,
+            PONumber = ((IncomingOrderModel)incomingOrderModel).PONumber,
+            ReceivingDate = ((IncomingOrderModel)incomingOrderModel).ReceivingDate,
+            Status = ((IncomingOrderModel)incomingOrderModel).Status,
+            VendorId = ((IncomingOrderModel)incomingOrderModel).VendorId,
         };
         StateHasChanged();
     }
@@ -208,11 +295,12 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private void ResetItemToOriginalValues(object incomingOrderModel)
     {
         ((IncomingOrderModel)incomingOrderModel).Id = _incomingOrderModelBeforeEdit.Id;
-        ((IncomingOrderModel)incomingOrderModel).Name = _incomingOrderModelBeforeEdit.Name;
-        ((IncomingOrderModel)incomingOrderModel).Address = _incomingOrderModelBeforeEdit.Address;
-        ((IncomingOrderModel)incomingOrderModel).Platform = _incomingOrderModelBeforeEdit.Platform;
-        ((IncomingOrderModel)incomingOrderModel).Website = _incomingOrderModelBeforeEdit.Website;
-        ((IncomingOrderModel)incomingOrderModel).ProductIds = _incomingOrderModelBeforeEdit.ProductIds;
+        ((IncomingOrderModel)incomingOrderModel).IncomingOrderProductIds = _incomingOrderModelBeforeEdit.IncomingOrderProductIds;
+        ((IncomingOrderModel)incomingOrderModel).IncomingDate = _incomingOrderModelBeforeEdit.IncomingDate;
+        ((IncomingOrderModel)incomingOrderModel).PONumber = _incomingOrderModelBeforeEdit.PONumber;
+        ((IncomingOrderModel)incomingOrderModel).ReceivingDate = _incomingOrderModelBeforeEdit.ReceivingDate;
+        ((IncomingOrderModel)incomingOrderModel).Status = _incomingOrderModelBeforeEdit.Status;
+        ((IncomingOrderModel)incomingOrderModel).VendorId = _incomingOrderModelBeforeEdit.VendorId;
 
         StateHasChanged();
     }
@@ -224,11 +312,12 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         {
             CreatedBy = CurrentStaff.Id,
             Id = incomingOrderModelConverted.Id,
-            Name = incomingOrderModelConverted.Name,
-            Address = incomingOrderModelConverted.Address,
-            Platform = incomingOrderModelConverted.Platform,
-            Website = incomingOrderModelConverted.Website,
-            ProductIds = incomingOrderModelConverted.ProductIds,
+            IncomingOrderProductIds = incomingOrderModelConverted.IncomingOrderProductIds,
+            IncomingDate = incomingOrderModelConverted.IncomingDate.Value,
+            PONumber = incomingOrderModelConverted.PONumber,
+            ReceivingDate = incomingOrderModelConverted.ReceivingDate.Value,
+            Status = incomingOrderModelConverted.Status,
+            VendorId = incomingOrderModelConverted.VendorId,
         };
         var updateIncomingOrderCommand = new UpdateIncomingOrderCommand(updateIncomingOrderDTO);
         var response = await Mediator.Send(updateIncomingOrderCommand);
@@ -257,7 +346,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             }
             IncomingOrderModels.Add(incomingOrderModelCreated);
             StateHasChanged();
-            SnackBar.Add($"{incomingOrderModelCreated.Name} created");
+            SnackBar.Add($"{incomingOrderModelCreated.PONumber} created");
         }
     }
 }

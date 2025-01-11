@@ -6,13 +6,13 @@
 
         public string PONumber { get; set; }
 
-        public DateTime IncomingDate { get; set; }
+        public DateTime? IncomingDate { get; set; }
 
-        public DateTime ReceivingDate { get; set; }
+        public DateTime? ReceivingDate { get; set; }
 
         public string Status { get; set; } = string.Empty;
 
-        public List<Guid> ProductIds { get; set; }
+        public List<Guid> IncomingOrderProductIds { get; set; } = [];
 
         public Guid VendorId { get; set; }
     }

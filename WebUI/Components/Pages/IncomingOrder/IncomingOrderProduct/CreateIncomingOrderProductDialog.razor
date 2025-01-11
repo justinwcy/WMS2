@@ -1,20 +1,65 @@
-
+@using System.Reflection
+@using Application.Constants
 @using WebUI.Components.Models
 @using Application.Service.Commands
 @using Application.DTO.Request
 @using Application.DTO.Response
+@using Application.Service.Queries
 <MudDialog>
     <TitleContent>
-        Create IncomingOrderProduct
+        Create Incoming Order Product
     </TitleContent>
     <DialogContent>
         <MudForm @bind-IsValid="@_isFormValid">
-            <MudTextField @bind-value="_incomingOrderProductModel.Name"
-            Variant="@_defaultVariant"
-            T="string"
-            Label="IncomingOrderProduct Name"
-            Required="true" RequiredError="Name is required!"
-            Margin="Margin.Dense"/>
+            
+            <MudSelect @bind-Value="_incomingOrderProductModel.ProductId"
+                       T="Guid"
+                       ToStringFunc="@(id=> _allProductModels.First(productModel=>productModel.Id == id).Name)"
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Product")
+                       MultiSelection="false"
+                       HelperText=@("Please select a product")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a product">
+                @foreach (var productModel in _allProductModels)
+                {
+                    <MudSelectItem Value="@productModel"></MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudSelect @bind-Value="_incomingOrderProductModel.Status"
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Status")
+                       MultiSelection="false"
+                       HelperText=@("Please select a status")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a status">
+                @foreach (var orderState in _orderStates)
+                {
+                    <MudSelectItem Value="@orderState">@orderState</MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudTextField @bind-value="_incomingOrderProductModel.Quantity"
+                          Variant="@_defaultVariant"
+                          T="int"
+                          Label="Quantity"
+                          Required="true" RequiredError="Quantity is required!"
+                          Margin="Margin.Dense"/>
 
         </MudForm>
     </DialogContent>
@@ -26,23 +71,66 @@
 @code {
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
-    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+    private readonly Variant _defaultVariant = Theme.DefaultInputVariant();
 
     private bool _isFormValid { get; set; } = false;
 
     private IncomingOrderProductModel _incomingOrderProductModel { get; set; } = new IncomingOrderProductModel();
+    private List<ProductModel> _allProductModels { get; set; } = [];
+    private List<string> _orderStates { get; set; }
 
     [Parameter]
     public required GetStaffResponseDTO CurrentStaff { get; set; }
+
+    [Parameter]
+    public required Guid IncomingOrderId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _incomingOrderProductModel.IncomingOrderId = IncomingOrderId;
+
+        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
+
+        foreach (var productId in productIds)
+        {
+            var getProductByIdQuery = new GetProductByIdQuery(productId);
+            var productDTO = await Mediator.Send(getProductByIdQuery);
+
+            var productModel = new ProductModel()
+            {
+                Id = productDTO.Id,
+                Name = productDTO.Name,
+                Description = productDTO.Description,
+                Height = productDTO.Height,
+                Length = productDTO.Length,
+                Price = productDTO.Price,
+                ProductGroupIds = productDTO.ProductGroupIds,
+                ShopIds = productDTO.ShopIds,
+                Sku = productDTO.Sku,
+                Tag = productDTO.Tag,
+                Weight = productDTO.Weight,
+                Width = productDTO.Width,
+            };
+            _allProductModels.Add(productModel);
+
+            _orderStates = typeof(OrderState)
+                .GetFields(BindingFlags.Public | BindingFlags.Static)
+                .Select(field => field.GetValue(null).ToString())
+                .ToList();
+
+        }
+    }
 
     private async Task Submit()
     {
         var createIncomingOrderProductDTO = new CreateIncomingOrderProductRequestDTO()
         {
             CreatedBy = CurrentStaff.CreatedBy,
-            Name = _incomingOrderProductModel.Name,
-            StaffIds = _incomingOrderProductModel.StaffIds,
-            WarehouseIds = _incomingOrderProductModel.WarehouseIds,
+            Status = _incomingOrderProductModel.Status,
+            IncomingOrderId = _incomingOrderProductModel.IncomingOrderId,
+            ProductId = _incomingOrderProductModel.ProductId,
+            Quantity = _incomingOrderProductModel.Quantity,
         };
         var createIncomingOrderProductCommand = new CreateIncomingOrderProductCommand(createIncomingOrderProductDTO);
         var createdIncomingOrderProductResponseDTO = await Mediator.Send(createIncomingOrderProductCommand);
@@ -50,9 +138,10 @@
         var createdIncomingOrderProductModel = new IncomingOrderProductModel()
         {
             Id = createdIncomingOrderProductResponseDTO.Id,
-            Name = _incomingOrderProductModel.Name,
-            StaffIds = _incomingOrderProductModel.StaffIds,
-            WarehouseIds = _incomingOrderProductModel.WarehouseIds,
+            Status = _incomingOrderProductModel.Status,
+            IncomingOrderId = _incomingOrderProductModel.IncomingOrderId,
+            ProductId = _incomingOrderProductModel.ProductId,
+            Quantity = _incomingOrderProductModel.Quantity,
         };
         MudDialog.Close(DialogResult.Ok(createdIncomingOrderProductModel));
     }

@@ -1,20 +1,47 @@
-
+@using System.Reflection
+@using Application.Constants
 @using WebUI.Components.Models
 @using Application.Service.Commands
 @using Application.DTO.Request
 @using Application.DTO.Response
 <MudDialog>
     <TitleContent>
-        Create RefundOrder
+        Create Refund Order
     </TitleContent>
     <DialogContent>
         <MudForm @bind-IsValid="@_isFormValid">
-            <MudTextField @bind-value="_refundOrderModel.Name"
-            Variant="@_defaultVariant"
-            T="string"
-            Label="RefundOrder Name"
-            Required="true" RequiredError="Name is required!"
-            Margin="Margin.Dense"/>
+
+            <MudDatePicker Label="Refund Order Date"
+                           Editable="true"
+                           @bind-Date="_refundOrderModel.ReceivingDate"
+                           Placeholder="Refund Order Date" />
+
+            <MudSelect @bind-Value="_refundOrderModel.Status"
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Status")
+                       MultiSelection="false"
+                       HelperText=@("Please select a status")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a status">
+                @foreach (var orderState in _orderStates)
+                {
+                    <MudSelectItem Value="@orderState">@orderState</MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudTextField @bind-value="_refundOrderModel.RefundReason"
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Refund Reason"
+                          Required="true" RequiredError="Reason is required!"
+                          Margin="Margin.Dense"/>
 
         </MudForm>
     </DialogContent>
@@ -23,6 +50,7 @@
         <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!_isFormValid)">Ok</MudButton>
     </DialogActions>
 </MudDialog>
+
 @code {
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
@@ -30,19 +58,29 @@
 
     private bool _isFormValid { get; set; } = false;
 
-    private RefundOrderModel _refundOrderModel { get; set; } = new RefundOrderModel();
+    private RefundOrderModel _refundOrderModel { get; set; }
+    private List<string> _orderStates { get; set; }
 
     [Parameter]
     public required GetStaffResponseDTO CurrentStaff { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _orderStates = typeof(OrderState)
+            .GetFields(BindingFlags.Public | BindingFlags.Static)
+            .Select(field => field.GetValue(null).ToString())
+            .ToList();
+    }
 
     private async Task Submit()
     {
         var createRefundOrderDTO = new CreateRefundOrderRequestDTO()
         {
             CreatedBy = CurrentStaff.CreatedBy,
-            Name = _refundOrderModel.Name,
-            StaffIds = _refundOrderModel.StaffIds,
-            WarehouseIds = _refundOrderModel.WarehouseIds,
+            Status = _refundOrderModel.Status,
+            RefundReason = _refundOrderModel.RefundReason,
+            ReceivingDate = _refundOrderModel.ReceivingDate.Value,
+            RefundOrderProductIds = _refundOrderModel.RefundOrderProductIds,
         };
         var createRefundOrderCommand = new CreateRefundOrderCommand(createRefundOrderDTO);
         var createdRefundOrderResponseDTO = await Mediator.Send(createRefundOrderCommand);
@@ -50,9 +88,10 @@
         var createdRefundOrderModel = new RefundOrderModel()
         {
             Id = createdRefundOrderResponseDTO.Id,
-            Name = _refundOrderModel.Name,
-            StaffIds = _refundOrderModel.StaffIds,
-            WarehouseIds = _refundOrderModel.WarehouseIds,
+            Status = _refundOrderModel.Status,
+            RefundReason = _refundOrderModel.RefundReason,
+            ReceivingDate = _refundOrderModel.ReceivingDate,
+            RefundOrderProductIds = _refundOrderModel.RefundOrderProductIds,
         };
         MudDialog.Close(DialogResult.Ok(createdRefundOrderModel));
     }

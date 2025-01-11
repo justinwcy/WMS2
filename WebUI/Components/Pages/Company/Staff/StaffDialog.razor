@@ -1,4 +1,3 @@
-
 @using Application.DTO.Response
 <MudDialog>
     <TitleContent>
@@ -6,9 +5,10 @@
     </TitleContent>
     <DialogContent>
         <Staff StaffIds="StaffIds"
-              CurrentStaff="CurrentStaff" />
+               CurrentStaff="CurrentStaff" />
     </DialogContent>
 </MudDialog>
+
 @code {
     [Parameter]
     public List<Guid> StaffIds { get; set; }

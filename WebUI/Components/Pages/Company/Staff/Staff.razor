@@ -1,4 +1,3 @@
-
 @inject IDialogService Dialog
 @using Application.Service.Queries
 @using WebUI.Components.Models
@@ -57,56 +56,56 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <col style="max-width: 50px" />
         <col style="max-width: 50px" />
         <col style="min-width: 150px" />
-        <col style="min-width: 200px" />
+        <col style="min-width: 150px" />
         <col style="min-width: 100px" />
         <col style="min-width: 150px" />
         <col style="min-width: 100px" />
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
-        <MudTh>Products</MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.FirstName)">First Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.LastName)">Last Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.Email)">Email</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.RolesString)">Roles</MudTableSortLabel></MudTh>
+        <MudTh>Company</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Address">@context.Address</MudTd>
-        <MudTd DataLabel="Website">@context.Website</MudTd>
-        <MudTd DataLabel="Platform">@context.Platform</MudTd>
-        <MudTd DataLabel="Products">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
+        <MudTd DataLabel="Name">@context.FirstName</MudTd>
+        <MudTd DataLabel="Last Name">@context.LastName</MudTd>
+        <MudTd DataLabel="Email">@context.Email</MudTd>
+        <MudTd DataLabel="Roles">@context.RolesString</MudTd>
+        <MudTd DataLabel="Company">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenCompanyDialogAsync(@context.CompanyId, CurrentStaff, Dialog))"
             Variant="Variant.Filled"
             Color="Color.Primary"
             Size="Size.Small"
             FullWidth="false">
-                View (@context.ProductIds.Count)
+                View (1)
             </MudButton>
         </MudTd>
     </RowTemplate>
 
     <RowEditingTemplate>
-        <MudTd DataLabel="Name">
-            <MudTextField @bind-Value="context.Name" Required />
+        <MudTd DataLabel="First Name">
+            <MudTextField @bind-Value="context.FirstName" Required />
         </MudTd>
 
-        <MudTd DataLabel="Address">
-            <MudTextField @bind-Value="context.Address" Required />
+        <MudTd DataLabel="Last Name">
+            <MudTextField @bind-Value="context.LastName" Required />
         </MudTd>
 
-        <MudTd DataLabel="Website">
-            <MudTextField @bind-Value="context.Website" Required />
+        <MudTd DataLabel="Email">
+            <MudTextField @bind-Value="context.Email" Required />
         </MudTd>
 
-        <MudTd DataLabel="Platform">
-            <MudTextField @bind-Value="context.Platform" Required />
+        <MudTd DataLabel="Roles">
+            <MudTextField @bind-Value="context.RolesString" Required />
         </MudTd>
 
-        <MudTd DataLabel="Products"></MudTd>
+        <MudTd DataLabel="Company"></MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
-        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
+        <MudTablePager PageSizeOptions="new [] { 10, 25, 50, 100, int.MaxValue }"
         RowsPerPageString="Rows per page:"
         InfoFormat="{first_item}-{last_item} of {all_items}"
         AllItemsText="All"
@@ -142,12 +141,12 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             var staffModel = new StaffModel()
             {
-                ProductIds = staffDTO.ProductIds,
-                Platform = staffDTO.Platform,
-                Address = staffDTO.Address,
                 Id = staffDTO.Id,
-                Name = staffDTO.Name,
-                Website = staffDTO.Website
+                CompanyId = staffDTO.CompanyId,
+                FirstName = staffDTO.FirstName,
+                LastName = staffDTO.LastName,
+                Email = staffDTO.Email,
+                RolesString = string.Join(", ", staffDTO.Roles),
             };
 
             StaffModels.Add(staffModel);
@@ -159,13 +158,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
-        if (staffModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (staffModel.FirstName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (staffModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (staffModel.LastName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (staffModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (staffModel.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (staffModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (staffModel.RolesString.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
 
         return false;
@@ -196,11 +195,11 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         _staffModelBeforeEdit = new StaffModel()
         {
             Id = ((StaffModel)staffModel).Id,
-            Name = ((StaffModel)staffModel).Name,
-            Address = ((StaffModel)staffModel).Address,
-            Platform = ((StaffModel)staffModel).Platform,
-            Website = ((StaffModel)staffModel).Website,
-            ProductIds = ((StaffModel)staffModel).ProductIds,
+            CompanyId = ((StaffModel)staffModel).CompanyId,
+            FirstName = ((StaffModel)staffModel).FirstName,
+            LastName = ((StaffModel)staffModel).LastName,
+            Email = ((StaffModel)staffModel).Email,
+            RolesString = string.Join(", ", ((StaffModel)staffModel).RolesString),
         };
         StateHasChanged();
     }
@@ -208,11 +207,11 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private void ResetItemToOriginalValues(object staffModel)
     {
         ((StaffModel)staffModel).Id = _staffModelBeforeEdit.Id;
-        ((StaffModel)staffModel).Name = _staffModelBeforeEdit.Name;
-        ((StaffModel)staffModel).Address = _staffModelBeforeEdit.Address;
-        ((StaffModel)staffModel).Platform = _staffModelBeforeEdit.Platform;
-        ((StaffModel)staffModel).Website = _staffModelBeforeEdit.Website;
-        ((StaffModel)staffModel).ProductIds = _staffModelBeforeEdit.ProductIds;
+        ((StaffModel)staffModel).CompanyId = _staffModelBeforeEdit.CompanyId;
+        ((StaffModel)staffModel).FirstName = _staffModelBeforeEdit.FirstName;
+        ((StaffModel)staffModel).LastName = _staffModelBeforeEdit.LastName;
+        ((StaffModel)staffModel).Email  = _staffModelBeforeEdit.Email;
+        ((StaffModel)staffModel).RolesString = _staffModelBeforeEdit.RolesString;
 
         StateHasChanged();
     }
@@ -224,11 +223,11 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         {
             CreatedBy = CurrentStaff.Id,
             Id = staffModelConverted.Id,
-            Name = staffModelConverted.Name,
-            Address = staffModelConverted.Address,
-            Platform = staffModelConverted.Platform,
-            Website = staffModelConverted.Website,
-            ProductIds = staffModelConverted.ProductIds,
+            CompanyId = staffModelConverted.CompanyId,
+            FirstName = staffModelConverted.FirstName,
+            LastName = staffModelConverted.LastName,
+            Email = staffModelConverted.Email,
+            Roles = staffModelConverted.GetRoleList(),
         };
         var updateStaffCommand = new UpdateStaffCommand(updateStaffDTO);
         var response = await Mediator.Send(updateStaffCommand);
@@ -257,7 +256,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             }
             StaffModels.Add(staffModelCreated);
             StateHasChanged();
-            SnackBar.Add($"{staffModelCreated.Name} created");
+            SnackBar.Add($"{staffModelCreated.FirstName} {staffModelCreated.LastName} created");
         }
     }
 }
