@@ -1,10 +1,25 @@
 ﻿using Application.DTO.Response;
-
 using MudBlazor;
-
-using WebUI.Components.Pages.Company;
-using WebUI.Components.Pages.Shop;
-using WebUI.Components.Pages.Warehouse;
+using WebUI.Components.Pages.Company.Company;
+using WebUI.Components.Pages.Company.Staff;
+using WebUI.Components.Pages.IncomingOrder.IncomingOrder;
+using WebUI.Components.Pages.IncomingOrder.IncomingOrderProduct;
+using WebUI.Components.Pages.IncomingOrder.Vendor;
+using WebUI.Components.Pages.Inventory.Inventory;
+using WebUI.Components.Pages.Inventory.ProductRack;
+using WebUI.Components.Pages.Inventory.Rack;
+using WebUI.Components.Pages.Inventory.Warehouse;
+using WebUI.Components.Pages.Inventory.Zone;
+using WebUI.Components.Pages.Order.Bin;
+using WebUI.Components.Pages.Order.Courier;
+using WebUI.Components.Pages.Order.Customer;
+using WebUI.Components.Pages.Order.CustomerOrder;
+using WebUI.Components.Pages.Order.CustomerOrderDetail;
+using WebUI.Components.Pages.Product.Product;
+using WebUI.Components.Pages.Product.ProductGroup;
+using WebUI.Components.Pages.RefundOrder.RefundOrder;
+using WebUI.Components.Pages.RefundOrder.RefundOrderProduct;
+using WebUI.Components.Pages.Shop.Shop;
 using WebUI.Themes;
 
 namespace WebUI.Utilities

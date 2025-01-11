@@ -62,8 +62,8 @@
     private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
     private bool _isFormValid { get; set; } = false;
 
-    private WmsStaffUserModel? _profileModel { get; set; }
-    private WmsStaffUserModel? _initialProfileModel { get; set; }
+    private StaffModel? _profileModel { get; set; }
+    private StaffModel? _initialProfileModel { get; set; }
     private List<string> _allStaffRoles = new();
 
     private bool IsUpdateButtonDisabled()
@@ -89,7 +89,7 @@
         await base.OnInitializedAsync();
 
         // fill up the profile
-        _profileModel = new WmsStaffUserModel();
+        _profileModel = new StaffModel();
         var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var userIdentity = authenticationState.User.Identity;
 
@@ -101,7 +101,7 @@
             var getStaffByIdCommand = new GetStaffByIdQuery(staffId);
             var getStaffResponseDTO = await Mediator.Send(getStaffByIdCommand);
 
-            _profileModel = new WmsStaffUserModel
+            _profileModel = new StaffModel
             {
                 FirstName = getStaffResponseDTO.FirstName,
                 LastName = getStaffResponseDTO.LastName,
@@ -110,7 +110,7 @@
             };
         }
 
-        _initialProfileModel = (WmsStaffUserModel)_profileModel.Clone();
+        _initialProfileModel = (StaffModel)_profileModel.Clone();
     }
 
     private async Task UpdateUserDetails()
@@ -147,7 +147,7 @@
 
             if (result.Success)
             {
-                _initialProfileModel = (WmsStaffUserModel)_profileModel.Clone();
+                _initialProfileModel = (StaffModel)_profileModel.Clone();
             }
         }
     }

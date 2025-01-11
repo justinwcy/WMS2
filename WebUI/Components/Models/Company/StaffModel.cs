@@ -1,6 +1,6 @@
 ﻿namespace WebUI.Components.Models
 {
-    public sealed class WmsStaffUserModel : ICloneable
+    public sealed class StaffModel : ICloneable
     {
         public Guid Id { get; set; }
         public string FirstName { get; set; } = "";
@@ -24,7 +24,7 @@
 
         public object Clone()
         {
-            return new WmsStaffUserModel
+            return new StaffModel
             {
                 Id = Id,
                 FirstName = FirstName, 
