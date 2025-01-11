@@ -1,12 +1,19 @@
-﻿<MudDialog>
+﻿@using WebUI.Components.Models
+@using Application.DTO.Response
+<MudDialog>
     <TitleContent>
         Products
     </TitleContent>
     <DialogContent>
-        <Product/>
+        <Product ProductModels="ProductModels"
+                 CurrentStaff="CurrentStaff" />
     </DialogContent>
 
 </MudDialog>
 @code {
-    
+    [Parameter]
+    private List<ProductModel> ProductModels { get; set; }
+
+    [Parameter]
+    public GetStaffResponseDTO CurrentStaff { get; set; }
 }

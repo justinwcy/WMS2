@@ -1,0 +1,33 @@
+﻿@page "/shops"
+@using WebUI.Components.Models
+@using Application.DTO.Response
+@using WebUI.Utilities
+@using Application.Service.Queries
+<Shop 
+    ShopModels="_shopModels" 
+    CurrentStaff="_currentStaff"/>
+
+@code {
+
+    private List<ShopModel> _shopModels { get; set; } = new List<ShopModel>();
+    private GetStaffResponseDTO _currentStaff { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _currentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
+        var getAllShopByCompanyIdQuery = new GetAllShopByCompanyIdQuery(_currentStaff.CompanyId);
+        var allShopDTO = await Mediator.Send(getAllShopByCompanyIdQuery);
+
+        foreach (var shopDTO in allShopDTO)
+        {
+            var shopModel = new ShopModel()
+            {
+                Id = shopDTO.Id,
+                Name = shopDTO.Name,
+            };
+
+            _shopModels.Add(shopModel);
+        }
+    }
+}

@@ -1,13 +1,10 @@
-﻿@page "/shops"
-@attribute [Authorize(Roles = StaffRole.MasterControl)]
-@inject IDialogService Dialog
+﻿@inject IDialogService Dialog
 @using Application.Service.Queries
 @using WebUI.Components.Models
 @using Application.Service.Commands
 @using Application.DTO.Request
 @using Application.DTO.Response
 @using WebUI.Utilities
-@using Application.Constants
 @using WebUI.Components.Pages.Product
 <MudGrid Class="mb-3">
     <MudItem xs="9">
@@ -34,7 +31,7 @@
 <MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
           Filter="new Func<ShopModel,bool>(FilterFunc)"
           CanCancelEdit="true"
-          Items="@_shops"
+          Items="@ShopModels"
           GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
           GroupFooterClass="mb-4"
           Dense="true"
@@ -78,7 +75,7 @@
         <MudTd DataLabel="Website">@context.Website</MudTd>
         <MudTd DataLabel="Platform">@context.Platform</MudTd>
         <MudTd DataLabel="Products">
-            <MudButton OnClick="@(OpenProductDialogAsync)"
+            <MudButton OnClick="@(() => OpenProductDialogAsync(@context.ProductIds))"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
                        Size="Size.Small"
@@ -118,67 +115,24 @@
 </MudTable>
 
 @code {
-    private List<ShopModel> _shops { get; set; } = new List<ShopModel>();
+    [Parameter]
+    public List<ShopModel> ShopModels { get; set; } = new List<ShopModel>();
+
+    [Parameter]
+    public GetStaffResponseDTO CurrentStaff { get; set; }
+
     private HashSet<ShopModel> _selectedShops = new HashSet<ShopModel>();
     private bool _disableDelete => !_selectedShops.Any();
-    private GetStaffResponseDTO _currentStaff { get; set; }
 
     private bool _loading { get; set; }
     private string searchString = "";
     private MudTable<ShopModel> _tableRef;
     private ShopModel _shopModelBeforeEdit { get; set; }
 
-    private static List<ProductModel> _products = new List<ProductModel>();
-
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
         await base.OnInitializedAsync();
-        _currentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
-        var getAllShopQuery = new GetAllShopByCompanyIdQuery(_currentStaff.CompanyId);
-        var allShopResponseDTO = await Mediator.Send(getAllShopQuery);
-
-        foreach (var shopResponseDTO in allShopResponseDTO)
-        {
-            var productIdsString = string.Empty;
-            if (shopResponseDTO.ProductIds != null)
-            {
-                productIdsString = string.Join(", ", shopResponseDTO.ProductIds.Select(productId => productId.ToString()));
-            }
-            var shopModel = new ShopModel
-            {
-                Id = shopResponseDTO.Id,
-                Name = shopResponseDTO.Name,
-                Address = shopResponseDTO.Address,
-                Platform = shopResponseDTO.Platform,
-                Website = shopResponseDTO.Website,
-                ProductIdsString = productIdsString
-            };
-
-            _shops.Add(shopModel);
-        }
-
-        var getAllProductsQuery = new GetAllProductByCompanyIdQuery(_currentStaff.CompanyId);
-        var getAllProductsDTO = await Mediator.Send(getAllProductsQuery);
-
-        foreach (var productDTO in getAllProductsDTO)
-        {
-            var productModel = new ProductModel()
-                {
-                    Description = productDTO.Description,
-                    Height = productDTO.Height,
-                    Id = productDTO.Id,
-                    Length = productDTO.Length,
-                    Name = productDTO.Name,
-                    Price = productDTO.Price,
-                    Sku = productDTO.Sku,
-                    Tag = productDTO.Tag,
-                    Width = productDTO.Width,
-                    Weight = productDTO.Weight,
-                };
-
-            _products.Add(productModel);
-        }
 
         _loading = false;
     }
@@ -209,7 +163,7 @@
 
             if (result.Success)
             {
-                _shops.Remove(shopModel);
+                ShopModels.Remove(shopModel);
             }
 
             success &= result.Success;
@@ -250,7 +204,7 @@
         var shopModelConverted = (ShopModel)shopModel;
         var updateShopDTO = new UpdateShopRequestDTO()
         {
-            CreatedBy = _currentStaff.Id,
+            CreatedBy = CurrentStaff.Id,
             Id = shopModelConverted.Id,
             Name = shopModelConverted.Name,
             Address = shopModelConverted.Address,
@@ -273,16 +227,27 @@
         if (dialogResult != null && !dialogResult.Canceled)
         {
             var shopModelCreated = (ShopModel)dialogResult.Data;
-            _shops.Add(shopModelCreated);
+            ShopModels.Add(shopModelCreated);
             StateHasChanged();
             SnackBar.Add($"{shopModelCreated.Name} created");
         }
     }
 
-    private async Task OpenProductDialogAsync()
+    private async Task OpenProductDialogAsync(List<Guid> productIds)
     {
-        var maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Large, FullWidth = true };
-        var dialog = await Dialog.ShowAsync<ProductsDialog>("Products", maxWidth);
+        foreach (var productId in productIds)
+        {
+            var getProductByIdQuery = new GetProductByIdQuery(productId);
+
+        }
+        // var parameters = new DialogParameters<ProductsDialog>()
+        // {
+        //     { x => x.CurrentStaff,  },
+        //     { x => x.ProductModels,  },
+        // };
+
+        var options = new DialogOptions() { MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await Dialog.ShowAsync<ProductsDialog>("Products", options);
 
         return;
     }
