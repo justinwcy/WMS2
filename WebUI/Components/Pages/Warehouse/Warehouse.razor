@@ -1,52 +1,52 @@
-﻿@page "/warehouses"
-@inject IDialogService Dialog
+﻿@inject IDialogService Dialog
 @using Application.Service.Queries
 @using WebUI.Components.Models
 @using Application.Service.Commands
 @using Application.DTO.Request
 @using Application.DTO.Response
+@using WebUI.Components.Pages.Company
 @using WebUI.Utilities
 <MudGrid Class="mb-3">
     <MudItem xs="9">
         <MudButton OnClick="@DeleteWarehouses"
-                   Color="Color.Error"
-                   Variant="Variant.Filled"
-                   Size="Size.Large"
-                   FullWidth="false"
-                   Disabled="_disableDelete">
+        Color="Color.Error"
+        Variant="Variant.Filled"
+        Size="Size.Large"
+        FullWidth="false"
+        Disabled="_disableDelete">
             Delete Warehouse
         </MudButton>
     </MudItem>
     <MudItem xs="3">
         <MudButton OnClick="@(OpenCreateWarehouseDialogAsync)"
-                   Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   Size="Size.Large"
-                   FullWidth="false">
+        Variant="Variant.Filled"
+        Color="Color.Primary"
+        Size="Size.Large"
+        FullWidth="false">
             Create Warehouse
         </MudButton>
     </MudItem>
 </MudGrid>
 
 <MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
-          Filter="new Func<WarehouseModel,bool>(FilterFunc)"
-          CanCancelEdit="true"
-          Items="@_warehouses"
-          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-          GroupFooterClass="mb-4"
-          Dense="true"
-          Loading="@_loading" LoadingProgressColor="Color.Info"
-          MultiSelection="true"
-          @bind-SelectedItems="_selectedWarehouses"
-          SelectOnRowClick="false"
-          CommitEditTooltip="Commit Edit"
-          CancelEditTooltip="Cancel Edit"
-          IsEditRowSwitchingBlocked="false"
-          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-          RowEditCommit="ItemHasBeenCommitted"
-          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-          @ref="_tableRef">
+Filter="new Func<WarehouseModel,bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@WarehouseModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedWarehouses"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Warehouses</MudText>
@@ -56,68 +56,95 @@
     <ColGroup>
         <col style="max-width: 50px" />
         <col style="max-width: 50px" />
+        <col style="min-width: 150px" />
         <col style="min-width: 200px" />
-        <col style="min-width: 500px" />
+        <col style="min-width: 100px" />
+        <col style="min-width: 100px" />
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<WarehouseModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
-        <MudTh>Address</MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<WarehouseModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
+        <MudTh>Company</MudTh>
+        <MudTh>Zone</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Address">@context.Address</MudTd>
+        <MudTd DataLabel="Company">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenCompanyDialogAsync(@context.CompanyId, CurrentStaff, Dialog))"
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
+                View (1)
+            </MudButton>
+        </MudTd>
+        <MudTd DataLabel="Zone">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenZoneDialogAsync(@context.ZoneIds, CurrentStaff, Dialog))"
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
+                View (@context.ZoneIds.Count)
+            </MudButton>
+        </MudTd>
     </RowTemplate>
 
     <RowEditingTemplate>
         <MudTd DataLabel="Name">
             <MudTextField @bind-Value="context.Name" Required />
         </MudTd>
-        <MudTd DataLabel="Address">
-            <MudTextField @bind-Value="context.Address" Required />
-        </MudTd>
+
+        <MudTd DataLabel="Warehouse"></MudTd>
+        <MudTd DataLabel="Staff"></MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-                       RowsPerPageString="Rows per page:"
-                       InfoFormat="{first_item}-{last_item} of {all_items}"
-                       AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right" />
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
 @code {
-    private List<WarehouseModel> _warehouses { get; set; } = new List<WarehouseModel>();
+    [Parameter]
+    public List<Guid> WarehouseIds { get; set; } = new List<Guid>();
+    public List<WarehouseModel> WarehouseModels { get; set; } = new List<WarehouseModel>();
+
+    [Parameter]
+    public GetStaffResponseDTO CurrentStaff { get; set; }
+
     private HashSet<WarehouseModel> _selectedWarehouses = new HashSet<WarehouseModel>();
     private bool _disableDelete => !_selectedWarehouses.Any();
-    private GetStaffResponseDTO _currentStaff { get; set; }
 
     private bool _loading { get; set; }
     private string searchString = "";
     private MudTable<WarehouseModel> _tableRef;
     private WarehouseModel _warehouseModelBeforeEdit { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         _loading = true;
-        await base.OnInitializedAsync();
-        _currentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
-        var getAllWarehouseQuery = new GetAllWarehouseIdsByCompanyIdQuery(_currentStaff.CompanyId);
-        var allWarehouseResponseDTO = await Mediator.Send(getAllWarehouseQuery);
+        await base.OnParametersSetAsync();
 
-        foreach (var warehouseResponseDTO in allWarehouseResponseDTO)
+        foreach (var warehouseId in WarehouseIds)
         {
+            var getWarehouseByIdQuery = new GetWarehouseByIdQuery(warehouseId);
+            var warehouseDTO = await Mediator.Send(getWarehouseByIdQuery);
+
             var warehouseModel = new WarehouseModel()
             {
-                Id = warehouseResponseDTO.Id,
-                Name = warehouseResponseDTO.Name,
-                Address = warehouseResponseDTO.Address,
-                CompanyId = _currentStaff.CompanyId,
+                Id = warehouseDTO.Id,
+                Name = warehouseDTO.Name,
+                Address = warehouseDTO.Address,
+                CompanyId = warehouseDTO.CompanyId,
+                ZoneIds = warehouseDTO.ZoneIds,
             };
 
-            _warehouses.Add(warehouseModel);
+            WarehouseModels.Add(warehouseModel);
         }
-
         _loading = false;
     }
 
@@ -127,9 +154,12 @@
             return true;
         if (warehouseModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
+        if (warehouseModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
         return false;
     }
-    
+
     private async Task DeleteWarehouses()
     {
         var success = true;
@@ -140,7 +170,7 @@
 
             if (result.Success)
             {
-                _warehouses.Remove(warehouseModel);
+                WarehouseModels.Remove(warehouseModel);
             }
 
             success &= result.Success;
@@ -158,6 +188,7 @@
             Name = ((WarehouseModel)warehouseModel).Name,
             Address = ((WarehouseModel)warehouseModel).Address,
             CompanyId = ((WarehouseModel)warehouseModel).CompanyId,
+            ZoneIds = ((WarehouseModel)warehouseModel).ZoneIds,
         };
         StateHasChanged();
     }
@@ -168,6 +199,7 @@
         ((WarehouseModel)warehouseModel).Name = _warehouseModelBeforeEdit.Name;
         ((WarehouseModel)warehouseModel).Address = _warehouseModelBeforeEdit.Address;
         ((WarehouseModel)warehouseModel).CompanyId = _warehouseModelBeforeEdit.CompanyId;
+        ((WarehouseModel)warehouseModel).ZoneIds = _warehouseModelBeforeEdit.ZoneIds;
 
         StateHasChanged();
     }
@@ -177,11 +209,12 @@
         var warehouseModelConverted = (WarehouseModel)warehouseModel;
         var updateWarehouseDTO = new UpdateWarehouseRequestDTO()
         {
-            CreatedBy = _currentStaff.Id,
+            CreatedBy = CurrentStaff.Id,
             Id = warehouseModelConverted.Id,
             Name = warehouseModelConverted.Name,
             Address = warehouseModelConverted.Address,
             CompanyId = warehouseModelConverted.CompanyId,
+            ZoneIds = warehouseModelConverted.ZoneIds,
         };
         var updateWarehouseCommand = new UpdateWarehouseCommand(updateWarehouseDTO);
         var response = await Mediator.Send(updateWarehouseCommand);
@@ -191,14 +224,23 @@
 
     private async Task OpenCreateWarehouseDialogAsync()
     {
-        var maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = await Dialog.ShowAsync<CreateWarehouseDialog>("Create Warehouse", maxWidth);
+        var parameters = new DialogParameters<CreateWarehouseDialog>()
+        {
+            { x => x.CurrentStaff,  CurrentStaff},
+        };
+        var options = Theme.DefaultCreateDialogOptions();
+        var dialog = await Dialog.ShowAsync<CreateWarehouseDialog>("Create Warehouse", parameters, options);
         var dialogResult = await dialog.Result;
 
-        if (dialogResult != null && !dialogResult.Canceled)
+        if (dialogResult != null && !dialogResult.Canceled && dialogResult.Data != null)
         {
             var warehouseModelCreated = (WarehouseModel)dialogResult.Data;
-            _warehouses.Add(warehouseModelCreated);
+            if (warehouseModelCreated == null)
+            {
+                throw new Exception("Warehouse created is not recognized");
+
+            }
+            WarehouseModels.Add(warehouseModelCreated);
             StateHasChanged();
             SnackBar.Add($"{warehouseModelCreated.Name} created");
         }

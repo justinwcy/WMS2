@@ -2,29 +2,21 @@
 @using Application.Service.Commands
 @using Application.DTO.Request
 @using Application.DTO.Response
-@using Application.Service.Queries
-@using WebUI.Utilities
 <MudDialog>
     <TitleContent>
         Create Warehouse
     </TitleContent>
     <DialogContent>
-        <MudForm @ref="_form" @bind-IsValid="@_isFormValid">
+        <MudForm @bind-IsValid="@_isFormValid">
             <MudTextField @bind-value="_warehouseModel.Name"
-                          Variant="@_defaultVariant"
-                          T="string"
-                          Label="Warehouse Name"
-                          Required="true" RequiredError="Name is required!"
-                          Margin="Margin.Dense"/>
-            
-            <MudTextField @bind-value="_warehouseModel.Address"
-                          Variant="@_defaultVariant"
-                          T="string"
-                          Label="Warehouse Address"
-                          Required="true" RequiredError="Address is required!"
-                          Margin="Margin.Dense" />
+            Variant="@_defaultVariant"
+            T="string"
+            Label="Warehouse Name"
+            Required="true" RequiredError="Name is required!"
+            Margin="Margin.Dense"/>
+
         </MudForm>
-        </DialogContent>
+    </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
         <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!_isFormValid)">Ok</MudButton>
@@ -36,19 +28,21 @@
     private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
 
     private bool _isFormValid { get; set; } = false;
-    private MudForm _form;
 
     private WarehouseModel _warehouseModel { get; set; } = new WarehouseModel();
-    private GetStaffResponseDTO _getStaffResponseDTO { get; set; }
+
+    [Parameter]
+    public required GetStaffResponseDTO CurrentStaff { get; set; }
 
     private async Task Submit()
     {
         var createWarehouseDTO = new CreateWarehouseRequestDTO()
         {
-            CreatedBy = _getStaffResponseDTO.CreatedBy,
+            CreatedBy = CurrentStaff.CreatedBy,
             Name = _warehouseModel.Name,
             Address = _warehouseModel.Address,
             CompanyId = _warehouseModel.CompanyId,
+            ZoneIds = _warehouseModel.ZoneIds,
         };
         var createWarehouseCommand = new CreateWarehouseCommand(createWarehouseDTO);
         var createdWarehouseResponseDTO = await Mediator.Send(createWarehouseCommand);
@@ -59,6 +53,7 @@
             Name = _warehouseModel.Name,
             Address = _warehouseModel.Address,
             CompanyId = _warehouseModel.CompanyId,
+            ZoneIds = _warehouseModel.ZoneIds,
         };
         MudDialog.Close(DialogResult.Ok(createdWarehouseModel));
     }
@@ -66,13 +61,5 @@
     private void Cancel()
     {
         MudDialog.Cancel();
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        _getStaffResponseDTO = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
-        _warehouseModel.CompanyId = _getStaffResponseDTO.CompanyId;
-
     }
 }

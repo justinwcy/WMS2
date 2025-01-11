@@ -2,42 +2,40 @@
 @using Application.Service.Commands
 @using Application.DTO.Request
 @using Application.DTO.Response
-@using Application.Service.Queries
-@using WebUI.Utilities
 <MudDialog>
     <TitleContent>
         Create Shop
     </TitleContent>
     <DialogContent>
-        <MudForm @ref="_form" @bind-IsValid="@_isFormValid">
+        <MudForm @bind-IsValid="@_isFormValid">
             <MudTextField @bind-value="_shopModel.Name"
-                          Variant="@_defaultVariant"
-                          T="string"
-                          Label="Shop Name"
-                          Required="true" RequiredError="Name is required!"
-                          Margin="Margin.Dense"/>
-            
+            Variant="@_defaultVariant"
+            T="string"
+            Label="Shop Name"
+            Required="true" RequiredError="Name is required!"
+            Margin="Margin.Dense"/>
+
             <MudTextField @bind-value="_shopModel.Platform"
-                          Variant="@_defaultVariant"
-                          T="string"
-                          Label="Platform Name"
-                          Required="true" RequiredError="Platform is required!"
-                          Margin="Margin.Dense" />
-            
+            Variant="@_defaultVariant"
+            T="string"
+            Label="Platform Name"
+            Required="true" RequiredError="Platform is required!"
+            Margin="Margin.Dense" />
+
             <MudTextField @bind-value="_shopModel.Address"
-                          Variant="@_defaultVariant"
-                          T="string"
-                          Label="Address"
-                          Margin="Margin.Dense" />
-            
+            Variant="@_defaultVariant"
+            T="string"
+            Label="Address"
+            Margin="Margin.Dense" />
+
             <MudTextField @bind-value="_shopModel.Website"
-                          Variant="@_defaultVariant"
-                          T="string"
-                          Label="Website"
-                          Margin="Margin.Dense" />
+            Variant="@_defaultVariant"
+            T="string"
+            Label="Website"
+            Margin="Margin.Dense" />
 
         </MudForm>
-        </DialogContent>
+    </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
         <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!_isFormValid)">Ok</MudButton>
@@ -47,19 +45,19 @@
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
     private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
-    private static List<ProductModel> _products = new List<ProductModel>();
 
     private bool _isFormValid { get; set; } = false;
-    private MudForm _form;
 
     private ShopModel _shopModel { get; set; } = new ShopModel();
-    private GetStaffResponseDTO _getStaffResponseDTO { get; set; }
+
+    [Parameter]
+    public required GetStaffResponseDTO CurrentStaff { get; set; }
 
     private async Task Submit()
     {
         var createShopDTO = new CreateShopRequestDTO()
         {
-            CreatedBy = _getStaffResponseDTO.CreatedBy,
+            CreatedBy = CurrentStaff.CreatedBy,
             Name = _shopModel.Name,
             Platform = _shopModel.Platform,
             Address = _shopModel.Address,
@@ -76,7 +74,7 @@
             Platform = _shopModel.Platform,
             Address = _shopModel.Address,
             Website = _shopModel.Website,
-            ProductIdsString = _shopModel.ProductIdsString,
+            ProductIds = _shopModel.ProductIds,
         };
         MudDialog.Close(DialogResult.Ok(createdShopModel));
     }
@@ -85,40 +83,4 @@
     {
         MudDialog.Cancel();
     }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        _getStaffResponseDTO = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
-
-        var getAllProductsQuery = new GetAllProductIdsByCompanyIdQuery(_getStaffResponseDTO.CompanyId);
-        var getAllProductsDTO = await Mediator.Send(getAllProductsQuery);
-
-        foreach (var productDTO in getAllProductsDTO)
-        {
-            var productModel = new ProductModel()
-            {
-                Description = productDTO.Description,
-                Height = productDTO.Height,
-                Id = productDTO.Id,
-                Length = productDTO.Length,
-                Name = productDTO.Name,
-                Price = productDTO.Price,
-                Sku = productDTO.Sku,
-                Tag = productDTO.Tag,
-                Width = productDTO.Width,
-                Weight = productDTO.Weight,
-            };
-
-            _products.Add(productModel);
-        }
-    }
-
-    private readonly Func<ProductModel, string> _convertProductIdsToString =
-        productId =>
-        {
-            var productModel = _products
-                .FirstOrDefault(product => product.Id.ToString() == productId.ToString());
-            return $"{productModel?.Sku} - {productModel?.Name}";
-        };
 }

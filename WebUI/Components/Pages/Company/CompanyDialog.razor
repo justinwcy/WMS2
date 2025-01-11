@@ -1,17 +1,17 @@
 ﻿@using Application.DTO.Response
 <MudDialog>
     <TitleContent>
-        Products
+        Companies
     </TitleContent>
     <DialogContent>
-        <Product ProductIds="ProductIds"
-                 CurrentStaff="CurrentStaff" />
+        <Company CompanyIds="CompanyIds"
+              CurrentStaff="CurrentStaff" />
     </DialogContent>
 
 </MudDialog>
 @code {
     [Parameter]
-    public List<Guid> ProductIds { get; set; }
+    public List<Guid> CompanyIds { get; set; }
 
     [Parameter]
     public GetStaffResponseDTO CurrentStaff { get; set; }

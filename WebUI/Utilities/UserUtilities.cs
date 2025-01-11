@@ -22,10 +22,8 @@ namespace WebUI.Utilities
                 var getStaffResponseDTO = await mediator.Send(getStaffByIdQuery);
                 return getStaffResponseDTO;
             }
-            else
-            {
-                throw new Exception("User not found!");
-            }
+
+            throw new Exception("User not found!");
         }
     }
 }

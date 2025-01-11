@@ -1,12 +1,12 @@
-﻿@page "/shops"
+﻿@page "/companies"
 @using Application.DTO.Response
 @using WebUI.Utilities
 @using Application.Service.Queries
-<Shop ShopIds="ShopIds"
-      CurrentStaff="CurrentStaff" />
+<Warehouse WarehouseIds="WarehouseIds"
+           CurrentStaff="CurrentStaff" />
 
 @code {
-    private List<Guid> ShopIds { get; set; } = new List<Guid>();
+    private List<Guid> WarehouseIds { get; set; } = new List<Guid>();
     private GetStaffResponseDTO CurrentStaff { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -14,7 +14,7 @@
         await base.OnInitializedAsync();
         CurrentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
 
-        var getAllShopIdsByCompanyIdQuery = new GetAllShopIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        ShopIds = await Mediator.Send(getAllShopIdsByCompanyIdQuery);
+        var getAllWarehouseIdsQuery = new GetAllWarehouseIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        WarehouseIds = await Mediator.Send(getAllWarehouseIdsQuery);
     }
 }

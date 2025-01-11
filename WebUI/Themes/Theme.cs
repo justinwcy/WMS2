@@ -9,6 +9,16 @@ public static class Theme
         return Variant.Text;
     }
 
+    public static DialogOptions DefaultCreateDialogOptions()
+    {
+        return new DialogOptions() { MaxWidth = MaxWidth.Small, FullWidth = true };
+    }
+
+    public static DialogOptions DefaultViewDialogOptions()
+    {
+        return new DialogOptions() { MaxWidth = MaxWidth.ExtraLarge, FullWidth = true };
+    }
+
     public static MudTheme ApplicationTheme()
     {
         var theme = new MudTheme

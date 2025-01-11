@@ -16,9 +16,11 @@ namespace Infrastructure.Repository
         {
             await using var wmsDbContext = contextFactory.CreateDbContext();
             var shopFound = await wmsDbContext.Shops.AsNoTracking()
+                .Include(shop=>shop.Products)
                 .FirstAsync(shop=>shop.Id == request.Id, cancellationToken);
 
             var result = shopFound.Adapt<GetShopResponseDTO>();
+            result.ProductIds = shopFound.Products.Select(product => product.Id).ToList();
             return result;
         }
     }

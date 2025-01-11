@@ -2,21 +2,21 @@
 @using Application.Service.Commands
 @using Application.DTO.Request
 @using Application.DTO.Response
-@using WebUI.Utilities
 <MudDialog>
     <TitleContent>
         Create Company
     </TitleContent>
     <DialogContent>
-        <MudForm @ref="_form" @bind-IsValid="@_isFormValid">
+        <MudForm @bind-IsValid="@_isFormValid">
             <MudTextField @bind-value="_companyModel.Name"
-                          Variant="@_defaultVariant"
-                          T="string"
-                          Label="Company Name"
-                          Required="true" RequiredError="Name is required!"
-                          Margin="Margin.Dense"/>
+            Variant="@_defaultVariant"
+            T="string"
+            Label="Company Name"
+            Required="true" RequiredError="Name is required!"
+            Margin="Margin.Dense"/>
+
         </MudForm>
-        </DialogContent>
+    </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
         <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!_isFormValid)">Ok</MudButton>
@@ -28,19 +28,20 @@
     private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
 
     private bool _isFormValid { get; set; } = false;
-    private MudForm _form;
 
     private CompanyModel _companyModel { get; set; } = new CompanyModel();
-    private GetStaffResponseDTO _getStaffResponseDTO { get; set; }
+
+    [Parameter]
+    public required GetStaffResponseDTO CurrentStaff { get; set; }
 
     private async Task Submit()
     {
         var createCompanyDTO = new CreateCompanyRequestDTO()
         {
-            CreatedBy = _getStaffResponseDTO.CreatedBy,
+            CreatedBy = CurrentStaff.CreatedBy,
             Name = _companyModel.Name,
-            StaffIds = new List<Guid>(),
-            WarehouseIds = new List<Guid>(),
+            StaffIds = _companyModel.StaffIds,
+            WarehouseIds = _companyModel.WarehouseIds,
         };
         var createCompanyCommand = new CreateCompanyCommand(createCompanyDTO);
         var createdCompanyResponseDTO = await Mediator.Send(createCompanyCommand);
@@ -49,8 +50,8 @@
         {
             Id = createdCompanyResponseDTO.Id,
             Name = _companyModel.Name,
-            StaffIds = new List<Guid>(),
-            WarehouseIds = new List<Guid>()
+            StaffIds = _companyModel.StaffIds,
+            WarehouseIds = _companyModel.WarehouseIds,
         };
         MudDialog.Close(DialogResult.Ok(createdCompanyModel));
     }
@@ -58,11 +59,5 @@
     private void Cancel()
     {
         MudDialog.Cancel();
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        _getStaffResponseDTO = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
     }
 }

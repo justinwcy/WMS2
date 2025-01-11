@@ -29,35 +29,34 @@
 </MudGrid>
 
 <MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
-          Filter="new Func<ProductModel,bool>(FilterFunc)"
-          Items="@ProductModels"
-          Dense="true"
-          Striped="true" 
-          Bordered="true"
-          Loading="@_loading" LoadingProgressColor="Color.Info"
-          MultiSelection="true"
-          @bind-SelectedItems="_selectedProducts" 
-          SelectOnRowClick="false"
+Filter="new Func<ProductModel,bool>(FilterFunc)"
+Items="@ProductModels"
+Dense="true"
+Bordered="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedProducts" 
+SelectOnRowClick="false"
 
-          CanCancelEdit="true"
-          CommitEditTooltip="Commit Edit"
-          CancelEditTooltip="Cancel Edit"
-          IsEditRowSwitchingBlocked="false"
-          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-          RowEditCommit="ItemHasBeenCommitted"
-          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd" 
-          EditButtonPosition="TableEditButtonPosition.StartAndEnd" 
-          EditTrigger="TableEditTrigger.RowClick"
-          >
+CanCancelEdit="true"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd" 
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" 
+EditTrigger="TableEditTrigger.RowClick"
+>
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Products</MudText>
         <MudSpacer/>
         <MudTextField @bind-Value="searchString"
-                      Placeholder="Search"
-                      Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search"
-                      IconSize="Size.Medium" Class="mt-0"/>
+        Placeholder="Search"
+        Adornment="Adornment.Start"
+        AdornmentIcon="@Icons.Material.Filled.Search"
+        IconSize="Size.Medium" Class="mt-0"/>
     </ToolBarContent>
     <ColGroup>
         <col style="max-width: 50px" />
@@ -71,7 +70,8 @@
         <col style="min-width: 150px" />
         <col style="min-width: 150px" />
         <col style="min-width: 150px" />
-        <col style="min-width: 250px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 150px" />
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Sku)">SKU</MudTableSortLabel></MudTh>
@@ -83,6 +83,7 @@
         <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Height)">Height (cm)</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Length)">Length (cm)</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Width)">Width (cm)</MudTableSortLabel></MudTh>
+        <MudTh>Shop</MudTh>
         <MudTh>Product Group</MudTh>
     </HeaderContent>
 
@@ -96,13 +97,22 @@
         <MudTd DataLabel="Height (cm)">@context.Height</MudTd>
         <MudTd DataLabel="Length (cm)">@context.Length</MudTd>
         <MudTd DataLabel="Width (cm)">@context.Width</MudTd>
+        <MudTd DataLabel="Shop">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenShopDialogAsync(context.ShopIds, CurrentStaff, Dialog))"
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Large"
+            FullWidth="false">
+                View (@context.ShopIds.Count)
+            </MudButton>
+        </MudTd>
         <MudTd DataLabel="Product Group">
-            <MudButton OnClick="@(OpenProductGroupDialogAsync)"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="false">
-                View Details (@context.ProductGroupIds.Count)
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductGroupDialogAsync(context.ShopIds, CurrentStaff, Dialog))"
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Large"
+            FullWidth="false">
+                View (@context.ProductGroupIds.Count)
             </MudButton>
         </MudTd>
     </RowTemplate>
@@ -135,6 +145,7 @@
         <MudTd DataLabel="Width (cm)">
             <MudTextField @bind-Value="context.Width" Required />
         </MudTd>
+        <MudTd DataLabel="Shop"></MudTd>
         <MudTd DataLabel="Product Group"></MudTd>
     </RowEditingTemplate>
 
@@ -150,26 +161,48 @@
 
 @code {
     [Parameter]
-    public List<ProductModel> ProductModels { get; set; }
+    public List<Guid> ProductIds { get; set; }
+
+    public List<ProductModel> ProductModels { get; set; } = new List<ProductModel>();
+
     [Parameter]
     public GetStaffResponseDTO CurrentStaff { get; set; }
 
     private HashSet<ProductModel> _selectedProducts = new HashSet<ProductModel>();
     private bool _disableDelete => !_selectedProducts.Any();
-    
+
     private ProductModel _productModelBeforeEdit = new ProductModel();
 
     private bool _loading { get; set; }
     private string searchString = "";
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         _loading = true;
-        await base.OnInitializedAsync();
+        await base.OnParametersSetAsync();
 
-        foreach (var productModel in ProductModels)
+        foreach (var productId in ProductIds)
         {
-            var productGroupIds = productModel.ProductGroupIds;
+            var getProductByIdQuery = new GetProductByIdQuery(productId);
+            var productDTO = await Mediator.Send(getProductByIdQuery);
+
+            var productModel = new ProductModel()
+            {
+                Description = productDTO.Description,
+                Height = productDTO.Height,
+                Id = productDTO.Id,
+                Length = productDTO.Length,
+                Name = productDTO.Name,
+                Price = productDTO.Price,
+                ProductGroupIds = productDTO.ProductGroupIds,
+                Sku = productDTO.Sku,
+                Tag = productDTO.Tag,
+                Weight = productDTO.Weight,
+                Width = productDTO.Width,
+                ShopIds = productDTO.ShopIds
+            };
+
+            ProductModels.Add(productModel);
         }
         _loading = false;
     }
@@ -275,20 +308,15 @@
             { x => x.StaffResponseDTO, CurrentStaff },
         };
 
-        var options = new DialogOptions() { MaxWidth = MaxWidth.Small, FullWidth = true };
+        var options = Theme.DefaultCreateDialogOptions();
         var dialog = await Dialog.ShowAsync<CreateProductDialog>("Create Product", parameters, options);
         var dialogResult = await dialog.Result;
-        
+
         if (dialogResult != null && !dialogResult.Canceled)
         {
             var productModelCreated = (ProductModel)dialogResult.Data;
             ProductModels.Add(productModelCreated);
             StateHasChanged();
         }
-    }
-
-    private async Task OpenProductGroupDialogAsync()
-    {
-        SnackBar.Add("NOT IMPLEMENTED YET");
     }
 }

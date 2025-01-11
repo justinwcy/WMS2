@@ -21,5 +21,7 @@
         public string Sku { get; set; }
 
         public List<Guid> ProductGroupIds { get; set; }
+
+        public List<Guid> ShopIds { get; set; }
     }
 }

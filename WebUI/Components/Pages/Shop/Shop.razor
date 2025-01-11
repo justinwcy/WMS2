@@ -5,48 +5,47 @@
 @using Application.DTO.Request
 @using Application.DTO.Response
 @using WebUI.Utilities
-@using WebUI.Components.Pages.Product
 <MudGrid Class="mb-3">
     <MudItem xs="9">
         <MudButton OnClick="@DeleteShops"
-                   Color="Color.Error"
-                   Variant="Variant.Filled"
-                   Size="Size.Large"
-                   FullWidth="false"
-                   Disabled="_disableDelete">
+        Color="Color.Error"
+        Variant="Variant.Filled"
+        Size="Size.Large"
+        FullWidth="false"
+        Disabled="_disableDelete">
             Delete Shop
         </MudButton>
     </MudItem>
     <MudItem xs="3">
         <MudButton OnClick="@(OpenCreateShopDialogAsync)"
-                   Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   Size="Size.Large"
-                   FullWidth="false">
+        Variant="Variant.Filled"
+        Color="Color.Primary"
+        Size="Size.Large"
+        FullWidth="false">
             Create Shop
         </MudButton>
     </MudItem>
 </MudGrid>
 
 <MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
-          Filter="new Func<ShopModel,bool>(FilterFunc)"
-          CanCancelEdit="true"
-          Items="@ShopModels"
-          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-          GroupFooterClass="mb-4"
-          Dense="true"
-          Loading="@_loading" LoadingProgressColor="Color.Info"
-          MultiSelection="true"
-          @bind-SelectedItems="_selectedShops"
-          SelectOnRowClick="false"
-          CommitEditTooltip="Commit Edit"
-          CancelEditTooltip="Cancel Edit"
-          IsEditRowSwitchingBlocked="false"
-          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-          RowEditCommit="ItemHasBeenCommitted"
-          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-          @ref="_tableRef">
+Filter="new Func<ShopModel,bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@ShopModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedShops"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Shops</MudText>
@@ -56,11 +55,11 @@
     <ColGroup>
         <col style="max-width: 50px" />
         <col style="max-width: 50px" />
+        <col style="min-width: 150px" />
         <col style="min-width: 200px" />
-        <col style="min-width: 200px" />
-        <col style="min-width: 200px" />
-        <col style="min-width: 200px" />
-        <col style="min-width: 200px" />
+        <col style="min-width: 100px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 100px" />
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<ShopModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
@@ -75,12 +74,12 @@
         <MudTd DataLabel="Website">@context.Website</MudTd>
         <MudTd DataLabel="Platform">@context.Platform</MudTd>
         <MudTd DataLabel="Products">
-            <MudButton OnClick="@(() => OpenProductDialogAsync(@context.ProductIds))"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Small"
-                       FullWidth="false">
-                View Products
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
+                View (@context.ProductIds.Count)
             </MudButton>
         </MudTd>
     </RowTemplate>
@@ -89,33 +88,34 @@
         <MudTd DataLabel="Name">
             <MudTextField @bind-Value="context.Name" Required />
         </MudTd>
-        
+
         <MudTd DataLabel="Address">
             <MudTextField @bind-Value="context.Address" Required />
         </MudTd>
-        
+
         <MudTd DataLabel="Website">
             <MudTextField @bind-Value="context.Website" Required />
         </MudTd>
-        
+
         <MudTd DataLabel="Platform">
             <MudTextField @bind-Value="context.Platform" Required />
         </MudTd>
-        
+
         <MudTd DataLabel="Products"></MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-                       RowsPerPageString="Rows per page:"
-                       InfoFormat="{first_item}-{last_item} of {all_items}"
-                       AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right" />
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
 @code {
     [Parameter]
+    public List<Guid> ShopIds { get; set; } = new List<Guid>();
     public List<ShopModel> ShopModels { get; set; } = new List<ShopModel>();
 
     [Parameter]
@@ -129,11 +129,28 @@
     private MudTable<ShopModel> _tableRef;
     private ShopModel _shopModelBeforeEdit { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         _loading = true;
-        await base.OnInitializedAsync();
+        await base.OnParametersSetAsync();
 
+        foreach (var shopId in ShopIds)
+        {
+            var getShopByIdQuery = new GetShopByIdQuery(shopId);
+            var shopDTO = await Mediator.Send(getShopByIdQuery);
+
+            var shopModel = new ShopModel()
+            {
+                ProductIds = shopDTO.ProductIds,
+                Platform = shopDTO.Platform,
+                Address = shopDTO.Address,
+                Id = shopDTO.Id,
+                Name = shopDTO.Name,
+                Website = shopDTO.Website
+            };
+
+            ShopModels.Add(shopModel);
+        }
         _loading = false;
     }
 
@@ -152,7 +169,7 @@
 
         return false;
     }
-    
+
     private async Task DeleteShops()
     {
         var success = true;
@@ -176,14 +193,14 @@
     {
 
         _shopModelBeforeEdit = new ShopModel()
-            {
-                Id = ((ShopModel)shopModel).Id,
-                Name = ((ShopModel)shopModel).Name,
-                Address = ((ShopModel)shopModel).Address,
-                Platform = ((ShopModel)shopModel).Platform,
-                Website = ((ShopModel)shopModel).Website,
-                ProductIdsString = ((ShopModel)shopModel).ProductIdsString,
-            };
+        {
+            Id = ((ShopModel)shopModel).Id,
+            Name = ((ShopModel)shopModel).Name,
+            Address = ((ShopModel)shopModel).Address,
+            Platform = ((ShopModel)shopModel).Platform,
+            Website = ((ShopModel)shopModel).Website,
+            ProductIds = ((ShopModel)shopModel).ProductIds,
+        };
         StateHasChanged();
     }
 
@@ -194,7 +211,7 @@
         ((ShopModel)shopModel).Address = _shopModelBeforeEdit.Address;
         ((ShopModel)shopModel).Platform = _shopModelBeforeEdit.Platform;
         ((ShopModel)shopModel).Website = _shopModelBeforeEdit.Website;
-        ((ShopModel)shopModel).ProductIdsString = _shopModelBeforeEdit.ProductIdsString;
+        ((ShopModel)shopModel).ProductIds = _shopModelBeforeEdit.ProductIds;
 
         StateHasChanged();
     }
@@ -220,35 +237,26 @@
 
     private async Task OpenCreateShopDialogAsync()
     {
-        var maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = await Dialog.ShowAsync<CreateShopDialog>("Create Shop", maxWidth);
+        var parameters = new DialogParameters<CreateShopDialog>()
+        {
+            { x => x.CurrentStaff,  CurrentStaff},
+        };
+
+        var options = Theme.DefaultCreateDialogOptions();
+        var dialog = await Dialog.ShowAsync<CreateShopDialog>("Create Shop", parameters, options);
         var dialogResult = await dialog.Result;
 
-        if (dialogResult != null && !dialogResult.Canceled)
+        if (dialogResult != null && !dialogResult.Canceled && dialogResult.Data != null)
         {
             var shopModelCreated = (ShopModel)dialogResult.Data;
+            if (shopModelCreated == null)
+            {
+                throw new Exception("Shop created is not recognized");
+
+            }
             ShopModels.Add(shopModelCreated);
             StateHasChanged();
             SnackBar.Add($"{shopModelCreated.Name} created");
         }
-    }
-
-    private async Task OpenProductDialogAsync(List<Guid> productIds)
-    {
-        foreach (var productId in productIds)
-        {
-            var getProductByIdQuery = new GetProductByIdQuery(productId);
-
-        }
-        // var parameters = new DialogParameters<ProductsDialog>()
-        // {
-        //     { x => x.CurrentStaff,  },
-        //     { x => x.ProductModels,  },
-        // };
-
-        var options = new DialogOptions() { MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = await Dialog.ShowAsync<ProductsDialog>("Products", options);
-
-        return;
     }
 }

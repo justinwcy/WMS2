@@ -1,54 +1,51 @@
-﻿@page "/companies"
-@attribute [Authorize(Roles = StaffRole.MasterControl)]
-@inject IDialogService Dialog
+﻿@inject IDialogService Dialog
 @using Application.Service.Queries
 @using WebUI.Components.Models
 @using Application.Service.Commands
 @using Application.DTO.Request
 @using Application.DTO.Response
 @using WebUI.Utilities
-@using Application.Constants
 <MudGrid Class="mb-3">
     <MudItem xs="9">
         <MudButton OnClick="@DeleteCompanies"
-                   Color="Color.Error"
-                   Variant="Variant.Filled"
-                   Size="Size.Large"
-                   FullWidth="false"
-                   Disabled="_disableDelete">
+        Color="Color.Error"
+        Variant="Variant.Filled"
+        Size="Size.Large"
+        FullWidth="false"
+        Disabled="_disableDelete">
             Delete Company
         </MudButton>
     </MudItem>
     <MudItem xs="3">
         <MudButton OnClick="@(OpenCreateCompanyDialogAsync)"
-                   Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   Size="Size.Large"
-                   FullWidth="false">
+        Variant="Variant.Filled"
+        Color="Color.Primary"
+        Size="Size.Large"
+        FullWidth="false">
             Create Company
         </MudButton>
     </MudItem>
 </MudGrid>
 
 <MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
-          Filter="new Func<CompanyModel,bool>(FilterFunc)"
-          CanCancelEdit="true"
-          Items="@_companies"
-          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-          GroupFooterClass="mb-4"
-          Dense="true"
-          Loading="@_loading" LoadingProgressColor="Color.Info"
-          MultiSelection="true"
-          @bind-SelectedItems="_selectedCompanies"
-          SelectOnRowClick="false"
-          CommitEditTooltip="Commit Edit"
-          CancelEditTooltip="Cancel Edit"
-          IsEditRowSwitchingBlocked="false"
-          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-          RowEditCommit="ItemHasBeenCommitted"
-          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-          @ref="_tableRef">
+Filter="new Func<CompanyModel,bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@CompanyModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedCompanies"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Companies</MudText>
@@ -58,70 +55,91 @@
     <ColGroup>
         <col style="max-width: 50px" />
         <col style="max-width: 50px" />
-        <col style="min-width: 450px" />
         <col style="min-width: 150px" />
-        <col style="min-width: 150px" />
+        <col style="min-width: 200px" />
+        <col style="min-width: 100px" />
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<CompanyModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
-        <MudTh>Number of users</MudTh>
-        <MudTh>Number of warehouses</MudTh>
+        <MudTh>Warehouse</MudTh>
+        <MudTh>Staff</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Number of users">@context.StaffIds.Count</MudTd>
-        <MudTd DataLabel="Number of warehouses">@context.WarehouseIds.Count</MudTd>
+        <MudTd DataLabel="Warehouse">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenWarehouseDialogAsync(@context.WarehouseIds, CurrentStaff, Dialog))"
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
+                View (@context.WarehouseIds.Count)
+            </MudButton>
+        </MudTd>
+        <MudTd DataLabel="Staff">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenStaffDialogAsync(@context.StaffIds, CurrentStaff, Dialog))"
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
+                View (@context.StaffIds.Count)
+            </MudButton>
+        </MudTd>
     </RowTemplate>
 
     <RowEditingTemplate>
         <MudTd DataLabel="Name">
             <MudTextField @bind-Value="context.Name" Required />
         </MudTd>
-        <MudTd DataLabel="Number of users"/>
-        <MudTd DataLabel="Number of warehouses"/>
+
+        <MudTd DataLabel="Warehouse"></MudTd>
+        <MudTd DataLabel="Staff"></MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
-        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-                       RowsPerPageString="Rows per page:"
-                       InfoFormat="{first_item}-{last_item} of {all_items}"
-                       AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right" />
+        <MudTablePager PageSizeOptions="new[] { 10, 25, 50, 100, int.MaxValue }"
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
 @code {
-    private List<CompanyModel> _companies { get; set; } = new List<CompanyModel>();
+    [Parameter]
+    public List<Guid> CompanyIds { get; set; } = new List<Guid>();
+    public List<CompanyModel> CompanyModels { get; set; } = new List<CompanyModel>();
+
+    [Parameter]
+    public GetStaffResponseDTO CurrentStaff { get; set; }
+
     private HashSet<CompanyModel> _selectedCompanies = new HashSet<CompanyModel>();
     private bool _disableDelete => !_selectedCompanies.Any();
-    private GetStaffResponseDTO _currentStaff { get; set; }
 
     private bool _loading { get; set; }
     private string searchString = "";
     private MudTable<CompanyModel> _tableRef;
     private CompanyModel _companyModelBeforeEdit { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         _loading = true;
-        await base.OnInitializedAsync();
-        _currentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
-        var getAllCompanyQuery = new GetAllCompanyQuery();
-        var allCompanyResponseDTO = await Mediator.Send(getAllCompanyQuery);
+        await base.OnParametersSetAsync();
 
-        foreach (var companyResponseDTO in allCompanyResponseDTO)
+        foreach (var companyId in CompanyIds)
         {
-            var companyModel = new CompanyModel
+            var getCompanyByIdQuery = new GetCompanyByIdQuery(companyId);
+            var companyDTO = await Mediator.Send(getCompanyByIdQuery);
+
+            var companyModel = new CompanyModel()
             {
-                Id = companyResponseDTO.Id,
-                Name = companyResponseDTO.Name,
-                StaffIds = companyResponseDTO.StaffIds,
-                WarehouseIds = companyResponseDTO.WarehouseIds
+                Id = companyDTO.Id,
+                Name = companyDTO.Name,
+                WarehouseIds = companyDTO.WarehouseIds,
+                StaffIds = companyDTO.StaffIds,
             };
 
-            _companies.Add(companyModel);
+            CompanyModels.Add(companyModel);
         }
-
         _loading = false;
     }
 
@@ -131,9 +149,10 @@
             return true;
         if (companyModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
+
         return false;
     }
-    
+
     private async Task DeleteCompanies()
     {
         var success = true;
@@ -144,25 +163,25 @@
 
             if (result.Success)
             {
-                _companies.Remove(companyModel);
+                CompanyModels.Remove(companyModel);
             }
 
             success &= result.Success;
         }
 
-        SnackBar.Add(success ? "Companies Deleted" : "Failed to delete companies");
+        SnackBar.Add(success ? "Companies Deleted" : "Failed to delete companys");
     }
 
     private void BackupItem(object companyModel)
     {
 
         _companyModelBeforeEdit = new CompanyModel()
-            {
-                Id = ((CompanyModel)companyModel).Id,
-                Name = ((CompanyModel)companyModel).Name,
-                StaffIds = ((CompanyModel)companyModel).StaffIds,
-                WarehouseIds = ((CompanyModel)companyModel).WarehouseIds,
-            };
+        {
+            Id = ((CompanyModel)companyModel).Id,
+            Name = ((CompanyModel)companyModel).Name,
+            StaffIds = ((CompanyModel)companyModel).StaffIds,
+            WarehouseIds = ((CompanyModel)companyModel).WarehouseIds,
+        };
         StateHasChanged();
     }
 
@@ -181,7 +200,7 @@
         var companyModelConverted = (CompanyModel)companyModel;
         var updateCompanyDTO = new UpdateCompanyRequestDTO()
         {
-            CreatedBy = _currentStaff.Id,
+            CreatedBy = CurrentStaff.Id,
             Id = companyModelConverted.Id,
             Name = companyModelConverted.Name,
             StaffIds = companyModelConverted.StaffIds,
@@ -195,14 +214,23 @@
 
     private async Task OpenCreateCompanyDialogAsync()
     {
-        var maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = await Dialog.ShowAsync<CreateCompanyDialog>("Create Company", maxWidth);
+        var parameters = new DialogParameters<CreateCompanyDialog>()
+        {
+            { x => x.CurrentStaff,  CurrentStaff},
+        };
+        var options = Theme.DefaultCreateDialogOptions();
+        var dialog = await Dialog.ShowAsync<CreateCompanyDialog>("Create Company", parameters, options);
         var dialogResult = await dialog.Result;
 
-        if (dialogResult != null && !dialogResult.Canceled)
+        if (dialogResult != null && !dialogResult.Canceled && dialogResult.Data != null)
         {
             var companyModelCreated = (CompanyModel)dialogResult.Data;
-            _companies.Add(companyModelCreated);
+            if (companyModelCreated == null)
+            {
+                throw new Exception("Company created is not recognized");
+
+            }
+            CompanyModels.Add(companyModelCreated);
             StateHasChanged();
             SnackBar.Add($"{companyModelCreated.Name} created");
         }

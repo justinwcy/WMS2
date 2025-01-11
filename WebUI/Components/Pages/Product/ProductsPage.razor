@@ -1,44 +1,23 @@
 ﻿@page "/products"
 @using WebUI.Utilities
 @using Application.Service.Queries
-@using WebUI.Components.Models
 @using Application.DTO.Response
 
-<Product 
-    ProductModels="_productModels" 
-    CurrentStaff="_currentStaff"/>
+<Product ProductIds="ProductIds"
+         CurrentStaff="CurrentStaff"/>
 
 @code {
 
-    private List<ProductModel> _productModels { get; set; } = new List<ProductModel>();
-    private GetStaffResponseDTO _currentStaff { get; set; }
+    private List<Guid> ProductIds { get; set; } = new List<Guid>();
+    private GetStaffResponseDTO CurrentStaff { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        _currentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
-        var getAllProductByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(_currentStaff.CompanyId);
-        var allProductDTO = await Mediator.Send(getAllProductByCompanyIdQuery);
+        CurrentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
 
-        foreach (var productDTO in allProductDTO)
-        {
-            var productModel = new ProductModel()
-            {
-                Id = productDTO.Id,
-                ProductGroupIds = productDTO.ProductGroupIds,
-                Description = productDTO.Description,
-                Name = productDTO.Name,
-                Height = productDTO.Height,
-                Length = productDTO.Length,
-                Width = productDTO.Width,
-                Price = decimal.Round(productDTO.Price, 2, MidpointRounding.AwayFromZero),
-                Sku = productDTO.Sku,
-                Tag = productDTO.Tag,
-                Weight = productDTO.Weight,
-            };
-
-            _productModels.Add(productModel);
-        }
+        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        ProductIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
     }
 }
 

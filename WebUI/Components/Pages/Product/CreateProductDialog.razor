@@ -7,7 +7,7 @@
         Create Product
     </TitleContent>
     <DialogContent>
-        <MudForm @ref="_form" @bind-IsValid="@_isFormValid">
+        <MudForm @bind-IsValid="@_isFormValid">
             <MudTextField @bind-value="_productModel.Sku"
                           Variant="@_defaultVariant"
                           T="string"
@@ -83,8 +83,6 @@
     private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
 
     private bool _isFormValid { get; set; } = false;
-    private MudForm _form;
-
     private ProductModel _productModel { get; set; } = new ProductModel();
 
     [Parameter]
@@ -104,6 +102,7 @@
             Tag = _productModel.Tag,
             Weight = _productModel.Weight,
             Width = _productModel.Width,
+            ProductGroupIds = _productModel.ProductGroupIds,
         };
         var createProductCommand = new CreateProductCommand(createProductDTO);
         var createdProductResponseDTO = await Mediator.Send(createProductCommand);

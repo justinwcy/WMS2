@@ -16,9 +16,13 @@ namespace Infrastructure.Repository
         {
             await using var wmsDbContext = contextFactory.CreateDbContext();
             var companyFound = await wmsDbContext.Companies.AsNoTracking()
+                .Include(company=>company.Staffs)
+                .Include(company=>company.Warehouses)
                 .FirstAsync(company=>company.Id == request.Id, cancellationToken);
 
             var result = companyFound.Adapt<GetCompanyResponseDTO>();
+            result.StaffIds = companyFound.Staffs.Select(staff => staff.Id).ToList();
+            result.WarehouseIds = companyFound.Warehouses.Select(warehouse => warehouse.Id).ToList();
             return result;
         }
     }
