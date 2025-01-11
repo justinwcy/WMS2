@@ -1,0 +1,65 @@
+
+@using WebUI.Components.Models
+@using Application.Service.Commands
+@using Application.DTO.Request
+@using Application.DTO.Response
+<MudDialog>
+    <TitleContent>
+        Create Bin
+    </TitleContent>
+    <DialogContent>
+        <MudForm @bind-IsValid="@_isFormValid">
+            <MudTextField @bind-value="_binModel.Name"
+            Variant="@_defaultVariant"
+            T="string"
+            Label="Bin Name"
+            Required="true" RequiredError="Name is required!"
+            Margin="Margin.Dense"/>
+
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!_isFormValid)">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
+    private bool _isFormValid { get; set; } = false;
+
+    private BinModel _binModel { get; set; } = new BinModel();
+
+    [Parameter]
+    public required GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private async Task Submit()
+    {
+        var createBinDTO = new CreateBinRequestDTO()
+        {
+            CreatedBy = CurrentStaff.CreatedBy,
+            Name = _binModel.Name,
+            StaffIds = _binModel.StaffIds,
+            WarehouseIds = _binModel.WarehouseIds,
+        };
+        var createBinCommand = new CreateBinCommand(createBinDTO);
+        var createdBinResponseDTO = await Mediator.Send(createBinCommand);
+
+        var createdBinModel = new BinModel()
+        {
+            Id = createdBinResponseDTO.Id,
+            Name = _binModel.Name,
+            StaffIds = _binModel.StaffIds,
+            WarehouseIds = _binModel.WarehouseIds,
+        };
+        MudDialog.Close(DialogResult.Ok(createdBinModel));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
+    
