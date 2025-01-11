@@ -1,4 +1,6 @@
-﻿namespace Application.DTO.BaseDTO.Identity
+﻿using Application.Service.Queries;
+
+namespace Application.DTO.BaseDTO.Identity
 {
     public class BaseStaffClaimsDTO : BaseDTO
     {
@@ -7,5 +9,7 @@
         public string Email { get; set; }
         public IEnumerable<string> Roles { get; set; }
         public IDictionary<string, string> CustomClaims { get; set; }
+
+        public Guid CompanyId { get; set; }
     }
 }

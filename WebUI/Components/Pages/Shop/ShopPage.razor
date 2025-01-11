@@ -16,7 +16,7 @@
     {
         await base.OnInitializedAsync();
         _currentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
-        var getAllShopByCompanyIdQuery = new GetAllShopByCompanyIdQuery(_currentStaff.CompanyId);
+        var getAllShopByCompanyIdQuery = new GetAllShopIdsByCompanyIdQuery(_currentStaff.CompanyId);
         var allShopDTO = await Mediator.Send(getAllShopByCompanyIdQuery);
 
         foreach (var shopDTO in allShopDTO)

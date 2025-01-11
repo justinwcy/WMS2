@@ -102,7 +102,7 @@
         _loading = true;
         await base.OnInitializedAsync();
         _currentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
-        var getAllWarehouseQuery = new GetAllWarehouseByCompanyIdQuery(_currentStaff.CompanyId);
+        var getAllWarehouseQuery = new GetAllWarehouseIdsByCompanyIdQuery(_currentStaff.CompanyId);
         var allWarehouseResponseDTO = await Mediator.Send(getAllWarehouseQuery);
 
         foreach (var warehouseResponseDTO in allWarehouseResponseDTO)

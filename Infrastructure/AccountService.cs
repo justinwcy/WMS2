@@ -127,7 +127,8 @@ namespace Infrastructure.Repository
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Roles = roles,
-                    CustomClaims = customClaims
+                    CustomClaims = customClaims,
+                    CompanyId = companyId,
                 };
                 userList.Add(getStaffWithClaimResponseDTO);
             }

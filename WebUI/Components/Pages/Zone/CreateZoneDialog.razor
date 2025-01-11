@@ -96,7 +96,7 @@
         await base.OnInitializedAsync();
         _getStaffResponseDTO = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
 
-        var getAllWarehouseByCompanyId = new GetAllWarehouseByCompanyIdQuery(_getStaffResponseDTO.CompanyId);
+        var getAllWarehouseByCompanyId = new GetAllWarehouseIdsByCompanyIdQuery(_getStaffResponseDTO.CompanyId);
         var allWarehouseDTO = await Mediator.Send(getAllWarehouseByCompanyId);
 
         foreach (var warehouseDTO in allWarehouseDTO)

@@ -130,7 +130,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         _loading = true;
         await base.OnInitializedAsync();
         _currentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
-        var getAllWarehouseByCompanyIdQuery = new GetAllWarehouseByCompanyIdQuery(_currentStaff.CompanyId);
+        var getAllWarehouseByCompanyIdQuery = new GetAllWarehouseIdsByCompanyIdQuery(_currentStaff.CompanyId);
         var allWarehouseDTO = await Mediator.Send(getAllWarehouseByCompanyIdQuery);
 
         foreach (var warehouseDTO in allWarehouseDTO)
