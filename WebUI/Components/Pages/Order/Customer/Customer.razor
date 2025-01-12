@@ -57,52 +57,52 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <col style="max-width: 50px" />
         <col style="max-width: 50px" />
         <col style="min-width: 150px" />
-        <col style="min-width: 200px" />
-        <col style="min-width: 100px" />
+        <col style="min-width: 150px" />
+        <col style="min-width: 150px" />
         <col style="min-width: 150px" />
         <col style="min-width: 100px" />
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x=>x.FirstName)">First Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x=>x.LastName)">Last Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x=>x.Email)">Email</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
-        <MudTh>Products</MudTh>
+        <MudTh>Customer Orders</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="First Name">@context.FirstName</MudTd>
+        <MudTd DataLabel="Last Name">@context.LastName</MudTd>
+        <MudTd DataLabel="Email">@context.Email</MudTd>
         <MudTd DataLabel="Address">@context.Address</MudTd>
-        <MudTd DataLabel="Website">@context.Website</MudTd>
-        <MudTd DataLabel="Platform">@context.Platform</MudTd>
-        <MudTd DataLabel="Products">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
-                View (@context.ProductIds.Count)
+        <MudTd DataLabel="Customer Orders">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.CustomerOrderIds, CurrentStaff, Dialog))"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
+                View (@context.CustomerOrderIds.Count)
             </MudButton>
         </MudTd>
     </RowTemplate>
 
     <RowEditingTemplate>
-        <MudTd DataLabel="Name">
-            <MudTextField @bind-Value="context.Name" Required />
+        <MudTd DataLabel="First Name">
+            <MudTextField @bind-Value="context.FirstName" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Last Name">
+            <MudTextField @bind-Value="context.LastName" Required />
+        </MudTd>
+        
+        <MudTd DataLabel="Email">
+            <MudTextField @bind-Value="context.Email" Required />
         </MudTd>
 
         <MudTd DataLabel="Address">
             <MudTextField @bind-Value="context.Address" Required />
         </MudTd>
 
-        <MudTd DataLabel="Website">
-            <MudTextField @bind-Value="context.Website" Required />
-        </MudTd>
-
-        <MudTd DataLabel="Platform">
-            <MudTextField @bind-Value="context.Platform" Required />
-        </MudTd>
-
-        <MudTd DataLabel="Products"></MudTd>
+        <MudTd DataLabel="Customer Orders"></MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
@@ -142,12 +142,12 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             var customerModel = new CustomerModel()
             {
-                ProductIds = customerDTO.ProductIds,
-                Platform = customerDTO.Platform,
-                Address = customerDTO.Address,
                 Id = customerDTO.Id,
-                Name = customerDTO.Name,
-                Website = customerDTO.Website
+                Address = customerDTO.Address,
+                Email = customerDTO.Email,
+                FirstName = customerDTO.FirstName,
+                LastName = customerDTO.LastName,
+                CustomerOrderIds = customerDTO.CustomerOrderIds,
             };
 
             CustomerModels.Add(customerModel);
@@ -159,13 +159,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
-        if (customerModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
         if (customerModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (customerModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (customerModel.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (customerModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (customerModel.FirstName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (customerModel.LastName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
 
         return false;
@@ -196,11 +196,11 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         _customerModelBeforeEdit = new CustomerModel()
         {
             Id = ((CustomerModel)customerModel).Id,
-            Name = ((CustomerModel)customerModel).Name,
+            FirstName = ((CustomerModel)customerModel).FirstName,
+            LastName = ((CustomerModel)customerModel).LastName,
+            Email = ((CustomerModel)customerModel).Email,
             Address = ((CustomerModel)customerModel).Address,
-            Platform = ((CustomerModel)customerModel).Platform,
-            Website = ((CustomerModel)customerModel).Website,
-            ProductIds = ((CustomerModel)customerModel).ProductIds,
+            CustomerOrderIds = ((CustomerModel)customerModel).CustomerOrderIds,
         };
         StateHasChanged();
     }
@@ -208,27 +208,26 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private void ResetItemToOriginalValues(object customerModel)
     {
         ((CustomerModel)customerModel).Id = _customerModelBeforeEdit.Id;
-        ((CustomerModel)customerModel).Name = _customerModelBeforeEdit.Name;
+        ((CustomerModel)customerModel).FirstName = _customerModelBeforeEdit.FirstName;
+        ((CustomerModel)customerModel).LastName = _customerModelBeforeEdit.LastName;
+        ((CustomerModel)customerModel).Email = _customerModelBeforeEdit.Email;
         ((CustomerModel)customerModel).Address = _customerModelBeforeEdit.Address;
-        ((CustomerModel)customerModel).Platform = _customerModelBeforeEdit.Platform;
-        ((CustomerModel)customerModel).Website = _customerModelBeforeEdit.Website;
-        ((CustomerModel)customerModel).ProductIds = _customerModelBeforeEdit.ProductIds;
+        ((CustomerModel)customerModel).CustomerOrderIds = _customerModelBeforeEdit.CustomerOrderIds;
 
         StateHasChanged();
     }
 
     private async void ItemHasBeenCommitted(object customerModel)
     {
-        var customerModelConverted = (CustomerModel)customerModel;
         var updateCustomerDTO = new UpdateCustomerRequestDTO()
         {
             CreatedBy = CurrentStaff.Id,
-            Id = customerModelConverted.Id,
-            Name = customerModelConverted.Name,
-            Address = customerModelConverted.Address,
-            Platform = customerModelConverted.Platform,
-            Website = customerModelConverted.Website,
-            ProductIds = customerModelConverted.ProductIds,
+            Id = ((CustomerModel)customerModel).Id,
+            FirstName = ((CustomerModel)customerModel).FirstName,
+            LastName = ((CustomerModel)customerModel).LastName,
+            Email = ((CustomerModel)customerModel).Email,
+            Address = ((CustomerModel)customerModel).Address,
+            CustomerOrderIds = ((CustomerModel)customerModel).CustomerOrderIds,
         };
         var updateCustomerCommand = new UpdateCustomerCommand(updateCustomerDTO);
         var response = await Mediator.Send(updateCustomerCommand);
@@ -257,7 +256,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             }
             CustomerModels.Add(customerModelCreated);
             StateHasChanged();
-            SnackBar.Add($"{customerModelCreated.Name} created");
+            SnackBar.Add($"{customerModelCreated.FirstName} {customerModelCreated.LastName} created");
         }
     }
 }

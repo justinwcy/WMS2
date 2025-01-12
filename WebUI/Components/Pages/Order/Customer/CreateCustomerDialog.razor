@@ -9,13 +9,33 @@
     </TitleContent>
     <DialogContent>
         <MudForm @bind-IsValid="@_isFormValid">
-            <MudTextField @bind-value="_customerModel.Name"
-            Variant="@_defaultVariant"
-            T="string"
-            Label="Customer Name"
-            Required="true" RequiredError="Name is required!"
-            Margin="Margin.Dense"/>
-
+            <MudTextField @bind-value="_customerModel.FirstName"
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="First Name"
+                          Required="true" RequiredError="First Name is required!"
+                          Margin="Margin.Dense"/>
+            
+            <MudTextField @bind-value="_customerModel.LastName"
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Last Name"
+                          Required="true" RequiredError="Last Name is required!"
+                          Margin="Margin.Dense"/>
+            
+            <MudTextField @bind-value="_customerModel.Email"
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Email"
+                          Required="true" RequiredError="Email is required!"
+                          Margin="Margin.Dense" />
+            
+            <MudTextField @bind-value="_customerModel.Address"
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Address"
+                          Required="true" RequiredError="Address is required!"
+                          Margin="Margin.Dense" />
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -40,9 +60,10 @@
         var createCustomerDTO = new CreateCustomerRequestDTO()
         {
             CreatedBy = CurrentStaff.Id,
-            Name = _customerModel.Name,
-            StaffIds = _customerModel.StaffIds,
-            WarehouseIds = _customerModel.WarehouseIds,
+            Address = _customerModel.Address,
+            Email = _customerModel.Email,
+            FirstName = _customerModel.FirstName,
+            LastName = _customerModel.LastName,
         };
         var createCustomerCommand = new CreateCustomerCommand(createCustomerDTO);
         var createdCustomerResponseDTO = await Mediator.Send(createCustomerCommand);
@@ -50,9 +71,10 @@
         var createdCustomerModel = new CustomerModel()
         {
             Id = createdCustomerResponseDTO.Id,
-            Name = _customerModel.Name,
-            StaffIds = _customerModel.StaffIds,
-            WarehouseIds = _customerModel.WarehouseIds,
+            Address = _customerModel.Address,
+            Email = _customerModel.Email,
+            FirstName = _customerModel.FirstName,
+            LastName = _customerModel.LastName,
         };
         MudDialog.Close(DialogResult.Ok(createdCustomerModel));
     }
