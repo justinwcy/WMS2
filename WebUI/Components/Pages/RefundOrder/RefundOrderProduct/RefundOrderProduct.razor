@@ -158,6 +158,18 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     protected override async Task OnInitializedAsync()
     {
+        _orderStates = typeof(OrderState)
+            .GetFields(BindingFlags.Public | BindingFlags.Static)
+            .Select(field => field.GetValue(null).ToString())
+            .ToList();
+
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+        await base.OnParametersSetAsync();
+
+        
         var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
 
@@ -167,33 +179,23 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             var productDTO = await Mediator.Send(getProductByIdQuery);
 
             var productModel = new ProductModel()
-                {
-                    Id = productDTO.Id,
-                    Name = productDTO.Name,
-                    Description = productDTO.Description,
-                    Height = productDTO.Height,
-                    Length = productDTO.Length,
-                    Price = productDTO.Price,
-                    ProductGroupIds = productDTO.ProductGroupIds,
-                    ShopIds = productDTO.ShopIds,
-                    Sku = productDTO.Sku,
-                    Tag = productDTO.Tag,
-                    Weight = productDTO.Weight,
-                    Width = productDTO.Width,
-                };
+            {
+                Id = productDTO.Id,
+                Name = productDTO.Name,
+                Description = productDTO.Description,
+                Height = productDTO.Height,
+                Length = productDTO.Length,
+                Price = productDTO.Price,
+                ProductGroupIds = productDTO.ProductGroupIds,
+                ShopIds = productDTO.ShopIds,
+                Sku = productDTO.Sku,
+                Tag = productDTO.Tag,
+                Weight = productDTO.Weight,
+                Width = productDTO.Width,
+            };
             _allProductModels.Add(productModel);
 
-            _orderStates = typeof(OrderState)
-                .GetFields(BindingFlags.Public | BindingFlags.Static)
-                .Select(field => field.GetValue(null).ToString())
-                .ToList();
-
         }
-    }
-    protected override async Task OnParametersSetAsync()
-    {
-        _loading = true;
-        await base.OnParametersSetAsync();
 
         foreach (var refundOrderProductId in RefundOrderProductIds)
         {

@@ -115,13 +115,13 @@
                 Width = productDTO.Width,
             };
             _allProductModels.Add(productModel);
-
-            _orderStates = typeof(OrderState)
-                .GetFields(BindingFlags.Public | BindingFlags.Static)
-                .Select(field => field.GetValue(null).ToString())
-                .ToList();
-
         }
+
+        _orderStates = typeof(OrderState)
+            .GetFields(BindingFlags.Public | BindingFlags.Static)
+            .Select(field => field.GetValue(null).ToString())
+            .ToList();
+
     }
 
     private async Task Submit()
