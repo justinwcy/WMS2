@@ -1,12 +1,30 @@
 ﻿<MudNavMenu>
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-    <MudNavLink Href="/companies" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Domain">Companies</MudNavLink>
-    <MudNavGroup Title="Warehouse" Expanded="false" Icon="@Icons.Material.Filled.Factory">
-        <MudNavLink Href="/warehouses" Icon="@Icons.Material.Filled.Warehouse">Warehouses</MudNavLink>
-        <MudNavLink Href="/zones" Icon="@Icons.Material.Filled.BorderAll">Zones</MudNavLink>
-        <MudNavLink Href="/products" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ProductionQuantityLimits">Products</MudNavLink>
+
+    <MudNavGroup Title="Company" Expanded="false" Icon="@Icons.Material.Filled.Menu">
+        <MudNavLink Href="/company" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Business">Companies</MudNavLink>
+        <MudNavLink Href="/staff" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Person">Staffs</MudNavLink>
+        <MudNavLink Href="/customer" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Person4">Customers</MudNavLink>
     </MudNavGroup>
-    <MudNavGroup Title="Selling" Expanded="false" Icon="@Icons.Material.Filled.Sell">
-        <MudNavLink Href="/shops" Icon="@Icons.Material.Filled.ShoppingCartCheckout">Shops</MudNavLink>
+
+    <MudNavGroup Title="Orders" Expanded="false" Icon="@Icons.Material.Filled.Menu">
+        <MudNavLink Href="/vendor" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ShoppingBag">Vendors</MudNavLink>
+        <MudNavLink Href="/incomingOrder" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.DoubleArrow">Incoming Orders</MudNavLink>
+        <MudNavLink Href="/refundOrder" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Loop">Refund Order</MudNavLink>
+        <MudNavLink Href="/customerOrder" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.MenuBook">Customer Orders</MudNavLink>
+    </MudNavGroup>
+
+    <MudNavGroup Title="Warehouse" Expanded="false" Icon="@Icons.Material.Filled.Menu">
+        <MudNavLink Href="/warehouse" Icon="@Icons.Material.Filled.Warehouse">Warehouses</MudNavLink>
+        <MudNavLink Href="/zone" Icon="@Icons.Material.Filled.BorderAll">Zones</MudNavLink>
+        <MudNavLink Href="/rack" Icon="@Icons.Material.Filled.AllInbox">Racks</MudNavLink>
+        <MudNavLink Href="/inventory" Icon="@Icons.Material.Filled.Inventory">Inventory</MudNavLink>
+        <MudNavLink Href="/product" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ProductionQuantityLimits">Products</MudNavLink>
+    </MudNavGroup>
+
+    <MudNavGroup Title="Selling" Expanded="false" Icon="@Icons.Material.Filled.Menu">
+        <MudNavLink Href="/shop" Icon="@Icons.Material.Filled.ShoppingCartCheckout">Shops</MudNavLink>
+        <MudNavLink Href="/bin" Icon="@Icons.Material.Filled.ShoppingBasket">Bins</MudNavLink>
+        <MudNavLink Href="/courier" Icon="@Icons.Material.Filled.FireTruck">Couriers</MudNavLink>
     </MudNavGroup>
 </MudNavMenu>
