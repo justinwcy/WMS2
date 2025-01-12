@@ -2,12 +2,36 @@
 @using Application.Service.Commands
 @using Application.DTO.Request
 @using Application.DTO.Response
+@using Application.Service.Queries
 <MudDialog>
     <TitleContent>
         Create Zone
     </TitleContent>
     <DialogContent>
         <MudForm @bind-IsValid="@_isFormValid">
+            
+            <MudSelect @bind-Value="_zoneModel.WarehouseId"
+                       T="Guid"
+                       ToStringFunc="@(id=> _allWarehouseModels.First(warehouseModel=>warehouseModel.Id == id).Name)"
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Warehouse")
+                       MultiSelection="false"
+                       HelperText=@("Please select a warehouse")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a product">
+                @foreach (var warehouseModel in _allWarehouseModels)
+                {
+                    <MudSelectItem Value="@warehouseModel"/>
+                }
+            </MudSelect>
+
             <MudTextField @bind-value="_zoneModel.Name"
                           Variant="@_defaultVariant"
                           T="string"
@@ -34,6 +58,30 @@
     [Parameter]
     public required GetStaffResponseDTO CurrentStaff { get; set; }
 
+    private List<WarehouseModel> _allWarehouseModels { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var getAllWarehouseIdsByCompanyIdQuery = new GetAllWarehouseIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var warehouseIds = await Mediator.Send(getAllWarehouseIdsByCompanyIdQuery);
+
+        foreach (var warehouseId in warehouseIds)
+        {
+            var getWarehouseByIdQuery = new GetWarehouseByIdQuery(warehouseId);
+            var warehouseDTO = await Mediator.Send(getWarehouseByIdQuery);
+
+            var warehouseModel = new WarehouseModel()
+            {
+                Id = warehouseDTO.Id,
+                Name = warehouseDTO.Name,
+                Address = warehouseDTO.Address,
+                ZoneIds = warehouseDTO.ZoneIds,
+                CompanyId = warehouseDTO.CompanyId,
+            };
+            _allWarehouseModels.Add(warehouseModel);
+        }
+    }
+
     private async Task Submit()
     {
         var createZoneDTO = new CreateZoneRequestDTO()
@@ -42,6 +90,7 @@
             Name = _zoneModel.Name,
             WarehouseId = _zoneModel.WarehouseId,
             StaffIds = _zoneModel.StaffIds,
+            RackIds = _zoneModel.RackIds,
         };
         var createZoneCommand = new CreateZoneCommand(createZoneDTO);
         var createdZoneResponseDTO = await Mediator.Send(createZoneCommand);
@@ -52,6 +101,7 @@
             Name = _zoneModel.Name,
             StaffIds = _zoneModel.StaffIds,
             WarehouseId = _zoneModel.WarehouseId,
+            RackIds = _zoneModel.RackIds,
         };
         MudDialog.Close(DialogResult.Ok(createdZoneModel));
     }

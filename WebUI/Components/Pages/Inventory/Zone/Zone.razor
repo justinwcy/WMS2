@@ -1,4 +1,3 @@
-
 @inject IDialogService Dialog
 @using Application.Service.Queries
 @using WebUI.Components.Models
@@ -57,30 +56,42 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <col style="max-width: 50px" />
         <col style="max-width: 50px" />
         <col style="min-width: 150px" />
-        <col style="min-width: 200px" />
         <col style="min-width: 100px" />
-        <col style="min-width: 150px" />
+        <col style="min-width: 100px" />
         <col style="min-width: 100px" />
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<ZoneModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ZoneModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ZoneModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ZoneModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
-        <MudTh>Products</MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<ZoneModel, object>(x => _allWarehouseModels.FirstOrDefault(warehouseModel => warehouseModel.Id == x.WarehouseId)?.Name">
+                Warehouse
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>Staff</MudTh>
+        <MudTh>Rack</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Address">@context.Address</MudTd>
-        <MudTd DataLabel="Website">@context.Website</MudTd>
-        <MudTd DataLabel="Platform">@context.Platform</MudTd>
-        <MudTd DataLabel="Products">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
+
+        <MudTd DataLabel="Warehouse">@_allWarehouseModels.FirstOrDefault(warehouseModel => warehouseModel.Id == @context.WarehouseId)?.Name</MudTd>
+
+        <MudTd DataLabel="Staff">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenStaffDialogAsync(@context.StaffIds, CurrentStaff, Dialog))"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
+                View (@context.StaffIds.Count)
+            </MudButton>
+        </MudTd>
+
+        <MudTd DataLabel="Rack">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenRackDialogAsync(@context.RackIds, CurrentStaff, Dialog))"
             Variant="Variant.Filled"
             Color="Color.Primary"
             Size="Size.Small"
             FullWidth="false">
-                View (@context.ProductIds.Count)
+                View (@context.RackIds.Count)
             </MudButton>
         </MudTd>
     </RowTemplate>
@@ -90,19 +101,30 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             <MudTextField @bind-Value="context.Name" Required />
         </MudTd>
 
-        <MudTd DataLabel="Address">
-            <MudTextField @bind-Value="context.Address" Required />
-        </MudTd>
+        <MudSelect @bind-Value="context.WarehouseId"
+                   T="Guid"
+                   ToStringFunc="@(id=> _allWarehouseModels.First(warehouseModel=>warehouseModel.Id == id).Name)"
+                   Variant="@_defaultVariant"
+                   Label="Status"
+                   Margin="Margin.Normal"
+                   Dense="false"
+                   Disabled="false"
+                   ReadOnly="false"
+                   Placeholder=@("Warehouse")
+                   MultiSelection="false"
+                   HelperText=@("Please select a warehouse")
+                   HelperTextOnFocus="true"
+                   Clearable="false"
+                   Required="true"
+                   RequiredError="Please select a product">
+            @foreach (var warehouseModel in _allWarehouseModels)
+            {
+                <MudSelectItem Value="@warehouseModel"/>
+            }
+        </MudSelect>
 
-        <MudTd DataLabel="Website">
-            <MudTextField @bind-Value="context.Website" Required />
-        </MudTd>
-
-        <MudTd DataLabel="Platform">
-            <MudTextField @bind-Value="context.Platform" Required />
-        </MudTd>
-
-        <MudTd DataLabel="Products"></MudTd>
+        <MudTd DataLabel="Staff"></MudTd>
+        <MudTd DataLabel="Rack"></MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
@@ -130,6 +152,31 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private MudTable<ZoneModel> _tableRef;
     private ZoneModel _zoneModelBeforeEdit { get; set; }
 
+    private List<WarehouseModel> _allWarehouseModels { get; set; } = [];
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var getAllWarehouseIdsByCompanyIdQuery = new GetAllWarehouseIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var warehouseIds = await Mediator.Send(getAllWarehouseIdsByCompanyIdQuery);
+
+        foreach (var warehouseId in warehouseIds)
+        {
+            var getWarehouseByIdQuery = new GetWarehouseByIdQuery(warehouseId);
+            var warehouseDTO = await Mediator.Send(getWarehouseByIdQuery);
+
+            var warehouseModel = new WarehouseModel()
+                {
+                    Id = warehouseDTO.Id,
+                    Name = warehouseDTO.Name,
+                    Address = warehouseDTO.Address,
+                    ZoneIds = warehouseDTO.ZoneIds,
+                    CompanyId = warehouseDTO.CompanyId,
+                };
+            _allWarehouseModels.Add(warehouseModel);
+        }
+    }
+
     protected override async Task OnParametersSetAsync()
     {
         _loading = true;
@@ -142,12 +189,11 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             var zoneModel = new ZoneModel()
             {
-                ProductIds = zoneDTO.ProductIds,
-                Platform = zoneDTO.Platform,
-                Address = zoneDTO.Address,
                 Id = zoneDTO.Id,
                 Name = zoneDTO.Name,
-                Website = zoneDTO.Website
+                StaffIds = zoneDTO.StaffIds,
+                RackIds = zoneDTO.RackIds,
+                WarehouseId = zoneDTO.WarehouseId,
             };
 
             ZoneModels.Add(zoneModel);
@@ -161,11 +207,9 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             return true;
         if (zoneModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (zoneModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (zoneModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (zoneModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+
+        var warehouseModel = _allWarehouseModels.FirstOrDefault(warehouseModel => warehouseModel.Id == zoneModel.WarehouseId);
+        if (warehouseModel != null && warehouseModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
 
         return false;
@@ -197,10 +241,9 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         {
             Id = ((ZoneModel)zoneModel).Id,
             Name = ((ZoneModel)zoneModel).Name,
-            Address = ((ZoneModel)zoneModel).Address,
-            Platform = ((ZoneModel)zoneModel).Platform,
-            Website = ((ZoneModel)zoneModel).Website,
-            ProductIds = ((ZoneModel)zoneModel).ProductIds,
+            StaffIds = ((ZoneModel)zoneModel).StaffIds,
+            RackIds = ((ZoneModel)zoneModel).RackIds,
+            WarehouseId = ((ZoneModel)zoneModel).WarehouseId,
         };
         StateHasChanged();
     }
@@ -209,26 +252,23 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
         ((ZoneModel)zoneModel).Id = _zoneModelBeforeEdit.Id;
         ((ZoneModel)zoneModel).Name = _zoneModelBeforeEdit.Name;
-        ((ZoneModel)zoneModel).Address = _zoneModelBeforeEdit.Address;
-        ((ZoneModel)zoneModel).Platform = _zoneModelBeforeEdit.Platform;
-        ((ZoneModel)zoneModel).Website = _zoneModelBeforeEdit.Website;
-        ((ZoneModel)zoneModel).ProductIds = _zoneModelBeforeEdit.ProductIds;
+        ((ZoneModel)zoneModel).StaffIds = _zoneModelBeforeEdit.StaffIds;
+        ((ZoneModel)zoneModel).RackIds = _zoneModelBeforeEdit.RackIds;
+        ((ZoneModel)zoneModel).WarehouseId = _zoneModelBeforeEdit.WarehouseId;
 
         StateHasChanged();
     }
 
     private async void ItemHasBeenCommitted(object zoneModel)
     {
-        var zoneModelConverted = (ZoneModel)zoneModel;
         var updateZoneDTO = new UpdateZoneRequestDTO()
         {
             CreatedBy = CurrentStaff.Id,
-            Id = zoneModelConverted.Id,
-            Name = zoneModelConverted.Name,
-            Address = zoneModelConverted.Address,
-            Platform = zoneModelConverted.Platform,
-            Website = zoneModelConverted.Website,
-            ProductIds = zoneModelConverted.ProductIds,
+            Id = ((ZoneModel)zoneModel).Id,
+            Name = ((ZoneModel)zoneModel).Name,
+            StaffIds = ((ZoneModel)zoneModel).StaffIds,
+            RackIds = ((ZoneModel)zoneModel).RackIds,
+            WarehouseId = ((ZoneModel)zoneModel).WarehouseId,
         };
         var updateZoneCommand = new UpdateZoneCommand(updateZoneDTO);
         var response = await Mediator.Send(updateZoneCommand);
