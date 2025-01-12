@@ -1,4 +1,3 @@
-
 @inject IDialogService Dialog
 @using Application.Service.Queries
 @using WebUI.Components.Models
@@ -8,7 +7,7 @@
 @using WebUI.Utilities
 <MudGrid Class="mb-3">
     <MudItem xs="9">
-        <MudButton OnClick="@DeleteInventorys"
+        <MudButton OnClick="@DeleteInventory"
         Color="Color.Error"
         Variant="Variant.Filled"
         Size="Size.Large"
@@ -37,7 +36,7 @@ GroupFooterClass="mb-4"
 Dense="true"
 Loading="@_loading" LoadingProgressColor="Color.Info"
 MultiSelection="true"
-@bind-SelectedItems="_selectedInventorys"
+@bind-SelectedItems="_selectedInventory"
 SelectOnRowClick="false"
 CommitEditTooltip="Commit Edit"
 CancelEditTooltip="Cancel Edit"
@@ -49,60 +48,61 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 @ref="_tableRef">
 
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Inventorys</MudText>
+        <MudText Typo="Typo.h6">Inventory</MudText>
         <MudSpacer />
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
         <col style="max-width: 50px" />
         <col style="max-width: 50px" />
-        <col style="min-width: 150px" />
         <col style="min-width: 200px" />
         <col style="min-width: 100px" />
-        <col style="min-width: 150px" />
         <col style="min-width: 100px" />
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<InventoryModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<InventoryModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<InventoryModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<InventoryModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
-        <MudTh>Products</MudTh>
+        <MudTh>Product</MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<InventoryModel, object>(x=>x.Quantity)">Quantity</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<InventoryModel, object>(x=>x.DaysLeadTime)">Lead Time (Days)</MudTableSortLabel></MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Address">@context.Address</MudTd>
-        <MudTd DataLabel="Website">@context.Website</MudTd>
-        <MudTd DataLabel="Platform">@context.Platform</MudTd>
-        <MudTd DataLabel="Products">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
-                View (@context.ProductIds.Count)
-            </MudButton>
-        </MudTd>
+        <MudTd DataLabel="Product">@(_allProductModels.First(productModel => productModel.Id == context.ProductId).Name)</MudTd>
+        <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
+        <MudTd DataLabel="Lead Time (Days)">@context.DaysLeadTime</MudTd>
     </RowTemplate>
 
     <RowEditingTemplate>
-        <MudTd DataLabel="Name">
-            <MudTextField @bind-Value="context.Name" Required />
+        <MudTd DataLabel="Products">
+            <MudSelect @bind-Value="context.ProductId"
+            T="Guid"
+            ToStringFunc="@(id=> _allProductModels.First(productModel=>productModel.Id == id).Name)"
+            Variant="@_defaultVariant"
+            Label="Status"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Product")
+            MultiSelection="false"
+            HelperText=@("Please select a product")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="true"
+            RequiredError="Please select a product">
+                @foreach (var productModel in _allProductModels)
+                {
+                    <MudSelectItem Value="@productModel"></MudSelectItem>
+                }
+            </MudSelect>
         </MudTd>
 
-        <MudTd DataLabel="Address">
-            <MudTextField @bind-Value="context.Address" Required />
+        <MudTd DataLabel="Quantity">
+            <MudTextField @bind-Value="context.Quantity" T="int" Required />
         </MudTd>
 
-        <MudTd DataLabel="Website">
-            <MudTextField @bind-Value="context.Website" Required />
+        <MudTd DataLabel="Lead Time (Days)">
+            <MudTextField @bind-Value="context.Quantity" T="int" Required />
         </MudTd>
 
-        <MudTd DataLabel="Platform">
-            <MudTextField @bind-Value="context.Platform" Required />
-        </MudTd>
-
-        <MudTd DataLabel="Products"></MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
@@ -122,13 +122,45 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     [Parameter]
     public GetStaffResponseDTO CurrentStaff { get; set; }
 
-    private HashSet<InventoryModel> _selectedInventorys = new HashSet<InventoryModel>();
-    private bool _disableDelete => !_selectedInventorys.Any();
+    private HashSet<InventoryModel> _selectedInventory = new HashSet<InventoryModel>();
+    private bool _disableDelete => !_selectedInventory.Any();
 
     private bool _loading { get; set; }
     private string searchString = "";
     private MudTable<InventoryModel> _tableRef;
     private InventoryModel _inventoryModelBeforeEdit { get; set; }
+
+    private List<ProductModel> _allProductModels { get; set; } = [];
+    private readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
+
+        foreach (var productId in productIds)
+        {
+            var getProductByIdQuery = new GetProductByIdQuery(productId);
+            var productDTO = await Mediator.Send(getProductByIdQuery);
+
+            var productModel = new ProductModel()
+            {
+                Id = productDTO.Id,
+                Name = productDTO.Name,
+                Description = productDTO.Description,
+                Height = productDTO.Height,
+                Length = productDTO.Length,
+                Price = productDTO.Price,
+                ProductGroupIds = productDTO.ProductGroupIds,
+                ShopIds = productDTO.ShopIds,
+                Sku = productDTO.Sku,
+                Tag = productDTO.Tag,
+                Weight = productDTO.Weight,
+                Width = productDTO.Width,
+            };
+            _allProductModels.Add(productModel);
+        }
+    }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -142,12 +174,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             var inventoryModel = new InventoryModel()
             {
-                ProductIds = inventoryDTO.ProductIds,
-                Platform = inventoryDTO.Platform,
-                Address = inventoryDTO.Address,
                 Id = inventoryDTO.Id,
-                Name = inventoryDTO.Name,
-                Website = inventoryDTO.Website
+                Quantity = inventoryDTO.Quantity,
+                DaysLeadTime = inventoryDTO.DaysLeadTime,
+                ProductId = inventoryDTO.ProductId,
             };
 
             InventoryModels.Add(inventoryModel);
@@ -159,22 +189,18 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
-        if (inventoryModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (inventoryModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (inventoryModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (inventoryModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+
+        var productName = _allProductModels.First(productModel => productModel.Id == inventoryModel.ProductId).Name;
+        if (productName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
 
         return false;
     }
 
-    private async Task DeleteInventorys()
+    private async Task DeleteInventory()
     {
         var success = true;
-        foreach (var inventoryModel in _selectedInventorys)
+        foreach (var inventoryModel in _selectedInventory)
         {
             var deleteInventoryCommand = new DeleteInventoryCommand(inventoryModel.Id);
             var result = await Mediator.Send(deleteInventoryCommand);
@@ -187,7 +213,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             success &= result.Success;
         }
 
-        SnackBar.Add(success ? "Inventorys Deleted" : "Failed to delete inventorys");
+        SnackBar.Add(success ? "Inventory Deleted" : "Failed to delete inventory");
     }
 
     private void BackupItem(object inventoryModel)
@@ -196,11 +222,9 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         _inventoryModelBeforeEdit = new InventoryModel()
         {
             Id = ((InventoryModel)inventoryModel).Id,
-            Name = ((InventoryModel)inventoryModel).Name,
-            Address = ((InventoryModel)inventoryModel).Address,
-            Platform = ((InventoryModel)inventoryModel).Platform,
-            Website = ((InventoryModel)inventoryModel).Website,
-            ProductIds = ((InventoryModel)inventoryModel).ProductIds,
+            DaysLeadTime = ((InventoryModel)inventoryModel).DaysLeadTime,
+            ProductId = ((InventoryModel)inventoryModel).ProductId,
+            Quantity = ((InventoryModel)inventoryModel).Quantity,
         };
         StateHasChanged();
     }
@@ -208,27 +232,22 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private void ResetItemToOriginalValues(object inventoryModel)
     {
         ((InventoryModel)inventoryModel).Id = _inventoryModelBeforeEdit.Id;
-        ((InventoryModel)inventoryModel).Name = _inventoryModelBeforeEdit.Name;
-        ((InventoryModel)inventoryModel).Address = _inventoryModelBeforeEdit.Address;
-        ((InventoryModel)inventoryModel).Platform = _inventoryModelBeforeEdit.Platform;
-        ((InventoryModel)inventoryModel).Website = _inventoryModelBeforeEdit.Website;
-        ((InventoryModel)inventoryModel).ProductIds = _inventoryModelBeforeEdit.ProductIds;
+        ((InventoryModel)inventoryModel).DaysLeadTime = _inventoryModelBeforeEdit.DaysLeadTime;
+        ((InventoryModel)inventoryModel).ProductId = _inventoryModelBeforeEdit.ProductId;
+        ((InventoryModel)inventoryModel).Quantity = _inventoryModelBeforeEdit.Quantity;
 
         StateHasChanged();
     }
 
     private async void ItemHasBeenCommitted(object inventoryModel)
     {
-        var inventoryModelConverted = (InventoryModel)inventoryModel;
         var updateInventoryDTO = new UpdateInventoryRequestDTO()
         {
             CreatedBy = CurrentStaff.Id,
-            Id = inventoryModelConverted.Id,
-            Name = inventoryModelConverted.Name,
-            Address = inventoryModelConverted.Address,
-            Platform = inventoryModelConverted.Platform,
-            Website = inventoryModelConverted.Website,
-            ProductIds = inventoryModelConverted.ProductIds,
+            Id = ((InventoryModel)inventoryModel).Id,
+            DaysLeadTime = ((InventoryModel)inventoryModel).DaysLeadTime,
+            ProductId = ((InventoryModel)inventoryModel).ProductId,
+            Quantity = ((InventoryModel)inventoryModel).Quantity,
         };
         var updateInventoryCommand = new UpdateInventoryCommand(updateInventoryDTO);
         var response = await Mediator.Send(updateInventoryCommand);
@@ -257,7 +276,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             }
             InventoryModels.Add(inventoryModelCreated);
             StateHasChanged();
-            SnackBar.Add($"{inventoryModelCreated.Name} created");
+            SnackBar.Add($"Inventory item created");
         }
     }
 }

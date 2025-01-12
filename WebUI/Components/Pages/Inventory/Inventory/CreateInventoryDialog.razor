@@ -1,20 +1,51 @@
-
+@using System.Reflection
+@using Application.Constants
 @using WebUI.Components.Models
 @using Application.Service.Commands
 @using Application.DTO.Request
 @using Application.DTO.Response
+@using Application.Service.Queries
 <MudDialog>
     <TitleContent>
         Create Inventory
     </TitleContent>
     <DialogContent>
         <MudForm @bind-IsValid="@_isFormValid">
-            <MudTextField @bind-value="_inventoryModel.Name"
-            Variant="@_defaultVariant"
-            T="string"
-            Label="Inventory Name"
-            Required="true" RequiredError="Name is required!"
-            Margin="Margin.Dense"/>
+            <MudSelect @bind-Value="_inventoryModel.ProductId"
+                       T="Guid"
+                       ToStringFunc="@(id=> _allProductModels.First(productModel=>productModel.Id == id).Name)"
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Product")
+                       MultiSelection="false"
+                       HelperText=@("Please select a product")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a product">
+                @foreach (var productModel in _allProductModels)
+                {
+                    <MudSelectItem Value="@productModel"></MudSelectItem>
+                }
+            </MudSelect>
+            
+            <MudTextField @bind-value="_inventoryModel.Quantity"
+                          Variant="@_defaultVariant"
+                          T="int"
+                          Label="Quantity"
+                          Required="true" RequiredError="Quantity is required!"
+                          Margin="Margin.Dense" />
+            
+            <MudTextField @bind-value="_inventoryModel.DaysLeadTime"
+                          Variant="@_defaultVariant"
+                          T="int"
+                          Label="Lead Time (Days)"
+                          Required="true" RequiredError="Lead time is required!"
+                          Margin="Margin.Dense" />
 
         </MudForm>
     </DialogContent>
@@ -35,14 +66,47 @@
     [Parameter]
     public required GetStaffResponseDTO CurrentStaff { get; set; }
 
+    private List<ProductModel> _allProductModels { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
+
+        foreach (var productId in productIds)
+        {
+            var getProductByIdQuery = new GetProductByIdQuery(productId);
+            var productDTO = await Mediator.Send(getProductByIdQuery);
+
+            var productModel = new ProductModel()
+            {
+                Id = productDTO.Id,
+                Name = productDTO.Name,
+                Description = productDTO.Description,
+                Height = productDTO.Height,
+                Length = productDTO.Length,
+                Price = productDTO.Price,
+                ProductGroupIds = productDTO.ProductGroupIds,
+                ShopIds = productDTO.ShopIds,
+                Sku = productDTO.Sku,
+                Tag = productDTO.Tag,
+                Weight = productDTO.Weight,
+                Width = productDTO.Width,
+            };
+            _allProductModels.Add(productModel);
+        }
+    }
+
     private async Task Submit()
     {
         var createInventoryDTO = new CreateInventoryRequestDTO()
         {
             CreatedBy = CurrentStaff.CreatedBy,
-            Name = _inventoryModel.Name,
-            StaffIds = _inventoryModel.StaffIds,
-            WarehouseIds = _inventoryModel.WarehouseIds,
+            Quantity = _inventoryModel.Quantity,
+            ProductId = _inventoryModel.ProductId,
+            DaysLeadTime = _inventoryModel.DaysLeadTime,
+
+
         };
         var createInventoryCommand = new CreateInventoryCommand(createInventoryDTO);
         var createdInventoryResponseDTO = await Mediator.Send(createInventoryCommand);
@@ -50,9 +114,9 @@
         var createdInventoryModel = new InventoryModel()
         {
             Id = createdInventoryResponseDTO.Id,
-            Name = _inventoryModel.Name,
-            StaffIds = _inventoryModel.StaffIds,
-            WarehouseIds = _inventoryModel.WarehouseIds,
+            Quantity = _inventoryModel.Quantity,
+            ProductId = _inventoryModel.ProductId,
+            DaysLeadTime = _inventoryModel.DaysLeadTime,
         };
         MudDialog.Close(DialogResult.Ok(createdInventoryModel));
     }

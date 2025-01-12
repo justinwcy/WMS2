@@ -1,4 +1,6 @@
 @inject IDialogService Dialog
+@using System.Reflection
+@using Application.Constants
 @using Application.Service.Queries
 @using WebUI.Components.Models
 @using Application.Service.Commands
@@ -13,7 +15,7 @@
         Size="Size.Large"
         FullWidth="false"
         Disabled="_disableDelete">
-            Delete RefundOrder
+            Delete Refund Order
         </MudButton>
     </MudItem>
     <MudItem xs="3">
@@ -22,7 +24,7 @@
         Color="Color.Primary"
         Size="Size.Large"
         FullWidth="false">
-            Create RefundOrder
+            Create Refund Order
         </MudButton>
     </MudItem>
 </MudGrid>
@@ -56,52 +58,65 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <col style="max-width: 50px" />
         <col style="max-width: 50px" />
         <col style="min-width: 150px" />
-        <col style="min-width: 200px" />
         <col style="min-width: 100px" />
         <col style="min-width: 150px" />
-        <col style="min-width: 100px" />
+        <col style="min-width: 150px" />
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
-        <MudTh>Products</MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderModel, object>(x=>x.RefundDate)">Refund Date</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderModel, object>(x=>x.Status)">Status</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderModel, object>(x=>x.RefundReason)">Reason</MudTableSortLabel></MudTh>
+        <MudTh>Details</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Address">@context.Address</MudTd>
-        <MudTd DataLabel="Website">@context.Website</MudTd>
-        <MudTd DataLabel="Platform">@context.Platform</MudTd>
-        <MudTd DataLabel="Products">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
+        <MudTd DataLabel="Refund Date">@context.RefundDate</MudTd>
+        <MudTd DataLabel="Status">@context.Status</MudTd>
+        <MudTd DataLabel="Reason">@context.RefundReason</MudTd>
+        <MudTd DataLabel="Details">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenRefundOrderProductDialogAsync(@context.RefundOrderProductIds, CurrentStaff, Dialog))"
             Variant="Variant.Filled"
             Color="Color.Primary"
             Size="Size.Small"
             FullWidth="false">
-                View (@context.ProductIds.Count)
+                View (@context.RefundOrderProductIds.Count)
             </MudButton>
         </MudTd>
     </RowTemplate>
 
     <RowEditingTemplate>
-        <MudTd DataLabel="Name">
-            <MudTextField @bind-Value="context.Name" Required />
+        <MudTd DataLabel="Refund Date">
+            <MudDatePicker Label="Refund Order Date"
+                           Editable="true"
+                           @bind-Date="context.RefundDate"
+                           Placeholder="Refund Order Date" />
         </MudTd>
 
-        <MudTd DataLabel="Address">
-            <MudTextField @bind-Value="context.Address" Required />
+        <MudTd DataLabel="Status">
+            <MudSelect @bind-Value="context.Status"
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Status")
+                       MultiSelection="false"
+                       HelperText=@("Please select a status")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a status">
+                @foreach (var orderState in _orderStates)
+                {
+                    <MudSelectItem Value="@orderState">@orderState</MudSelectItem>
+                }
+            </MudSelect>
         </MudTd>
 
-        <MudTd DataLabel="Website">
-            <MudTextField @bind-Value="context.Website" Required />
+        <MudTd DataLabel="Reason">
+            <MudTextField @bind-Value="context.RefundReason" Required />
         </MudTd>
-
-        <MudTd DataLabel="Platform">
-            <MudTextField @bind-Value="context.Platform" Required />
-        </MudTd>
-
-        <MudTd DataLabel="Products"></MudTd>
+        <MudTd DataLabel="Details"></MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
@@ -128,6 +143,16 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private string searchString = "";
     private MudTable<RefundOrderModel> _tableRef;
     private RefundOrderModel _refundOrderModelBeforeEdit { get; set; }
+    private List<string> _orderStates { get; set; }
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _orderStates = typeof(OrderState)
+            .GetFields(BindingFlags.Public | BindingFlags.Static)
+            .Select(field => field.GetValue(null).ToString())
+            .ToList();
+    }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -141,12 +166,11 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             var refundOrderModel = new RefundOrderModel()
             {
-                ProductIds = refundOrderDTO.ProductIds,
-                Platform = refundOrderDTO.Platform,
-                Address = refundOrderDTO.Address,
                 Id = refundOrderDTO.Id,
-                Name = refundOrderDTO.Name,
-                Website = refundOrderDTO.Website
+                Status = refundOrderDTO.Status,
+                RefundReason = refundOrderDTO.RefundReason,
+                RefundDate = refundOrderDTO.RefundDate,
+                RefundOrderProductIds = refundOrderDTO.RefundOrderProductIds,
             };
 
             RefundOrderModels.Add(refundOrderModel);
@@ -158,13 +182,9 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
-        if (refundOrderModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (refundOrderModel.Status.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (refundOrderModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (refundOrderModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (refundOrderModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (refundOrderModel.RefundReason.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
 
         return false;
@@ -195,11 +215,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         _refundOrderModelBeforeEdit = new RefundOrderModel()
         {
             Id = ((RefundOrderModel)refundOrderModel).Id,
-            Name = ((RefundOrderModel)refundOrderModel).Name,
-            Address = ((RefundOrderModel)refundOrderModel).Address,
-            Platform = ((RefundOrderModel)refundOrderModel).Platform,
-            Website = ((RefundOrderModel)refundOrderModel).Website,
-            ProductIds = ((RefundOrderModel)refundOrderModel).ProductIds,
+            Status = ((RefundOrderModel)refundOrderModel).Status,
+            RefundReason = ((RefundOrderModel)refundOrderModel).RefundReason,
+            RefundDate = ((RefundOrderModel)refundOrderModel).RefundDate,
+            RefundOrderProductIds = ((RefundOrderModel)refundOrderModel).RefundOrderProductIds,
         };
         StateHasChanged();
     }
@@ -207,27 +226,24 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private void ResetItemToOriginalValues(object refundOrderModel)
     {
         ((RefundOrderModel)refundOrderModel).Id = _refundOrderModelBeforeEdit.Id;
-        ((RefundOrderModel)refundOrderModel).Name = _refundOrderModelBeforeEdit.Name;
-        ((RefundOrderModel)refundOrderModel).Address = _refundOrderModelBeforeEdit.Address;
-        ((RefundOrderModel)refundOrderModel).Platform = _refundOrderModelBeforeEdit.Platform;
-        ((RefundOrderModel)refundOrderModel).Website = _refundOrderModelBeforeEdit.Website;
-        ((RefundOrderModel)refundOrderModel).ProductIds = _refundOrderModelBeforeEdit.ProductIds;
+        ((RefundOrderModel)refundOrderModel).Status = _refundOrderModelBeforeEdit.Status;
+        ((RefundOrderModel)refundOrderModel).RefundReason = _refundOrderModelBeforeEdit.RefundReason;
+        ((RefundOrderModel)refundOrderModel).RefundDate = _refundOrderModelBeforeEdit.RefundDate;
+        ((RefundOrderModel)refundOrderModel).RefundOrderProductIds = _refundOrderModelBeforeEdit.RefundOrderProductIds;
 
         StateHasChanged();
     }
 
     private async void ItemHasBeenCommitted(object refundOrderModel)
     {
-        var refundOrderModelConverted = (RefundOrderModel)refundOrderModel;
         var updateRefundOrderDTO = new UpdateRefundOrderRequestDTO()
         {
             CreatedBy = CurrentStaff.Id,
-            Id = refundOrderModelConverted.Id,
-            Name = refundOrderModelConverted.Name,
-            Address = refundOrderModelConverted.Address,
-            Platform = refundOrderModelConverted.Platform,
-            Website = refundOrderModelConverted.Website,
-            ProductIds = refundOrderModelConverted.ProductIds,
+            Id = ((RefundOrderModel)refundOrderModel).Id,
+            Status = ((RefundOrderModel)refundOrderModel).Status,
+            RefundReason = ((RefundOrderModel)refundOrderModel).RefundReason,
+            RefundDate = ((RefundOrderModel)refundOrderModel).RefundDate.Value,
+            RefundOrderProductIds = ((RefundOrderModel)refundOrderModel).RefundOrderProductIds,
         };
         var updateRefundOrderCommand = new UpdateRefundOrderCommand(updateRefundOrderDTO);
         var response = await Mediator.Send(updateRefundOrderCommand);
@@ -256,7 +272,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             }
             RefundOrderModels.Add(refundOrderModelCreated);
             StateHasChanged();
-            SnackBar.Add($"{refundOrderModelCreated.Name} created");
+            SnackBar.Add($"Refund on {refundOrderModelCreated.RefundDate} created");
         }
     }
 }

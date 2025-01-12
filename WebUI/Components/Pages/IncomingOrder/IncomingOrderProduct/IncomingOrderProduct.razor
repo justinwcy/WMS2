@@ -67,7 +67,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderProductModel, object>(x => x.Quantity)">Quantity</MudTableSortLabel></MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Product">@context.ProductId</MudTd>
+        <MudTd DataLabel="Product">@(_allProductModels.First(productModel => productModel.Id == context.ProductId).Name)</MudTd>
         <MudTd DataLabel="Status">@context.Status</MudTd>
         <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
     </RowTemplate>

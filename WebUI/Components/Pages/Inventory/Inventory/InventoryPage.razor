@@ -1,10 +1,9 @@
-
 @page "/inventory"
 @using Application.DTO.Response
 @using WebUI.Utilities
 @using Application.Service.Queries
 <Inventory InventoryIds="InventoryIds"
-      CurrentStaff="CurrentStaff" />
+           CurrentStaff="CurrentStaff" />
 
 @code {
     private List<Guid> InventoryIds { get; set; } = new List<Guid>();

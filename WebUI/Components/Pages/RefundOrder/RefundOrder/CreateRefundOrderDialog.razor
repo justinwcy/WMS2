@@ -13,7 +13,7 @@
 
             <MudDatePicker Label="Refund Order Date"
                            Editable="true"
-                           @bind-Date="_refundOrderModel.ReceivingDate"
+                           @bind-Date="_refundOrderModel.RefundDate"
                            Placeholder="Refund Order Date" />
 
             <MudSelect @bind-Value="_refundOrderModel.Status"
@@ -79,7 +79,7 @@
             CreatedBy = CurrentStaff.CreatedBy,
             Status = _refundOrderModel.Status,
             RefundReason = _refundOrderModel.RefundReason,
-            ReceivingDate = _refundOrderModel.ReceivingDate.Value,
+            RefundDate = _refundOrderModel.RefundDate.Value,
             RefundOrderProductIds = _refundOrderModel.RefundOrderProductIds,
         };
         var createRefundOrderCommand = new CreateRefundOrderCommand(createRefundOrderDTO);
@@ -90,7 +90,7 @@
             Id = createdRefundOrderResponseDTO.Id,
             Status = _refundOrderModel.Status,
             RefundReason = _refundOrderModel.RefundReason,
-            ReceivingDate = _refundOrderModel.ReceivingDate,
+            RefundDate = _refundOrderModel.RefundDate,
             RefundOrderProductIds = _refundOrderModel.RefundOrderProductIds,
         };
         MudDialog.Close(DialogResult.Ok(createdRefundOrderModel));
