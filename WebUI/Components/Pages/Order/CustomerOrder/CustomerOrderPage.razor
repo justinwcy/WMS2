@@ -1,10 +1,9 @@
-
 @page "/customerOrder"
 @using Application.DTO.Response
 @using WebUI.Utilities
 @using Application.Service.Queries
 <CustomerOrder CustomerOrderIds="CustomerOrderIds"
-      CurrentStaff="CurrentStaff" />
+               CurrentStaff="CurrentStaff" />
 
 @code {
     private List<Guid> CustomerOrderIds { get; set; } = new List<Guid>();

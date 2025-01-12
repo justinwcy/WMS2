@@ -9,11 +9,11 @@
     <DialogContent>
         <MudForm @bind-IsValid="@_isFormValid">
             <MudTextField @bind-value="_binModel.Name"
-            Variant="@_defaultVariant"
-            T="string"
-            Label="Bin Name"
-            Required="true" RequiredError="Name is required!"
-            Margin="Margin.Dense"/>
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Bin Name"
+                          Required="true" RequiredError="Name is required!"
+                          Margin="Margin.Dense"/>
 
         </MudForm>
     </DialogContent>
@@ -40,8 +40,7 @@
         {
             CreatedBy = CurrentStaff.Id,
             Name = _binModel.Name,
-            StaffIds = _binModel.StaffIds,
-            WarehouseIds = _binModel.WarehouseIds,
+            CustomerOrderIds = _binModel.CustomerOrderIds,
         };
         var createBinCommand = new CreateBinCommand(createBinDTO);
         var createdBinResponseDTO = await Mediator.Send(createBinCommand);
@@ -50,8 +49,7 @@
         {
             Id = createdBinResponseDTO.Id,
             Name = _binModel.Name,
-            StaffIds = _binModel.StaffIds,
-            WarehouseIds = _binModel.WarehouseIds,
+            CustomerOrderIds = _binModel.CustomerOrderIds,
         };
         MudDialog.Close(DialogResult.Ok(createdBinModel));
     }

@@ -57,29 +57,20 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <col style="max-width: 50px" />
         <col style="min-width: 150px" />
         <col style="min-width: 200px" />
-        <col style="min-width: 100px" />
-        <col style="min-width: 150px" />
-        <col style="min-width: 100px" />
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<BinModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<BinModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<BinModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<BinModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
-        <MudTh>Products</MudTh>
+        <MudTh>Customer Orders</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Address">@context.Address</MudTd>
-        <MudTd DataLabel="Website">@context.Website</MudTd>
-        <MudTd DataLabel="Platform">@context.Platform</MudTd>
-        <MudTd DataLabel="Products">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
-                View (@context.ProductIds.Count)
+        <MudTd DataLabel="Customer Orders">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenCustomerOrderDialogAsync(@context.CustomerOrderIds, CurrentStaff, Dialog))"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
+                View (@context.CustomerOrderIds.Count)
             </MudButton>
         </MudTd>
     </RowTemplate>
@@ -88,20 +79,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Name">
             <MudTextField @bind-Value="context.Name" Required />
         </MudTd>
-
-        <MudTd DataLabel="Address">
-            <MudTextField @bind-Value="context.Address" Required />
-        </MudTd>
-
-        <MudTd DataLabel="Website">
-            <MudTextField @bind-Value="context.Website" Required />
-        </MudTd>
-
-        <MudTd DataLabel="Platform">
-            <MudTextField @bind-Value="context.Platform" Required />
-        </MudTd>
-
-        <MudTd DataLabel="Products"></MudTd>
+        
+        <MudTd DataLabel="Customer Orders"></MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
@@ -141,12 +120,9 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             var binModel = new BinModel()
             {
-                ProductIds = binDTO.ProductIds,
-                Platform = binDTO.Platform,
-                Address = binDTO.Address,
                 Id = binDTO.Id,
                 Name = binDTO.Name,
-                Website = binDTO.Website
+                CustomerOrderIds = binDTO.CustomerOrderIds
             };
 
             BinModels.Add(binModel);
@@ -159,12 +135,6 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
         if (binModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (binModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (binModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (binModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
 
         return false;
@@ -196,10 +166,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         {
             Id = ((BinModel)binModel).Id,
             Name = ((BinModel)binModel).Name,
-            Address = ((BinModel)binModel).Address,
-            Platform = ((BinModel)binModel).Platform,
-            Website = ((BinModel)binModel).Website,
-            ProductIds = ((BinModel)binModel).ProductIds,
+            CustomerOrderIds = ((BinModel)binModel).CustomerOrderIds,
         };
         StateHasChanged();
     }
@@ -208,10 +175,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
         ((BinModel)binModel).Id = _binModelBeforeEdit.Id;
         ((BinModel)binModel).Name = _binModelBeforeEdit.Name;
-        ((BinModel)binModel).Address = _binModelBeforeEdit.Address;
-        ((BinModel)binModel).Platform = _binModelBeforeEdit.Platform;
-        ((BinModel)binModel).Website = _binModelBeforeEdit.Website;
-        ((BinModel)binModel).ProductIds = _binModelBeforeEdit.ProductIds;
+        ((BinModel)binModel).CustomerOrderIds = _binModelBeforeEdit.CustomerOrderIds;
 
         StateHasChanged();
     }
@@ -224,10 +188,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             CreatedBy = CurrentStaff.Id,
             Id = binModelConverted.Id,
             Name = binModelConverted.Name,
-            Address = binModelConverted.Address,
-            Platform = binModelConverted.Platform,
-            Website = binModelConverted.Website,
-            ProductIds = binModelConverted.ProductIds,
+            CustomerOrderIds = binModelConverted.CustomerOrderIds,
         };
         var updateBinCommand = new UpdateBinCommand(updateBinDTO);
         var response = await Mediator.Send(updateBinCommand);
