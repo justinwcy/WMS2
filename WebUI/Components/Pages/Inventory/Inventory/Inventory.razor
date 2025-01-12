@@ -133,7 +133,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private List<ProductModel> _allProductModels { get; set; } = [];
     private readonly Variant _defaultVariant = Theme.DefaultInputVariant();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);

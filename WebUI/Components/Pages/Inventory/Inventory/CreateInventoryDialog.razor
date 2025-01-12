@@ -68,7 +68,7 @@
 
     private List<ProductModel> _allProductModels { get; set; } = [];
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);

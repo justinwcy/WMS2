@@ -158,6 +158,17 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     protected override async Task OnInitializedAsync()
     {
+        _orderStates = typeof(OrderState)
+            .GetFields(BindingFlags.Public | BindingFlags.Static)
+            .Select(field => field.GetValue(null).ToString())
+            .ToList();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+        await base.OnParametersSetAsync();
+
         var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
 
@@ -182,19 +193,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 Width = productDTO.Width,
             };
             _allProductModels.Add(productModel);
-
-            _orderStates = typeof(OrderState)
-                .GetFields(BindingFlags.Public | BindingFlags.Static)
-                .Select(field => field.GetValue(null).ToString())
-                .ToList();
-
         }
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        _loading = true;
-        await base.OnParametersSetAsync();
 
         foreach (var incomingOrderProductId in IncomingOrderProductIds)
         {

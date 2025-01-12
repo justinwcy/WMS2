@@ -87,7 +87,7 @@
     [Parameter]
     public required Guid RefundOrderId { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         _refundOrderProductModel.RefundOrderId = RefundOrderId;
 
