@@ -4,6 +4,6 @@
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public List<Guid> CustomerOrderIds { get; set; }
+        public List<Guid> CustomerOrderIds { get; set; } = [];
     }
 }

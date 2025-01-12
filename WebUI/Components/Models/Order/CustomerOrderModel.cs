@@ -7,7 +7,7 @@
         public DateTime? OrderCreationDate { get; set; } = DateTime.Now;
         public string OrderAddress { get; set; }
         public Guid CustomerId { get; set; }
-        public List<Guid> CustomerOrderDetailIds { get; set; }
+        public List<Guid> CustomerOrderDetailIds { get; set; } = [];
         public Guid CourierId { get; set; }
         public Guid BinId { get; set; }
     }
