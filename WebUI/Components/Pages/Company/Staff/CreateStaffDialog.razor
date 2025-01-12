@@ -143,7 +143,7 @@
     {
         var createStaffDTO = new CreateStaffRequestDTO()
         {
-            CreatedBy = CurrentStaff.CreatedBy,
+            CreatedBy = CurrentStaff.Id,
             CompanyId = _staffModel.CompanyId,
             FirstName = _staffModel.FirstName,
             LastName = _staffModel.LastName,
@@ -151,6 +151,7 @@
             Roles = _staffModel.GetRoleList(),
             Password = _staffModel.Password,
             ConfirmPassword = _staffModel.ConfirmPassword,
+            ZoneIds = _staffModel.ZoneIds,
         };
         var createStaffCommand = new CreateStaffCommand(createStaffDTO);
         var createdStaffResponseDTO = await Mediator.Send(createStaffCommand);
@@ -163,6 +164,7 @@
             Email = _staffModel.Email,
             Password = _staffModel.Password,
             ConfirmPassword = _staffModel.ConfirmPassword,
+            ZoneIds = _staffModel.ZoneIds,
             RolesString = _staffModel.RolesString
         };
         MudDialog.Close(DialogResult.Ok(createdStaffModel));

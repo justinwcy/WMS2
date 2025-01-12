@@ -67,7 +67,7 @@
     {
         var createVendorDTO = new CreateVendorRequestDTO()
         {
-            CreatedBy = CurrentStaff.CreatedBy,
+            CreatedBy = CurrentStaff.Id,
             FirstName = _vendorModel.FirstName,
             LastName = _vendorModel.LastName,
             Address = _vendorModel.Address,

@@ -38,7 +38,7 @@
     {
         var createCompanyDTO = new CreateCompanyRequestDTO()
         {
-            CreatedBy = CurrentStaff.CreatedBy,
+            CreatedBy = CurrentStaff.Id,
             Name = _companyModel.Name,
             StaffIds = _companyModel.StaffIds,
             WarehouseIds = _companyModel.WarehouseIds,

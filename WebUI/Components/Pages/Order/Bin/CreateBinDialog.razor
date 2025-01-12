@@ -38,7 +38,7 @@
     {
         var createBinDTO = new CreateBinRequestDTO()
         {
-            CreatedBy = CurrentStaff.CreatedBy,
+            CreatedBy = CurrentStaff.Id,
             Name = _binModel.Name,
             StaffIds = _binModel.StaffIds,
             WarehouseIds = _binModel.WarehouseIds,

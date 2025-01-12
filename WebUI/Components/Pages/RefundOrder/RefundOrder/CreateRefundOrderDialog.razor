@@ -76,7 +76,7 @@
     {
         var createRefundOrderDTO = new CreateRefundOrderRequestDTO()
         {
-            CreatedBy = CurrentStaff.CreatedBy,
+            CreatedBy = CurrentStaff.Id,
             Status = _refundOrderModel.Status,
             RefundReason = _refundOrderModel.RefundReason,
             RefundDate = _refundOrderModel.RefundDate.Value,

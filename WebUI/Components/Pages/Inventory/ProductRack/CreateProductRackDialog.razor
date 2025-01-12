@@ -39,7 +39,7 @@
     {
         var createProductRackDTO = new CreateProductRackRequestDTO()
         {
-            CreatedBy = CurrentStaff.CreatedBy,
+            CreatedBy = CurrentStaff.Id,
             Name = _productRackModel.Name,
             StaffIds = _productRackModel.StaffIds,
             WarehouseIds = _productRackModel.WarehouseIds,

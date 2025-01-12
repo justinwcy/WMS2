@@ -60,6 +60,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <col style="min-width: 100px" />
         <col style="min-width: 150px" />
         <col style="min-width: 100px" />
+        <col style="min-width: 100px" />
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.FirstName)">First Name</MudTableSortLabel></MudTh>
@@ -67,6 +68,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.Email)">Email</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.RolesString)">Roles</MudTableSortLabel></MudTh>
         <MudTh>Company</MudTh>
+        <MudTh>Zone</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">@context.FirstName</MudTd>
@@ -75,11 +77,21 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Roles">@context.RolesString</MudTd>
         <MudTd DataLabel="Company">
             <MudButton OnClick="@(() => ViewDialogUtilities.OpenCompanyDialogAsync(@context.CompanyId, CurrentStaff, Dialog))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
                 View (1)
+            </MudButton>
+        </MudTd>
+        
+        <MudTd DataLabel="Zone">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenZoneDialogAsync(@context.ZoneIds, CurrentStaff, Dialog))"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
+                View (@context.ZoneIds.Count)
             </MudButton>
         </MudTd>
     </RowTemplate>
@@ -102,6 +114,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         </MudTd>
 
         <MudTd DataLabel="Company"></MudTd>
+        <MudTd DataLabel="Zone"></MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
@@ -147,6 +160,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 LastName = staffDTO.LastName,
                 Email = staffDTO.Email,
                 RolesString = string.Join(", ", staffDTO.Roles),
+                ZoneIds = staffDTO.ZoneIds
             };
 
             StaffModels.Add(staffModel);
@@ -199,6 +213,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             FirstName = ((StaffModel)staffModel).FirstName,
             LastName = ((StaffModel)staffModel).LastName,
             Email = ((StaffModel)staffModel).Email,
+            ZoneIds = ((StaffModel)staffModel).ZoneIds,
             RolesString = string.Join(", ", ((StaffModel)staffModel).RolesString),
         };
         StateHasChanged();
@@ -212,6 +227,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         ((StaffModel)staffModel).LastName = _staffModelBeforeEdit.LastName;
         ((StaffModel)staffModel).Email  = _staffModelBeforeEdit.Email;
         ((StaffModel)staffModel).RolesString = _staffModelBeforeEdit.RolesString;
+        ((StaffModel)staffModel).ZoneIds = _staffModelBeforeEdit.ZoneIds;
 
         StateHasChanged();
     }
@@ -227,6 +243,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             FirstName = staffModelConverted.FirstName,
             LastName = staffModelConverted.LastName,
             Email = staffModelConverted.Email,
+            ZoneIds = staffModelConverted.ZoneIds,
             Roles = staffModelConverted.GetRoleList(),
         };
         var updateStaffCommand = new UpdateStaffCommand(updateStaffDTO);

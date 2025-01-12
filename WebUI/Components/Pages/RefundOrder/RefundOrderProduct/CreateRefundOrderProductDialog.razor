@@ -128,7 +128,7 @@
     {
         var createRefundOrderProductDTO = new CreateRefundOrderProductRequestDTO()
         {
-            CreatedBy = CurrentStaff.CreatedBy,
+            CreatedBy = CurrentStaff.Id,
             Status = _refundOrderProductModel.Status,
             ProductId = _refundOrderProductModel.ProductId,
             Quantity = _refundOrderProductModel.Quantity,

@@ -1,4 +1,3 @@
-
 @using WebUI.Components.Models
 @using Application.Service.Commands
 @using Application.DTO.Request
@@ -10,11 +9,11 @@
     <DialogContent>
         <MudForm @bind-IsValid="@_isFormValid">
             <MudTextField @bind-value="_zoneModel.Name"
-            Variant="@_defaultVariant"
-            T="string"
-            Label="Zone Name"
-            Required="true" RequiredError="Name is required!"
-            Margin="Margin.Dense"/>
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Zone Name"
+                          Required="true" RequiredError="Name is required!"
+                          Margin="Margin.Dense"/>
 
         </MudForm>
     </DialogContent>
@@ -39,10 +38,10 @@
     {
         var createZoneDTO = new CreateZoneRequestDTO()
         {
-            CreatedBy = CurrentStaff.CreatedBy,
+            CreatedBy = CurrentStaff.Id,
             Name = _zoneModel.Name,
+            WarehouseId = _zoneModel.WarehouseId,
             StaffIds = _zoneModel.StaffIds,
-            WarehouseIds = _zoneModel.WarehouseIds,
         };
         var createZoneCommand = new CreateZoneCommand(createZoneDTO);
         var createdZoneResponseDTO = await Mediator.Send(createZoneCommand);
@@ -52,7 +51,7 @@
             Id = createdZoneResponseDTO.Id,
             Name = _zoneModel.Name,
             StaffIds = _zoneModel.StaffIds,
-            WarehouseIds = _zoneModel.WarehouseIds,
+            WarehouseId = _zoneModel.WarehouseId,
         };
         MudDialog.Close(DialogResult.Ok(createdZoneModel));
     }

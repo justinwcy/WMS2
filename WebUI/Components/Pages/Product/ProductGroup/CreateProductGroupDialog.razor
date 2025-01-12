@@ -39,7 +39,7 @@
     {
         var createProductGroupDTO = new CreateProductGroupRequestDTO()
         {
-            CreatedBy = CurrentStaff.CreatedBy,
+            CreatedBy = CurrentStaff.Id,
             Name = _productGroupModel.Name,
             StaffIds = _productGroupModel.StaffIds,
             WarehouseIds = _productGroupModel.WarehouseIds,

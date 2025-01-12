@@ -38,7 +38,7 @@
     {
         var createWarehouseDTO = new CreateWarehouseRequestDTO()
         {
-            CreatedBy = CurrentStaff.CreatedBy,
+            CreatedBy = CurrentStaff.Id,
             Name = _warehouseModel.Name,
             Address = _warehouseModel.Address,
             CompanyId = _warehouseModel.CompanyId,

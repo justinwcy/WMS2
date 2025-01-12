@@ -10,6 +10,7 @@
         public string ConfirmPassword { get; set; } = "";
         public string RolesString { get; set; } = "";
         public Guid CompanyId { get; set; }
+        public List<Guid> ZoneIds { get; set; }
         public List<string> GetRoleList()
         {
             return RolesString.Split(',')

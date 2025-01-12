@@ -126,7 +126,7 @@
     {
         var createIncomingOrderProductDTO = new CreateIncomingOrderProductRequestDTO()
         {
-            CreatedBy = CurrentStaff.CreatedBy,
+            CreatedBy = CurrentStaff.Id,
             Status = _incomingOrderProductModel.Status,
             IncomingOrderId = _incomingOrderProductModel.IncomingOrderId,
             ProductId = _incomingOrderProductModel.ProductId,

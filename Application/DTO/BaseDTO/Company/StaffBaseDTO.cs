@@ -9,5 +9,6 @@ namespace Application.DTO.BaseDTO
         public string Email { get; set; }
         public IEnumerable<string> Roles { get; set; }
         public Guid CompanyId { get; set; }
+        public List<Guid> ZoneIds { get; set; }
     }
 }

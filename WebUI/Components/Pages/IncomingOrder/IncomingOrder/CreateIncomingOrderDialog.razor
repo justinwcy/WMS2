@@ -126,7 +126,7 @@
     {
         var createIncomingOrderDTO = new CreateIncomingOrderRequestDTO()
         {
-            CreatedBy = CurrentStaff.CreatedBy,
+            CreatedBy = CurrentStaff.Id,
             VendorId = _incomingOrderModel.VendorId,
             IncomingDate = _incomingOrderModel.IncomingDate.Value,
             PONumber = _incomingOrderModel.PONumber,

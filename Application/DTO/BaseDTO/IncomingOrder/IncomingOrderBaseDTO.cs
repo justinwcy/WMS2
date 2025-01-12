@@ -3,7 +3,7 @@
     public class IncomingOrderBaseDTO : BaseDTO
     {
         public DateTime IncomingDate { get; set; }
-        public DateTime RefundDate { get; set; }
+        public DateTime ReceivingDate { get; set; }
         public string Status { get; set; }
         public Guid VendorId { get; set; }
         public string PONumber { get; set; }

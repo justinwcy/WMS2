@@ -39,7 +39,7 @@
     {
         var createCustomerOrderDetailDTO = new CreateCustomerOrderDetailRequestDTO()
         {
-            CreatedBy = CurrentStaff.CreatedBy,
+            CreatedBy = CurrentStaff.Id,
             Name = _customerOrderDetailModel.Name,
             StaffIds = _customerOrderDetailModel.StaffIds,
             WarehouseIds = _customerOrderDetailModel.WarehouseIds,

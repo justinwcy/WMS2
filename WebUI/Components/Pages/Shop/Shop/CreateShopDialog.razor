@@ -57,7 +57,7 @@
     {
         var createShopDTO = new CreateShopRequestDTO()
         {
-            CreatedBy = CurrentStaff.CreatedBy,
+            CreatedBy = CurrentStaff.Id,
             Name = _shopModel.Name,
             Platform = _shopModel.Platform,
             Address = _shopModel.Address,

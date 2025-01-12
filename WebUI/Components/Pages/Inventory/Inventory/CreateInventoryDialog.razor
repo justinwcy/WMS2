@@ -101,7 +101,7 @@
     {
         var createInventoryDTO = new CreateInventoryRequestDTO()
         {
-            CreatedBy = CurrentStaff.CreatedBy,
+            CreatedBy = CurrentStaff.Id,
             Quantity = _inventoryModel.Quantity,
             ProductId = _inventoryModel.ProductId,
             DaysLeadTime = _inventoryModel.DaysLeadTime,

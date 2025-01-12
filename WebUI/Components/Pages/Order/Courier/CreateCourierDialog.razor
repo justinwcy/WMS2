@@ -39,7 +39,7 @@
     {
         var createCourierDTO = new CreateCourierRequestDTO()
         {
-            CreatedBy = CurrentStaff.CreatedBy,
+            CreatedBy = CurrentStaff.Id,
             Name = _courierModel.Name,
             StaffIds = _courierModel.StaffIds,
             WarehouseIds = _courierModel.WarehouseIds,
