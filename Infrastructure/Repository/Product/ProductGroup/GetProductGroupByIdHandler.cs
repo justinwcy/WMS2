@@ -10,7 +10,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.Repository
 {
     public class GetProductGroupByIdHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
-        IRequestHandler<GetProductGroupByIdQuery, GetProductGroupResponseDTO>> {
+        IRequestHandler<GetProductGroupByIdQuery, GetProductGroupResponseDTO> 
+    {
         public async Task<GetProductGroupResponseDTO> Handle(GetProductGroupByIdQuery request, CancellationToken cancellationToken)
         {
             await using var wmsDbContext = contextFactory.CreateDbContext();

@@ -6,7 +6,6 @@ using WebUI.Components.Pages.IncomingOrder.IncomingOrder;
 using WebUI.Components.Pages.IncomingOrder.IncomingOrderProduct;
 using WebUI.Components.Pages.IncomingOrder.Vendor;
 using WebUI.Components.Pages.Inventory.Inventory;
-using WebUI.Components.Pages.Inventory.ProductRack;
 using WebUI.Components.Pages.Inventory.Rack;
 using WebUI.Components.Pages.Inventory.Warehouse;
 using WebUI.Components.Pages.Inventory.Zone;
@@ -126,23 +125,6 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<InventoryDialog>("Inventory", parameters, options);
-        }
-
-        public static async Task OpenProductRackDialogAsync(Guid productRackId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
-        {
-            await OpenProductRackDialogAsync([productRackId], currentStaff, dialogService);
-        }
-
-        public static async Task OpenProductRackDialogAsync(List<Guid> productRackIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
-        {
-            var parameters = new DialogParameters<ProductRackDialog>()
-            {
-                { x => x.CurrentStaff, currentStaff },
-                { x => x.ProductRackIds, productRackIds },
-            };
-
-            var options = Theme.DefaultViewDialogOptions();
-            var dialog = await dialogService.ShowAsync<ProductRackDialog>("ProductRack", parameters, options);
         }
 
         public static async Task OpenRackDialogAsync(Guid rackId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
