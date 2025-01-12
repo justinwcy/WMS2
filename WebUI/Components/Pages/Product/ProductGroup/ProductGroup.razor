@@ -59,21 +59,15 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <col style="min-width: 150px" />
         <col style="min-width: 200px" />
         <col style="min-width: 100px" />
-        <col style="min-width: 150px" />
-        <col style="min-width: 100px" />
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<ProductGroupModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ProductGroupModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ProductGroupModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ProductGroupModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductGroupModel, object>(x=>x.Description)">Description</MudTableSortLabel></MudTh>
         <MudTh>Products</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Address">@context.Address</MudTd>
-        <MudTd DataLabel="Website">@context.Website</MudTd>
-        <MudTd DataLabel="Platform">@context.Platform</MudTd>
+        <MudTd DataLabel="Description">@context.Description</MudTd>
         <MudTd DataLabel="Products">
             <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
             Variant="Variant.Filled"
@@ -90,16 +84,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             <MudTextField @bind-Value="context.Name" Required />
         </MudTd>
 
-        <MudTd DataLabel="Address">
-            <MudTextField @bind-Value="context.Address" Required />
-        </MudTd>
-
-        <MudTd DataLabel="Website">
-            <MudTextField @bind-Value="context.Website" Required />
-        </MudTd>
-
-        <MudTd DataLabel="Platform">
-            <MudTextField @bind-Value="context.Platform" Required />
+        <MudTd DataLabel="Description">
+            <MudTextField @bind-Value="context.Description" Required />
         </MudTd>
 
         <MudTd DataLabel="Products"></MudTd>
@@ -142,14 +128,11 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             var productGroupModel = new ProductGroupModel()
             {
-                ProductIds = productGroupDTO.ProductIds,
-                Platform = productGroupDTO.Platform,
-                Address = productGroupDTO.Address,
+                Description = productGroupDTO.Description,
                 Id = productGroupDTO.Id,
                 Name = productGroupDTO.Name,
-                Website = productGroupDTO.Website
+                ProductIds = productGroupDTO.ProductIds,
             };
-
             ProductGroupModels.Add(productGroupModel);
         }
         _loading = false;
@@ -161,11 +144,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             return true;
         if (productGroupModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (productGroupModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (productGroupModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (productGroupModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (productGroupModel.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
 
         return false;
@@ -197,9 +176,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         {
             Id = ((ProductGroupModel)productGroupModel).Id,
             Name = ((ProductGroupModel)productGroupModel).Name,
-            Address = ((ProductGroupModel)productGroupModel).Address,
-            Platform = ((ProductGroupModel)productGroupModel).Platform,
-            Website = ((ProductGroupModel)productGroupModel).Website,
+            Description = ((ProductGroupModel)productGroupModel).Description,
             ProductIds = ((ProductGroupModel)productGroupModel).ProductIds,
         };
         StateHasChanged();
@@ -209,9 +186,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
         ((ProductGroupModel)productGroupModel).Id = _productGroupModelBeforeEdit.Id;
         ((ProductGroupModel)productGroupModel).Name = _productGroupModelBeforeEdit.Name;
-        ((ProductGroupModel)productGroupModel).Address = _productGroupModelBeforeEdit.Address;
-        ((ProductGroupModel)productGroupModel).Platform = _productGroupModelBeforeEdit.Platform;
-        ((ProductGroupModel)productGroupModel).Website = _productGroupModelBeforeEdit.Website;
+        ((ProductGroupModel)productGroupModel).Description = _productGroupModelBeforeEdit.Description;
         ((ProductGroupModel)productGroupModel).ProductIds = _productGroupModelBeforeEdit.ProductIds;
 
         StateHasChanged();
@@ -219,16 +194,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     private async void ItemHasBeenCommitted(object productGroupModel)
     {
-        var productGroupModelConverted = (ProductGroupModel)productGroupModel;
         var updateProductGroupDTO = new UpdateProductGroupRequestDTO()
         {
             CreatedBy = CurrentStaff.Id,
-            Id = productGroupModelConverted.Id,
-            Name = productGroupModelConverted.Name,
-            Address = productGroupModelConverted.Address,
-            Platform = productGroupModelConverted.Platform,
-            Website = productGroupModelConverted.Website,
-            ProductIds = productGroupModelConverted.ProductIds,
+            Id = ((ProductGroupModel)productGroupModel).Id,
+            Name = ((ProductGroupModel)productGroupModel).Name,
+            Description = ((ProductGroupModel)productGroupModel).Description,
+            ProductIds = ((ProductGroupModel)productGroupModel).ProductIds,
         };
         var updateProductGroupCommand = new UpdateProductGroupCommand(updateProductGroupDTO);
         var response = await Mediator.Send(updateProductGroupCommand);

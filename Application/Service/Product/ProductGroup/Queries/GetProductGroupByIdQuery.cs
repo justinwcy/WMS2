@@ -3,6 +3,6 @@ using MediatR;
 
 namespace Application.Service.Queries
 {
-    public record GetProductGroupByIdQuery(Guid Id) : IRequest<IEnumerable<GetProductGroupResponseDTO>>;
+    public record GetProductGroupByIdQuery(Guid Id) : IRequest<GetProductGroupResponseDTO>;
 }
     

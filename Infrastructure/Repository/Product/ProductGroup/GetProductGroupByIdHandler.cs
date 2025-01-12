@@ -10,16 +10,14 @@ using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.Repository
 {
     public class GetProductGroupByIdHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
-        IRequestHandler<GetProductGroupByIdQuery, IEnumerable<GetProductGroupResponseDTO>>
-    {
-        public async Task<IEnumerable<GetProductGroupResponseDTO>> Handle(GetProductGroupByIdQuery request, CancellationToken cancellationToken)
+        IRequestHandler<GetProductGroupByIdQuery, GetProductGroupResponseDTO>> {
+        public async Task<GetProductGroupResponseDTO> Handle(GetProductGroupByIdQuery request, CancellationToken cancellationToken)
         {
             await using var wmsDbContext = contextFactory.CreateDbContext();
             var productGroupFound = wmsDbContext.ProductGroups.AsNoTracking()
-                .Where(productGroup=>productGroup.Id == request.Id)
-                .ToList();
+                .First(productGroup=>productGroup.Id == request.Id);
 
-            var result = productGroupFound.Adapt<IEnumerable<GetProductGroupResponseDTO>>();
+            var result = productGroupFound.Adapt<GetProductGroupResponseDTO>();
             return result;
         }
     }

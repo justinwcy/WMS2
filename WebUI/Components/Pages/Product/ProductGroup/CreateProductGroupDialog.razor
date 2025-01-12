@@ -10,12 +10,17 @@
     <DialogContent>
         <MudForm @bind-IsValid="@_isFormValid">
             <MudTextField @bind-value="_productGroupModel.Name"
-            Variant="@_defaultVariant"
-            T="string"
-            Label="ProductGroup Name"
-            Required="true" RequiredError="Name is required!"
-            Margin="Margin.Dense"/>
-
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Product Group Name"
+                          Required="true" RequiredError="Name is required!"
+                          Margin="Margin.Dense"/>
+            
+            <MudTextField @bind-value="_productGroupModel.Description"
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Product Group Description"
+                          Margin="Margin.Dense" />
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -41,8 +46,8 @@
         {
             CreatedBy = CurrentStaff.Id,
             Name = _productGroupModel.Name,
-            StaffIds = _productGroupModel.StaffIds,
-            WarehouseIds = _productGroupModel.WarehouseIds,
+            Description = _productGroupModel.Description,
+            ProductIds = _productGroupModel.ProductIds,
         };
         var createProductGroupCommand = new CreateProductGroupCommand(createProductGroupDTO);
         var createdProductGroupResponseDTO = await Mediator.Send(createProductGroupCommand);
@@ -51,8 +56,8 @@
         {
             Id = createdProductGroupResponseDTO.Id,
             Name = _productGroupModel.Name,
-            StaffIds = _productGroupModel.StaffIds,
-            WarehouseIds = _productGroupModel.WarehouseIds,
+            Description = _productGroupModel.Description,
+            ProductIds = _productGroupModel.ProductIds,
         };
         MudDialog.Close(DialogResult.Ok(createdProductGroupModel));
     }
