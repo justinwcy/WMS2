@@ -2,18 +2,91 @@
 @using Application.Service.Commands
 @using Application.DTO.Request
 @using Application.DTO.Response
+@using Application.Service.Queries
 <MudDialog>
     <TitleContent>
-        Create CustomerOrder
+        Create Customer Order
     </TitleContent>
     <DialogContent>
         <MudForm @bind-IsValid="@_isFormValid">
-            <MudTextField @bind-value="_customerOrderModel.Name"
-            Variant="@_defaultVariant"
-            T="string"
-            Label="CustomerOrder Name"
-            Required="true" RequiredError="Name is required!"
-            Margin="Margin.Dense"/>
+
+            <MudSelect @bind-Value="_customerOrderModel.CustomerId"
+                       T="Guid"
+                       ToStringFunc="@(id => $"{_allCustomerModels.First(customerModel => customerModel.Id == id).FirstName} {_allCustomerModels.First(customerModel => customerModel.Id == id).LastName}")"
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Customer")
+                       MultiSelection="false"
+                       HelperText=@("Please select a customer")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a courier">
+                @foreach (var customerModel in _allCustomerModels)
+                {
+                    <MudSelectItem Value="@customerModel.Id" />
+                }
+            </MudSelect>
+            
+            <MudDatePicker Label="Expected Arrival Date" 
+                           Editable="true" 
+                           @bind-Date="_customerOrderModel.ExpectedArrivalDate"
+                           Placeholder="Expected Arrival Date" />
+
+            <MudSelect @bind-Value="_customerOrderModel.CourierId"
+                       T="Guid"
+                       ToStringFunc="@(id => _allCourierModels.First(courierModel => courierModel.Id == id).Name)"
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Courier")
+                       MultiSelection="false"
+                       HelperText=@("Please select a courier")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a courier">
+                @foreach (var courierModel in _allCourierModels)
+                {
+                    <MudSelectItem Value="@courierModel.Id"/>
+                }
+            </MudSelect>
+
+            <MudTextField @bind-value="_customerOrderModel.OrderAddress"
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Customer Order Address"
+                          Required="true" RequiredError="Order Address is required!"
+                          Margin="Margin.Dense"/>
+
+            <MudSelect @bind-Value="_customerOrderModel.BinId"
+                       T="Guid"
+                       ToStringFunc="@(id => _allBinModels.First(binModel => binModel.Id == id).Name)"
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Bin")
+                       MultiSelection="false"
+                       HelperText=@("Please select a bin")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a bin">
+                @foreach (var binModel in _allBinModels)
+                {
+                    <MudSelectItem Value="@binModel.Id"/>
+                }
+            </MudSelect>
 
         </MudForm>
     </DialogContent>
@@ -34,14 +107,74 @@
     [Parameter]
     public required GetStaffResponseDTO CurrentStaff { get; set; }
 
+    private List<CustomerModel> _allCustomerModels { get; set; } = [];
+    private List<BinModel> _allBinModels { get; set; } = [];
+    private List<CourierModel> _allCourierModels { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var getAllCustomerIdsByCompanyIdQuery = new GetAllCustomerIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var customerIds = await Mediator.Send(getAllCustomerIdsByCompanyIdQuery);
+        foreach (var customerId in customerIds)
+        {
+            var getCustomerByIdQuery = new GetCustomerByIdQuery(customerId);
+            var customerDTO = await Mediator.Send(getCustomerByIdQuery);
+            var customerModel = new CustomerModel()
+            {
+                Id = customerDTO.Id,
+                Address = customerDTO.Address,
+                CustomerOrderIds = customerDTO.CustomerOrderIds,
+                Email = customerDTO.Email,
+                FirstName = customerDTO.FirstName,
+                LastName = customerDTO.LastName,
+            };
+            _allCustomerModels.Add(customerModel);
+        }
+
+        var getAllBinIdsByCompanyIdQuery = new GetAllBinIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var binIds = await Mediator.Send(getAllBinIdsByCompanyIdQuery);
+        foreach (var binId in binIds)
+        {
+            var getBinByIdQuery = new GetBinByIdQuery(binId);
+            var binDTO = await Mediator.Send(getBinByIdQuery);
+            var binModel = new BinModel()
+            {
+                Id = binDTO.Id,
+                CustomerOrderIds = binDTO.CustomerOrderIds,
+                Name = binDTO.Name,
+            };
+            _allBinModels.Add(binModel);
+        }
+
+        var getAllCourierIdsByCompanyIdQuery = new GetAllCourierIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var courierIds = await Mediator.Send(getAllCourierIdsByCompanyIdQuery);
+        foreach (var courierId in courierIds)
+        {
+            var getCourierByIdQuery = new GetCourierByIdQuery(courierId);
+            var courierDTO = await Mediator.Send(getCourierByIdQuery);
+            var courierModel = new CourierModel()
+            {
+                Id = courierDTO.Id,
+                CustomerOrderIds = courierDTO.CustomerOrderIds,
+                Name = courierDTO.Name,
+                Remark = courierDTO.Remark,
+                Price = courierDTO.Price,
+            };
+            _allCourierModels.Add(courierModel);
+        }
+    }
+
     private async Task Submit()
     {
         var createCustomerOrderDTO = new CreateCustomerOrderRequestDTO()
         {
             CreatedBy = CurrentStaff.Id,
-            Name = _customerOrderModel.Name,
-            StaffIds = _customerOrderModel.StaffIds,
-            WarehouseIds = _customerOrderModel.WarehouseIds,
+            OrderAddress = _customerOrderModel.OrderAddress,
+            BinId = _customerOrderModel.BinId,
+            CourierId = _customerOrderModel.CourierId,
+            ExpectedArrivalDate = _customerOrderModel.ExpectedArrivalDate.Value,
+            CustomerId = _customerOrderModel.CustomerId,
+            OrderCreationDate = _customerOrderModel.OrderCreationDate.Value,
         };
         var createCustomerOrderCommand = new CreateCustomerOrderCommand(createCustomerOrderDTO);
         var createdCustomerOrderResponseDTO = await Mediator.Send(createCustomerOrderCommand);
@@ -49,9 +182,12 @@
         var createdCustomerOrderModel = new CustomerOrderModel()
         {
             Id = createdCustomerOrderResponseDTO.Id,
-            Name = _customerOrderModel.Name,
-            StaffIds = _customerOrderModel.StaffIds,
-            WarehouseIds = _customerOrderModel.WarehouseIds,
+            OrderAddress = _customerOrderModel.OrderAddress,
+            BinId = _customerOrderModel.BinId,
+            CourierId = _customerOrderModel.CourierId,
+            ExpectedArrivalDate = _customerOrderModel.ExpectedArrivalDate,
+            CustomerId = _customerOrderModel.CustomerId,
+            OrderCreationDate = _customerOrderModel.OrderCreationDate,
         };
         MudDialog.Close(DialogResult.Ok(createdCustomerOrderModel));
     }

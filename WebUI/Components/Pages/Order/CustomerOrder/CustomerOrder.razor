@@ -48,7 +48,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 @ref="_tableRef">
 
     <ToolBarContent>
-        <MudText Typo="Typo.h6">CustomerOrders</MudText>
+        <MudText Typo="Typo.h6">Customer Orders</MudText>
         <MudSpacer />
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
@@ -56,52 +56,156 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <col style="max-width: 50px" />
         <col style="max-width: 50px" />
         <col style="min-width: 150px" />
-        <col style="min-width: 200px" />
         <col style="min-width: 100px" />
         <col style="min-width: 150px" />
+        <col style="min-width: 200px" />
+        <col style="min-width: 100px" />
+        <col style="min-width: 100px" />
         <col style="min-width: 100px" />
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<CustomerOrderModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<CustomerOrderModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<CustomerOrderModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<CustomerOrderModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
-        <MudTh>Products</MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<CustomerOrderModel, object>(x => _allCustomerModels.FirstOrDefault(customerModel => customerModel.Id == x.CustomerId).FirstName)">
+                Customer
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<CustomerOrderModel, object>(x => x.ExpectedArrivalDate!)">
+                Expected Arrival Date
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<CustomerOrderModel, object>(x => _allCourierModels.FirstOrDefault(courierModel => courierModel.Id == x.CourierId).Name)">
+                Courier
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<CustomerOrderModel, object>(x => x.OrderCreationDate)">
+                Order Creation Date
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<CustomerOrderModel, object>(x => x.OrderAddress)">
+                Order Address
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<CustomerOrderModel, object>(x => _allBinModels.FirstOrDefault(binModel => binModel.Id == x.BinId).Name)">
+                Bin
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>Details</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Address">@context.Address</MudTd>
-        <MudTd DataLabel="Website">@context.Website</MudTd>
-        <MudTd DataLabel="Platform">@context.Platform</MudTd>
-        <MudTd DataLabel="Products">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
+        <MudTd DataLabel="Customer">@_allCustomerModels.First(customerModel => customerModel.Id == context.CustomerId).FirstName @_allCustomerModels.First(customerModel => customerModel.Id == context.CustomerId).LastName</MudTd>
+        <MudTd DataLabel="Expected Arrival Date">@context.ExpectedArrivalDate</MudTd>
+        <MudTd DataLabel="Courier">@_allCourierModels.First(courierModel => courierModel.Id == context.CourierId).Name</MudTd>
+        <MudTd DataLabel="Order Creation Date">@context.OrderCreationDate</MudTd>
+        <MudTd DataLabel="Order Address">@context.OrderAddress</MudTd>
+        <MudTd DataLabel="Bin">@_allBinModels.First(binModel=>binModel.Id == context.BinId).Name</MudTd>
+        <MudTd DataLabel="Details">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenCustomerOrderDetailDialogAsync(@context.CustomerOrderDetailIds, CurrentStaff, Dialog))"
             Variant="Variant.Filled"
             Color="Color.Primary"
             Size="Size.Small"
             FullWidth="false">
-                View (@context.ProductIds.Count)
+                View (@context.CustomerOrderDetailIds.Count)
             </MudButton>
         </MudTd>
     </RowTemplate>
 
     <RowEditingTemplate>
-        <MudTd DataLabel="Name">
-            <MudTextField @bind-Value="context.Name" Required />
+        <MudTd DataLabel="Customer">
+            <MudSelect @bind-Value="context.CustomerId"
+                       T="Guid"
+                       ToStringFunc="@(id => $"{_allCustomerModels.First(customerModel => customerModel.Id == id).FirstName} {_allCustomerModels.First(customerModel => customerModel.Id == id).LastName}")"
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Customer")
+                       MultiSelection="false"
+                       HelperText=@("Please select a customer")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a courier">
+                @foreach (var customerModel in _allCustomerModels)
+                {
+                    <MudSelectItem Value="@customerModel.Id" />
+                }
+            </MudSelect>
         </MudTd>
 
-        <MudTd DataLabel="Address">
-            <MudTextField @bind-Value="context.Address" Required />
+        <MudTd DataLabel="Expected Arrival Date">
+            <MudDatePicker Label="Expected Arrival Date"
+                           Editable="true"
+                           @bind-Date="context.ExpectedArrivalDate"
+                           Placeholder="Expected Arrival Date" />
         </MudTd>
 
-        <MudTd DataLabel="Website">
-            <MudTextField @bind-Value="context.Website" Required />
+        <MudTd DataLabel="Courier">
+            <MudSelect @bind-Value="context.CourierId"
+                       T="Guid"
+                       ToStringFunc="@(id => _allCourierModels.First(courierModel => courierModel.Id == id).Name)"
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Courier")
+                       MultiSelection="false"
+                       HelperText=@("Please select a courier")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a courier">
+                @foreach (var courierModel in _allCourierModels)
+                {
+                    <MudSelectItem Value="@courierModel.Id" />
+                }
+            </MudSelect>
         </MudTd>
 
-        <MudTd DataLabel="Platform">
-            <MudTextField @bind-Value="context.Platform" Required />
+        <MudTd DataLabel="Order Creation Date">
+            <MudDatePicker Label="Order Creation Date"
+                           Editable="true"
+                           @bind-Date="context.OrderCreationDate"
+                           Placeholder="Order Creation Date" />
         </MudTd>
 
-        <MudTd DataLabel="Products"></MudTd>
+        <MudTd DataLabel="Order Address">
+            <MudTextField @bind-Value="context.OrderAddress" Required />
+        </MudTd>
+
+        <MudTd DataLabel="Bin">
+            <MudSelect @bind-Value="context.BinId"
+                       T="Guid"
+                       ToStringFunc="@(id => _allBinModels.First(binModel => binModel.Id == id).Name)"
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Bin")
+                       MultiSelection="false"
+                       HelperText=@("Please select a bin")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a bin">
+                @foreach (var binModel in _allBinModels)
+                {
+                    <MudSelectItem Value="@binModel.Id" />
+                }
+            </MudSelect>
+        </MudTd>
+
+        <MudTd DataLabel="Details"></MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
@@ -129,6 +233,64 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private MudTable<CustomerOrderModel> _tableRef;
     private CustomerOrderModel _customerOrderModelBeforeEdit { get; set; }
 
+    private List<CustomerModel> _allCustomerModels { get; set; } = [];
+    private List<BinModel> _allBinModels { get; set; } = [];
+    private List<CourierModel> _allCourierModels { get; set; } = [];
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var getAllCustomerIdsByCompanyIdQuery = new GetAllCustomerIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var customerIds = await Mediator.Send(getAllCustomerIdsByCompanyIdQuery);
+        foreach (var customerId in customerIds)
+        {
+            var getCustomerByIdQuery = new GetCustomerByIdQuery(customerId);
+            var customerDTO = await Mediator.Send(getCustomerByIdQuery);
+            var customerModel = new CustomerModel()
+                {
+                    Id = customerDTO.Id,
+                    Address = customerDTO.Address,
+                    CustomerOrderIds = customerDTO.CustomerOrderIds,
+                    Email = customerDTO.Email,
+                    FirstName = customerDTO.FirstName,
+                    LastName = customerDTO.LastName,
+                };
+            _allCustomerModels.Add(customerModel);
+        }
+
+        var getAllBinIdsByCompanyIdQuery = new GetAllBinIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var binIds = await Mediator.Send(getAllBinIdsByCompanyIdQuery);
+        foreach (var binId in binIds)
+        {
+            var getBinByIdQuery = new GetBinByIdQuery(binId);
+            var binDTO = await Mediator.Send(getBinByIdQuery);
+            var binModel = new BinModel()
+                {
+                    Id = binDTO.Id,
+                    CustomerOrderIds = binDTO.CustomerOrderIds,
+                    Name = binDTO.Name,
+                };
+            _allBinModels.Add(binModel);
+        }
+
+        var getAllCourierIdsByCompanyIdQuery = new GetAllCourierIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var courierIds = await Mediator.Send(getAllCourierIdsByCompanyIdQuery);
+        foreach (var courierId in courierIds)
+        {
+            var getCourierByIdQuery = new GetCourierByIdQuery(courierId);
+            var courierDTO = await Mediator.Send(getCourierByIdQuery);
+            var courierModel = new CourierModel()
+                {
+                    Id = courierDTO.Id,
+                    CustomerOrderIds = courierDTO.CustomerOrderIds,
+                    Name = courierDTO.Name,
+                    Remark = courierDTO.Remark,
+                    Price = courierDTO.Price,
+                };
+            _allCourierModels.Add(courierModel);
+        }
+    }
+
     protected override async Task OnParametersSetAsync()
     {
         _loading = true;
@@ -141,12 +303,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             var customerOrderModel = new CustomerOrderModel()
             {
-                ProductIds = customerOrderDTO.ProductIds,
-                Platform = customerOrderDTO.Platform,
-                Address = customerOrderDTO.Address,
                 Id = customerOrderDTO.Id,
-                Name = customerOrderDTO.Name,
-                Website = customerOrderDTO.Website
+                OrderAddress = customerOrderDTO.OrderAddress,
+                BinId = customerOrderDTO.BinId,
+                CourierId = customerOrderDTO.CourierId,
+                CustomerId = customerOrderDTO.CustomerId,
+                CustomerOrderDetailIds = customerOrderDTO.CustomerOrderDetailIds,
+                ExpectedArrivalDate = customerOrderDTO.ExpectedArrivalDate,
+                OrderCreationDate = customerOrderDTO.OrderCreationDate
             };
 
             CustomerOrderModels.Add(customerOrderModel);
@@ -158,13 +322,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
-        if (customerOrderModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (customerOrderModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (customerOrderModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (customerOrderModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (customerOrderModel.OrderAddress.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
 
         return false;
@@ -195,11 +353,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         _customerOrderModelBeforeEdit = new CustomerOrderModel()
         {
             Id = ((CustomerOrderModel)customerOrderModel).Id,
-            Name = ((CustomerOrderModel)customerOrderModel).Name,
-            Address = ((CustomerOrderModel)customerOrderModel).Address,
-            Platform = ((CustomerOrderModel)customerOrderModel).Platform,
-            Website = ((CustomerOrderModel)customerOrderModel).Website,
-            ProductIds = ((CustomerOrderModel)customerOrderModel).ProductIds,
+            OrderAddress = ((CustomerOrderModel)customerOrderModel).OrderAddress, 
+            BinId = ((CustomerOrderModel)customerOrderModel).BinId,
+            CourierId = ((CustomerOrderModel)customerOrderModel).CourierId, 
+            CustomerId = ((CustomerOrderModel)customerOrderModel).CustomerId,
+            CustomerOrderDetailIds = ((CustomerOrderModel)customerOrderModel).CustomerOrderDetailIds,
+            ExpectedArrivalDate = ((CustomerOrderModel)customerOrderModel).ExpectedArrivalDate, 
+            OrderCreationDate = ((CustomerOrderModel)customerOrderModel).OrderCreationDate
         };
         StateHasChanged();
     }
@@ -207,27 +367,30 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private void ResetItemToOriginalValues(object customerOrderModel)
     {
         ((CustomerOrderModel)customerOrderModel).Id = _customerOrderModelBeforeEdit.Id;
-        ((CustomerOrderModel)customerOrderModel).Name = _customerOrderModelBeforeEdit.Name;
-        ((CustomerOrderModel)customerOrderModel).Address = _customerOrderModelBeforeEdit.Address;
-        ((CustomerOrderModel)customerOrderModel).Platform = _customerOrderModelBeforeEdit.Platform;
-        ((CustomerOrderModel)customerOrderModel).Website = _customerOrderModelBeforeEdit.Website;
-        ((CustomerOrderModel)customerOrderModel).ProductIds = _customerOrderModelBeforeEdit.ProductIds;
+        ((CustomerOrderModel)customerOrderModel).OrderAddress = _customerOrderModelBeforeEdit.OrderAddress;
+        ((CustomerOrderModel)customerOrderModel).BinId = _customerOrderModelBeforeEdit.BinId;
+        ((CustomerOrderModel)customerOrderModel).CourierId = _customerOrderModelBeforeEdit.CourierId;
+        ((CustomerOrderModel)customerOrderModel).CustomerId = _customerOrderModelBeforeEdit.CustomerId;
+        ((CustomerOrderModel)customerOrderModel).CustomerOrderDetailIds = _customerOrderModelBeforeEdit.CustomerOrderDetailIds;
+        ((CustomerOrderModel)customerOrderModel).ExpectedArrivalDate = _customerOrderModelBeforeEdit.ExpectedArrivalDate;
+        ((CustomerOrderModel)customerOrderModel).OrderCreationDate = _customerOrderModelBeforeEdit.OrderCreationDate;
 
         StateHasChanged();
     }
 
     private async void ItemHasBeenCommitted(object customerOrderModel)
     {
-        var customerOrderModelConverted = (CustomerOrderModel)customerOrderModel;
         var updateCustomerOrderDTO = new UpdateCustomerOrderRequestDTO()
         {
             CreatedBy = CurrentStaff.Id,
-            Id = customerOrderModelConverted.Id,
-            Name = customerOrderModelConverted.Name,
-            Address = customerOrderModelConverted.Address,
-            Platform = customerOrderModelConverted.Platform,
-            Website = customerOrderModelConverted.Website,
-            ProductIds = customerOrderModelConverted.ProductIds,
+            Id = ((CustomerOrderModel)customerOrderModel).Id,
+            OrderAddress = ((CustomerOrderModel)customerOrderModel).OrderAddress,
+            BinId = ((CustomerOrderModel)customerOrderModel).BinId,
+            CourierId = ((CustomerOrderModel)customerOrderModel).CourierId,
+            CustomerId = ((CustomerOrderModel)customerOrderModel).CustomerId,
+            CustomerOrderDetailIds = ((CustomerOrderModel)customerOrderModel).CustomerOrderDetailIds,
+            ExpectedArrivalDate = ((CustomerOrderModel)customerOrderModel).ExpectedArrivalDate.Value,
+            OrderCreationDate = ((CustomerOrderModel)customerOrderModel).OrderCreationDate.Value
         };
         var updateCustomerOrderCommand = new UpdateCustomerOrderCommand(updateCustomerOrderDTO);
         var response = await Mediator.Send(updateCustomerOrderCommand);
@@ -256,7 +419,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             }
             CustomerOrderModels.Add(customerOrderModelCreated);
             StateHasChanged();
-            SnackBar.Add($"{customerOrderModelCreated.Name} created");
+            SnackBar.Add($"Customer Order created");
         }
     }
 }

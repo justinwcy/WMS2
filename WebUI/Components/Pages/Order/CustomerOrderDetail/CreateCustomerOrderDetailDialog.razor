@@ -1,4 +1,3 @@
-
 @using WebUI.Components.Models
 @using Application.Service.Commands
 @using Application.DTO.Request
@@ -9,12 +8,12 @@
     </TitleContent>
     <DialogContent>
         <MudForm @bind-IsValid="@_isFormValid">
-            <MudTextField @bind-value="_customerOrderDetailModel.Name"
-            Variant="@_defaultVariant"
-            T="string"
-            Label="CustomerOrderDetail Name"
-            Required="true" RequiredError="Name is required!"
-            Margin="Margin.Dense"/>
+            <MudTextField @bind-value="_customerOrderDetailModel.Quantity"
+                          Variant="@_defaultVariant"
+                          T="int"
+                          Label="CustomerOrderDetail Name"
+                          Required="true" RequiredError="Quantity is required!"
+                          Margin="Margin.Dense"/>
 
         </MudForm>
     </DialogContent>
@@ -40,9 +39,10 @@
         var createCustomerOrderDetailDTO = new CreateCustomerOrderDetailRequestDTO()
         {
             CreatedBy = CurrentStaff.Id,
-            Name = _customerOrderDetailModel.Name,
-            StaffIds = _customerOrderDetailModel.StaffIds,
-            WarehouseIds = _customerOrderDetailModel.WarehouseIds,
+            CustomerOrderId = _customerOrderDetailModel.CustomerOrderId,
+            Quantity = _customerOrderDetailModel.Quantity,
+            Status = _customerOrderDetailModel.Status,
+            ProductId = _customerOrderDetailModel.ProductId,
         };
         var createCustomerOrderDetailCommand = new CreateCustomerOrderDetailCommand(createCustomerOrderDetailDTO);
         var createdCustomerOrderDetailResponseDTO = await Mediator.Send(createCustomerOrderDetailCommand);
@@ -50,9 +50,10 @@
         var createdCustomerOrderDetailModel = new CustomerOrderDetailModel()
         {
             Id = createdCustomerOrderDetailResponseDTO.Id,
-            Name = _customerOrderDetailModel.Name,
-            StaffIds = _customerOrderDetailModel.StaffIds,
-            WarehouseIds = _customerOrderDetailModel.WarehouseIds,
+            CustomerOrderId = _customerOrderDetailModel.CustomerOrderId,
+            Quantity = _customerOrderDetailModel.Quantity,
+            Status = _customerOrderDetailModel.Status,
+            ProductId = _customerOrderDetailModel.ProductId,
         };
         MudDialog.Close(DialogResult.Ok(createdCustomerOrderDetailModel));
     }
