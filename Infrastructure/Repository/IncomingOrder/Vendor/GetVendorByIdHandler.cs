@@ -16,9 +16,11 @@ namespace Infrastructure.Repository
         {
             await using var wmsDbContext = contextFactory.CreateDbContext();
             var vendorFound = await wmsDbContext.Vendors.AsNoTracking()
+                .Include(vendor => vendor.IncomingOrders)
                 .FirstAsync(vendor=>vendor.Id == request.Id, cancellationToken);
 
             var result = vendorFound.Adapt<GetVendorResponseDTO>();
+            result.IncomingOrderIds = vendorFound.IncomingOrders.Select(incomingOrder => incomingOrder.Id).ToList();
             return result;
         }
     }

@@ -19,6 +19,8 @@ namespace Infrastructure.Repository
                 .FirstAsync(incomingOrderProduct=>incomingOrderProduct.Id == request.Id, cancellationToken);
 
             var result = incomingOrderProductFound.Adapt<GetIncomingOrderProductResponseDTO>();
+            result.ProductId = incomingOrderProductFound.ProductId;
+            result.IncomingOrderId = incomingOrderProductFound.IncomingOrderId;
             return result;
         }
     }

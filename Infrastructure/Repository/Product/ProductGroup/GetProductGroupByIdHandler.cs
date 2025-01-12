@@ -16,9 +16,12 @@ namespace Infrastructure.Repository
         {
             await using var wmsDbContext = contextFactory.CreateDbContext();
             var productGroupFound = wmsDbContext.ProductGroups.AsNoTracking()
+                .Include(productGroup => productGroup.Products)
                 .First(productGroup=>productGroup.Id == request.Id);
 
             var result = productGroupFound.Adapt<GetProductGroupResponseDTO>();
+            result.ProductIds = productGroupFound.Products.Select(product=>product.Id).ToList();
+            
             return result;
         }
     }

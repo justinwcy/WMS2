@@ -19,6 +19,8 @@ namespace Infrastructure.Repository
                 .FirstAsync(zoneStaff=>zoneStaff.Id == request.Id, cancellationToken);
 
             var result = zoneStaffFound.Adapt<GetZoneStaffResponseDTO>();
+            result.ZoneId = zoneStaffFound.ZoneId;
+            result.StaffId = zoneStaffFound.StaffId;
             return result;
         }
     }

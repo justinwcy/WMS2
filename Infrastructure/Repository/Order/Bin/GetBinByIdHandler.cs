@@ -16,9 +16,12 @@ namespace Infrastructure.Repository.Orders.Handlers
         {
             await using var wmsDbContext = contextFactory.CreateDbContext();
             var binFound = await wmsDbContext.Bins.AsNoTracking()
+                .Include(bin => bin.CustomerOrders)
                 .FirstAsync(bin=>bin.Id == request.Id, cancellationToken);
 
             var result = binFound.Adapt<GetBinResponseDTO>();
+            result.CustomerOrderIds = binFound.CustomerOrders.Select(customerOrder => customerOrder.Id).ToList();
+
             return result;
         }
     }

@@ -15,10 +15,13 @@ namespace Infrastructure.Repository
         public async Task<GetProductRackResponseDTO> Handle(GetProductRackByIdQuery request, CancellationToken cancellationToken)
         {
             await using var wmsDbContext = contextFactory.CreateDbContext();
-            var ProductRackFound = await wmsDbContext.ProductRacks.AsNoTracking()
-                .FirstAsync(ProductRack=>ProductRack.Id == request.Id, cancellationToken);
+            var productRackFound = await wmsDbContext.ProductRacks.AsNoTracking()
+                .FirstAsync(productRack => productRack.Id == request.Id, cancellationToken);
 
-            var result = ProductRackFound.Adapt<GetProductRackResponseDTO>();
+            var result = productRackFound.Adapt<GetProductRackResponseDTO>();
+            result.ProductId = productRackFound.ProductId;
+            result.RackId = productRackFound.RackId;
+            
             return result;
         }
     }

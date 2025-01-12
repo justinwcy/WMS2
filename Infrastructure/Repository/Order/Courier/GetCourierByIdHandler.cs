@@ -4,7 +4,6 @@ using Application.Service.Queries;
 using Infrastructure.Data;
 using Mapster;
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repository
@@ -16,9 +15,12 @@ namespace Infrastructure.Repository
         {
             await using var wmsDbContext = contextFactory.CreateDbContext();
             var courierFound = await wmsDbContext.Couriers.AsNoTracking()
+                .Include(courier => courier.CustomerOrders)
                 .FirstAsync(courier=>courier.Id == request.Id, cancellationToken);
 
             var result = courierFound.Adapt<GetCourierResponseDTO>();
+            result.CustomerOrderIds = courierFound.CustomerOrders.Select(customerOrder => customerOrder.Id).ToList();
+            
             return result;
         }
     }

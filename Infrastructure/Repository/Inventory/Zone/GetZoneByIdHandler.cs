@@ -16,9 +16,15 @@ namespace Infrastructure.Repository
         {
             await using var wmsDbContext = contextFactory.CreateDbContext();
             var zoneFound = await wmsDbContext.Zones.AsNoTracking()
+                .Include(zone => zone.Staffs)
+                .Include(zone => zone.Racks)
                 .FirstAsync(zone=>zone.Id == request.Id, cancellationToken);
 
             var result = zoneFound.Adapt<GetZoneResponseDTO>();
+            result.StaffIds = zoneFound.Staffs.Select(staff=>staff.Id).ToList();
+            result.RackIds = zoneFound.Racks.Select(rack =>rack.Id).ToList();
+            result.WarehouseId = zoneFound.WarehouseId;
+
             return result;
         }
     }

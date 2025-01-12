@@ -21,6 +21,7 @@ namespace Infrastructure.Repository
 
             var result = shopFound.Adapt<GetShopResponseDTO>();
             result.ProductIds = shopFound.Products.Select(product => product.Id).ToList();
+            
             return result;
         }
     }

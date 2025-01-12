@@ -24,6 +24,8 @@ namespace Infrastructure.Repository
         {
             await using var wmsDbContext = contextFactory.CreateDbContext();
             var staffFound = await wmsDbContext.Staffs.AsNoTracking()
+                .Include(staff => staff.Zones)
+                .Include(staff => staff.StaffNotifications)
                 .FirstAsync(staff => staff.Id == request.StaffId, cancellationToken);
 
             var accountService = new AccountService(userManager, signInManager, roleManager, contextFactory);
@@ -35,6 +37,11 @@ namespace Infrastructure.Repository
 
             getStaffResponseDTO.CompanyId = staffFound.CompanyId;
             getStaffResponseDTO.CreatedBy = staffFound.CreatedBy;
+            getStaffResponseDTO.ZoneIds = staffFound.Zones.Select(zone => zone.Id).ToList();
+            getStaffResponseDTO.StaffNotifications = staffFound
+                .StaffNotifications
+                .Select(staffNotification => staffNotification.Id)
+                .ToList();
             return getStaffResponseDTO;
         }
     }

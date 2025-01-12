@@ -21,6 +21,7 @@ namespace Infrastructure.Repository
                     cancellationToken);
 
             var result = staffNotificationFound.Adapt<GetStaffNotificationResponseDTO>();
+            result.StaffId = staffNotificationFound.StaffId;
             return result;
         }
     }
