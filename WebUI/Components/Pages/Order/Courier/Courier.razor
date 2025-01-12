@@ -56,30 +56,27 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <col style="max-width: 50px" />
         <col style="max-width: 50px" />
         <col style="min-width: 150px" />
+        <col style="min-width: 100px" />
         <col style="min-width: 200px" />
-        <col style="min-width: 100px" />
         <col style="min-width: 150px" />
-        <col style="min-width: 100px" />
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<CourierModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<CourierModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<CourierModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<CourierModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
-        <MudTh>Products</MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CourierModel, object>(x=>x.Price)">Price</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CourierModel, object>(x=>x.Remark)">Remark</MudTableSortLabel></MudTh>
+        <MudTh>Customer Orders</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Address">@context.Address</MudTd>
-        <MudTd DataLabel="Website">@context.Website</MudTd>
-        <MudTd DataLabel="Platform">@context.Platform</MudTd>
-        <MudTd DataLabel="Products">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
-                View (@context.ProductIds.Count)
+        <MudTd DataLabel="Price">@context.Price</MudTd>
+        <MudTd DataLabel="Remark">@context.Remark</MudTd>
+        <MudTd DataLabel="Customer Orders">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenCustomerOrderDialogAsync(@context.CustomerOrderIds, CurrentStaff, Dialog))"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
+                View (@context.CustomerOrderIds.Count)
             </MudButton>
         </MudTd>
     </RowTemplate>
@@ -89,19 +86,15 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             <MudTextField @bind-Value="context.Name" Required />
         </MudTd>
 
-        <MudTd DataLabel="Address">
-            <MudTextField @bind-Value="context.Address" Required />
+        <MudTd DataLabel="Price">
+            <MudTextField @bind-Value="context.Price" T="decimal" Required />
         </MudTd>
 
-        <MudTd DataLabel="Website">
-            <MudTextField @bind-Value="context.Website" Required />
+        <MudTd DataLabel="Remark">
+            <MudTextField @bind-Value="context.Remark" Required />
         </MudTd>
 
-        <MudTd DataLabel="Platform">
-            <MudTextField @bind-Value="context.Platform" Required />
-        </MudTd>
-
-        <MudTd DataLabel="Products"></MudTd>
+        <MudTd DataLabel="Customer Orders"></MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
@@ -141,12 +134,11 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             var courierModel = new CourierModel()
             {
-                ProductIds = courierDTO.ProductIds,
-                Platform = courierDTO.Platform,
-                Address = courierDTO.Address,
                 Id = courierDTO.Id,
                 Name = courierDTO.Name,
-                Website = courierDTO.Website
+                Price = courierDTO.Price,
+                CustomerOrderIds = courierDTO.CustomerOrderIds,
+                Remark = courierDTO.Remark,
             };
 
             CourierModels.Add(courierModel);
@@ -160,11 +152,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             return true;
         if (courierModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (courierModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (courierModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (courierModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (courierModel.Remark.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
 
         return false;
@@ -196,10 +184,9 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         {
             Id = ((CourierModel)courierModel).Id,
             Name = ((CourierModel)courierModel).Name,
-            Address = ((CourierModel)courierModel).Address,
-            Platform = ((CourierModel)courierModel).Platform,
-            Website = ((CourierModel)courierModel).Website,
-            ProductIds = ((CourierModel)courierModel).ProductIds,
+            Price = ((CourierModel)courierModel).Price,
+            CustomerOrderIds = ((CourierModel)courierModel).CustomerOrderIds,
+            Remark = ((CourierModel)courierModel).Remark,
         };
         StateHasChanged();
     }
@@ -208,26 +195,23 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
         ((CourierModel)courierModel).Id = _courierModelBeforeEdit.Id;
         ((CourierModel)courierModel).Name = _courierModelBeforeEdit.Name;
-        ((CourierModel)courierModel).Address = _courierModelBeforeEdit.Address;
-        ((CourierModel)courierModel).Platform = _courierModelBeforeEdit.Platform;
-        ((CourierModel)courierModel).Website = _courierModelBeforeEdit.Website;
-        ((CourierModel)courierModel).ProductIds = _courierModelBeforeEdit.ProductIds;
+        ((CourierModel)courierModel).Price = _courierModelBeforeEdit.Price;
+        ((CourierModel)courierModel).CustomerOrderIds = _courierModelBeforeEdit.CustomerOrderIds;
+        ((CourierModel)courierModel).Remark = _courierModelBeforeEdit.Remark;
 
         StateHasChanged();
     }
 
     private async void ItemHasBeenCommitted(object courierModel)
     {
-        var courierModelConverted = (CourierModel)courierModel;
         var updateCourierDTO = new UpdateCourierRequestDTO()
         {
             CreatedBy = CurrentStaff.Id,
-            Id = courierModelConverted.Id,
-            Name = courierModelConverted.Name,
-            Address = courierModelConverted.Address,
-            Platform = courierModelConverted.Platform,
-            Website = courierModelConverted.Website,
-            ProductIds = courierModelConverted.ProductIds,
+            Id = ((CourierModel)courierModel).Id,
+            Name = ((CourierModel)courierModel).Name,
+            Price = ((CourierModel)courierModel).Price,
+            CustomerOrderIds = ((CourierModel)courierModel).CustomerOrderIds,
+            Remark = ((CourierModel)courierModel).Remark,
         };
         var updateCourierCommand = new UpdateCourierCommand(updateCourierDTO);
         var response = await Mediator.Send(updateCourierCommand);
