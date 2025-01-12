@@ -196,27 +196,6 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             .GetFields(BindingFlags.Public | BindingFlags.Static)
             .Select(field => field.GetValue(null).ToString())
             .ToList();
-
-        var getAllVendorIdsByCompanyIdQuery = new GetAllVendorIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var vendorIds = await Mediator.Send(getAllVendorIdsByCompanyIdQuery);
-
-        foreach (var vendorId in vendorIds)
-        {
-            var getVendorByIdQuery = new GetVendorByIdQuery(vendorId);
-            var vendorDTO = await Mediator.Send(getVendorByIdQuery);
-
-            var vendorModel = new VendorModel()
-            {
-                Id = vendorDTO.Id,
-                Address = vendorDTO.Address,
-                Email = vendorDTO.Email,
-                FirstName = vendorDTO.FirstName,
-                LastName = vendorDTO.LastName,
-                PhoneNumber = vendorDTO.PhoneNumber,
-                IncomingOrderIds = vendorDTO.IncomingOrderIds,
-            };
-            _allVendorModels.Add(vendorModel);
-        }
     }
 
     protected override async Task OnParametersSetAsync()
@@ -241,6 +220,27 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             };
 
             IncomingOrderModels.Add(incomingOrderModel);
+        }
+
+        var getAllVendorIdsByCompanyIdQuery = new GetAllVendorIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var vendorIds = await Mediator.Send(getAllVendorIdsByCompanyIdQuery);
+
+        foreach (var vendorId in vendorIds)
+        {
+            var getVendorByIdQuery = new GetVendorByIdQuery(vendorId);
+            var vendorDTO = await Mediator.Send(getVendorByIdQuery);
+
+            var vendorModel = new VendorModel()
+                {
+                    Id = vendorDTO.Id,
+                    Address = vendorDTO.Address,
+                    Email = vendorDTO.Email,
+                    FirstName = vendorDTO.FirstName,
+                    LastName = vendorDTO.LastName,
+                    PhoneNumber = vendorDTO.PhoneNumber,
+                    IncomingOrderIds = vendorDTO.IncomingOrderIds,
+                };
+            _allVendorModels.Add(vendorModel);
         }
         _loading = false;
     }
