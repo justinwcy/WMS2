@@ -25,10 +25,10 @@
                        HelperTextOnFocus="true"
                        Clearable="false"
                        Required="true"
-                       RequiredError="Please select a product">
+                       RequiredError="Please select a warehouse">
                 @foreach (var warehouseModel in _allWarehouseModels)
                 {
-                    <MudSelectItem Value="@warehouseModel"/>
+                    <MudSelectItem Value="@warehouseModel.Id"/>
                 }
             </MudSelect>
 

@@ -15,5 +15,7 @@ namespace Application.DTO.BaseDTO
         public double Width { get; set; }
 
         public double Depth { get; set; }
+
+        public List<Guid> ProductIds { get; set; }
     }
 }

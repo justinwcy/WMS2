@@ -31,7 +31,7 @@
                        RequiredError="Please select a product">
                 @foreach (var productModel in _allProductModels)
                 {
-                    <MudSelectItem Value="@productModel"></MudSelectItem>
+                    <MudSelectItem Value="@productModel.Id"></MudSelectItem>
                 }
             </MudSelect>
             

@@ -56,24 +56,40 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     <ColGroup>
         <col style="max-width: 50px" />
         <col style="max-width: 50px" />
-        <col style="min-width: 150px" />
-        <col style="min-width: 200px" />
+        <col style="min-width: 100px" />
+        <col style="min-width: 100px" />
+        <col style="min-width: 100px" />
+        <col style="min-width: 100px" />
         <col style="min-width: 100px" />
         <col style="min-width: 150px" />
-        <col style="min-width: 100px" />
+        <col style="min-width: 150px" />
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<RackModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<RackModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<RackModel, object>(x=>x.Platform)">Platform</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<RackModel, object>(x=>x.Website)">Website</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<RackModel, object>(x=>x.MaxWeight)">Max Weight (g)</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<RackModel, object>(x=>x.Height)">Height</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<RackModel, object>(x=>x.Width)">Width</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<RackModel, object>(x=>x.Depth)">Depth</MudTableSortLabel></MudTh>
+        <MudTh>Zones</MudTh>
         <MudTh>Products</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Address">@context.Address</MudTd>
-        <MudTd DataLabel="Website">@context.Website</MudTd>
-        <MudTd DataLabel="Platform">@context.Platform</MudTd>
+        <MudTd DataLabel="Max Weight (g)">@context.MaxWeight</MudTd>
+        <MudTd DataLabel="Height">@context.Height</MudTd>
+        <MudTd DataLabel="Width">@context.Width</MudTd>
+        <MudTd DataLabel="Depth">@context.Depth</MudTd>
+        
+        <MudTd DataLabel="Zones">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenZoneDialogAsync(@context.ZoneId, CurrentStaff, Dialog))"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
+                View (1)
+            </MudButton>
+        </MudTd>
+
         <MudTd DataLabel="Products">
             <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
             Variant="Variant.Filled"
@@ -89,19 +105,24 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Name">
             <MudTextField @bind-Value="context.Name" Required />
         </MudTd>
-
-        <MudTd DataLabel="Address">
-            <MudTextField @bind-Value="context.Address" Required />
+        
+        <MudTd DataLabel="Max Weight (g)">
+            <MudTextField @bind-Value="context.MaxWeight" T="double" Required />
+        </MudTd>
+        
+        <MudTd DataLabel="Height">
+            <MudTextField @bind-Value="context.Height" T="double" Required />
+        </MudTd>
+        
+        <MudTd DataLabel="Width">
+            <MudTextField @bind-Value="context.Width" T="double" Required />
+        </MudTd>
+        
+        <MudTd DataLabel="Depth">
+            <MudTextField @bind-Value="context.Depth" T="double" Required />
         </MudTd>
 
-        <MudTd DataLabel="Website">
-            <MudTextField @bind-Value="context.Website" Required />
-        </MudTd>
-
-        <MudTd DataLabel="Platform">
-            <MudTextField @bind-Value="context.Platform" Required />
-        </MudTd>
-
+        <MudTd DataLabel="Zones"></MudTd>
         <MudTd DataLabel="Products"></MudTd>
     </RowEditingTemplate>
 
@@ -142,12 +163,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             var rackModel = new RackModel()
             {
-                ProductIds = rackDTO.ProductIds,
-                Platform = rackDTO.Platform,
-                Address = rackDTO.Address,
                 Id = rackDTO.Id,
+                ProductIds = rackDTO.ProductIds,
                 Name = rackDTO.Name,
-                Website = rackDTO.Website
+                MaxWeight = rackDTO.MaxWeight,
+                Width = rackDTO.Width,
+                Depth = rackDTO.Depth,
+                Height = rackDTO.Height,
+                ZoneId = rackDTO.ZoneId,
             };
 
             RackModels.Add(rackModel);
@@ -160,12 +183,6 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
         if (rackModel.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (rackModel.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (rackModel.Platform.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (rackModel.Website.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
 
         return false;
@@ -196,11 +213,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         _rackModelBeforeEdit = new RackModel()
         {
             Id = ((RackModel)rackModel).Id,
-            Name = ((RackModel)rackModel).Name,
-            Address = ((RackModel)rackModel).Address,
-            Platform = ((RackModel)rackModel).Platform,
-            Website = ((RackModel)rackModel).Website,
-            ProductIds = ((RackModel)rackModel).ProductIds,
+            ProductIds = ((RackModel)rackModel).ProductIds, 
+            Name = ((RackModel)rackModel).Name, 
+            MaxWeight = ((RackModel)rackModel).MaxWeight,
+            Width = ((RackModel)rackModel).Width,
+            Depth = ((RackModel)rackModel).Depth,
+            Height = ((RackModel)rackModel).Height,
+            ZoneId = ((RackModel)rackModel).ZoneId,
         };
         StateHasChanged();
     }
@@ -209,26 +228,29 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
         ((RackModel)rackModel).Id = _rackModelBeforeEdit.Id;
         ((RackModel)rackModel).Name = _rackModelBeforeEdit.Name;
-        ((RackModel)rackModel).Address = _rackModelBeforeEdit.Address;
-        ((RackModel)rackModel).Platform = _rackModelBeforeEdit.Platform;
-        ((RackModel)rackModel).Website = _rackModelBeforeEdit.Website;
         ((RackModel)rackModel).ProductIds = _rackModelBeforeEdit.ProductIds;
+        ((RackModel)rackModel).MaxWeight = _rackModelBeforeEdit.MaxWeight;
+        ((RackModel)rackModel).Width = _rackModelBeforeEdit.Width;
+        ((RackModel)rackModel).Depth = _rackModelBeforeEdit.Depth;
+        ((RackModel)rackModel).Height = _rackModelBeforeEdit.Height;
+        ((RackModel)rackModel).ZoneId = _rackModelBeforeEdit.ZoneId;
 
         StateHasChanged();
     }
 
     private async void ItemHasBeenCommitted(object rackModel)
     {
-        var rackModelConverted = (RackModel)rackModel;
         var updateRackDTO = new UpdateRackRequestDTO()
         {
             CreatedBy = CurrentStaff.Id,
-            Id = rackModelConverted.Id,
-            Name = rackModelConverted.Name,
-            Address = rackModelConverted.Address,
-            Platform = rackModelConverted.Platform,
-            Website = rackModelConverted.Website,
-            ProductIds = rackModelConverted.ProductIds,
+            Id = ((RackModel)rackModel).Id,
+            ProductIds = ((RackModel)rackModel).ProductIds,
+            Name = ((RackModel)rackModel).Name,
+            MaxWeight = ((RackModel)rackModel).MaxWeight,
+            Width = ((RackModel)rackModel).Width,
+            Depth = ((RackModel)rackModel).Depth,
+            Height = ((RackModel)rackModel).Height,
+            ZoneId = ((RackModel)rackModel).ZoneId,
         };
         var updateRackCommand = new UpdateRackCommand(updateRackDTO);
         var response = await Mediator.Send(updateRackCommand);
