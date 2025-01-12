@@ -107,11 +107,11 @@ EditTrigger="TableEditTrigger.RowClick"
             </MudButton>
         </MudTd>
         <MudTd DataLabel="Product Group">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductGroupDialogAsync(context.ShopIds, CurrentStaff, Dialog))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Large"
-            FullWidth="false">
+            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductGroupDialogAsync(context.ProductGroupIds, CurrentStaff, Dialog))"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Large"
+                       FullWidth="false">
                 View (@context.ProductGroupIds.Count)
             </MudButton>
         </MudTd>

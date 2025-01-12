@@ -63,7 +63,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<ZoneModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
         <MudTh>
-            <MudTableSortLabel SortBy="new Func<ZoneModel, object>(x => _allWarehouseModels.FirstOrDefault(warehouseModel => warehouseModel.Id == x.WarehouseId)?.Name">
+            <MudTableSortLabel SortBy="new Func<ZoneModel, object>(x => _allWarehouseModels.FirstOrDefault(warehouseModel => warehouseModel.Id == x.WarehouseId)?.Name)">
                 Warehouse
             </MudTableSortLabel>
         </MudTh>
@@ -87,10 +87,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
         <MudTd DataLabel="Rack">
             <MudButton OnClick="@(() => ViewDialogUtilities.OpenRackDialogAsync(@context.RackIds, CurrentStaff, Dialog))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
                 View (@context.RackIds.Count)
             </MudButton>
         </MudTd>
