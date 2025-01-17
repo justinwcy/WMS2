@@ -71,7 +71,7 @@
             
             <MudSelect @bind-Value="_staffModel.CompanyId"
                        T="Guid"
-                       ToStringFunc="@(id=> _allCompanyModels.First(companyModel=>companyModel.Id == id).Name)"
+                       ToStringFunc="@(id=> _allCompanyModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Company"
                        Margin="Margin.Normal"

@@ -2,6 +2,7 @@
 @using Application.Service.Commands
 @using Application.DTO.Request
 @using Application.DTO.Response
+@using Application.Service.Queries
 <MudDialog>
     <TitleContent>
         Create Warehouse
@@ -9,11 +10,40 @@
     <DialogContent>
         <MudForm @bind-IsValid="@_isFormValid">
             <MudTextField @bind-value="_warehouseModel.Name"
-            Variant="@_defaultVariant"
-            T="string"
-            Label="Warehouse Name"
-            Required="true" RequiredError="Name is required!"
-            Margin="Margin.Dense"/>
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Warehouse Name"
+                          Required="true" RequiredError="Name is required!"
+                          Margin="Margin.Dense"/>
+
+            <MudTextField @bind-value="_warehouseModel.Address"
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Warehouse Address"
+                          Required="true" RequiredError="Address is required!"
+                          Margin="Margin.Dense"/>
+            
+            <MudSelect @bind-Value="_warehouseModel.CompanyId"
+                       T="Guid"
+                       ToStringFunc="@(id=> _allCompanyModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Company"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Company")
+                       MultiSelection="false"
+                       HelperText=@("Please select a company for the user")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a company for the user">
+                @foreach (var companyModel in _allCompanyModels)
+                {
+                    <MudSelectItem Value="companyModel.Id"></MudSelectItem>
+                }
+            </MudSelect>
 
         </MudForm>
     </DialogContent>
@@ -30,9 +60,32 @@
     private bool _isFormValid { get; set; } = false;
 
     private WarehouseModel _warehouseModel { get; set; } = new WarehouseModel();
+    private List<CompanyModel> _allCompanyModels { get; set; } = [];
 
     [Parameter]
     public required GetStaffResponseDTO CurrentStaff { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        var getAllCompanyIdsQuery = new GetAllCompanyIdsQuery();
+        var companyIds = await Mediator.Send(getAllCompanyIdsQuery);
+
+        foreach (var companyId in companyIds)
+        {
+            var getCompanyByIdQuery = new GetCompanyByIdQuery(companyId);
+            var companyDTO = await Mediator.Send(getCompanyByIdQuery);
+
+            var companyModel = new CompanyModel()
+            {
+                Id = companyDTO.Id,
+                Name = companyDTO.Name,
+                StaffIds = companyDTO.StaffIds,
+                WarehouseIds = companyDTO.WarehouseIds,
+            };
+            _allCompanyModels.Add(companyModel);
+        }
+    }
 
     private async Task Submit()
     {

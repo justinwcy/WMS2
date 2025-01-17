@@ -12,7 +12,7 @@
 
             <MudSelect @bind-Value="_customerOrderModel.CustomerId"
                        T="Guid"
-                       ToStringFunc="@(id => $"{_allCustomerModels.First(customerModel => customerModel.Id == id).FirstName} {_allCustomerModels.First(customerModel => customerModel.Id == id).LastName}")"
+                       ToStringFunc="@(id => $"{_allCustomerModels.FirstOrDefault(customerModel => customerModel.Id == id)?.FirstName} {_allCustomerModels.FirstOrDefault(customerModel => customerModel.Id == id)?.LastName}")"
                        Variant="@_defaultVariant"
                        Label="Status"
                        Margin="Margin.Normal"
@@ -39,7 +39,7 @@
 
             <MudSelect @bind-Value="_customerOrderModel.CourierId"
                        T="Guid"
-                       ToStringFunc="@(id => _allCourierModels.First(courierModel => courierModel.Id == id).Name)"
+                       ToStringFunc="@(id => _allCourierModels.FirstOrDefault(courierModel => courierModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Status"
                        Margin="Margin.Normal"
@@ -68,7 +68,7 @@
 
             <MudSelect @bind-Value="_customerOrderModel.BinId"
                        T="Guid"
-                       ToStringFunc="@(id => _allBinModels.First(binModel => binModel.Id == id).Name)"
+                       ToStringFunc="@(id => _allBinModels.FirstOrDefault(binModel => binModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Status"
                        Margin="Margin.Normal"
@@ -111,7 +111,7 @@
     private List<BinModel> _allBinModels { get; set; } = [];
     private List<CourierModel> _allCourierModels { get; set; } = [];
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         var getAllCustomerIdsByCompanyIdQuery = new GetAllCustomerIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         var customerIds = await Mediator.Send(getAllCustomerIdsByCompanyIdQuery);

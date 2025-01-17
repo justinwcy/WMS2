@@ -50,7 +50,7 @@
 
             <MudSelect @bind-Value="_incomingOrderModel.VendorId"
                        T="Guid"
-                       ToStringFunc="@(id=> $"{_allVendorModels.First(companyModel=>companyModel.Id == id).FirstName} {_allVendorModels.First(companyModel=>companyModel.Id == id).LastName}")"
+                       ToStringFunc="@(id=> $"{_allVendorModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.FirstName} {_allVendorModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.LastName}")"
                        Variant="@_defaultVariant"
                        Label="Vendor"
                        Margin="Margin.Normal"
@@ -80,7 +80,7 @@
 @code {
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
-    private Variant _defaultVariant = Theme.DefaultInputVariant();
+    private readonly Variant _defaultVariant = Theme.DefaultInputVariant();
 
     private bool _isFormValid { get; set; } = false;
 
@@ -99,7 +99,10 @@
             .GetFields(BindingFlags.Public | BindingFlags.Static)
             .Select(field => field.GetValue(null).ToString())
             .ToList();
+    }
 
+    protected override async Task OnParametersSetAsync()
+    {
         var getAllVendorIdsByCompanyIdQuery = new GetAllVendorIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         var vendorIds = await Mediator.Send(getAllVendorIdsByCompanyIdQuery);
 
@@ -109,15 +112,15 @@
             var vendorDTO = await Mediator.Send(getVendorByIdQuery);
 
             var vendorModel = new VendorModel()
-            {
-                Id = vendorDTO.Id,
-                Address = vendorDTO.Address,
-                Email = vendorDTO.Email,
-                FirstName = vendorDTO.FirstName,
-                LastName = vendorDTO.LastName,
-                PhoneNumber = vendorDTO.PhoneNumber,
-                IncomingOrderIds = vendorDTO.IncomingOrderIds,
-            };
+                {
+                    Id = vendorDTO.Id,
+                    Address = vendorDTO.Address,
+                    Email = vendorDTO.Email,
+                    FirstName = vendorDTO.FirstName,
+                    LastName = vendorDTO.LastName,
+                    PhoneNumber = vendorDTO.PhoneNumber,
+                    IncomingOrderIds = vendorDTO.IncomingOrderIds,
+                };
             _allVendorModels.Add(vendorModel);
         }
     }

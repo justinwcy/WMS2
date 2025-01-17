@@ -14,7 +14,8 @@
         Variant="Variant.Filled"
         Size="Size.Large"
         FullWidth="false"
-        Disabled="_disableDelete">
+                   Disabled="_disableDelete">
+            <IncomingOrderProduct />
             Delete IncomingOrderProduct
         </MudButton>
     </MudItem>
@@ -67,7 +68,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderProductModel, object>(x => x.Quantity)">Quantity</MudTableSortLabel></MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Product">@(_allProductModels.First(productModel => productModel.Id == context.ProductId).Name)</MudTd>
+        <MudTd DataLabel="Product">@(_allProductModels.FirstOrDefault(productModel => productModel.Id == context.ProductId)?.Name)</MudTd>
         <MudTd DataLabel="Status">@context.Status</MudTd>
         <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
     </RowTemplate>
@@ -75,21 +76,21 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     <RowEditingTemplate>
         <MudTd DataLabel="Products">
             <MudSelect @bind-Value="context.ProductId"
-            T="Guid"
-            ToStringFunc="@(id=> _allProductModels.First(productModel=>productModel.Id == id).Name)"
-            Variant="@_defaultVariant"
-            Label="Status"
-            Margin="Margin.Normal"
-            Dense="false"
-            Disabled="false"
-            ReadOnly="false"
-            Placeholder=@("Product")
-            MultiSelection="false"
-            HelperText=@("Please select a product")
-            HelperTextOnFocus="true"
-            Clearable="false"
-            Required="true"
-            RequiredError="Please select a product">
+                       T="Guid"
+                       ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Product")
+                       MultiSelection="false"
+                       HelperText=@("Please select a product")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a product">
                 @foreach (var productModel in _allProductModels)
                 {
                     <MudSelectItem Value="@productModel"></MudSelectItem>

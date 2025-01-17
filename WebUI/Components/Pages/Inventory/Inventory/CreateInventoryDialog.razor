@@ -13,7 +13,7 @@
         <MudForm @bind-IsValid="@_isFormValid">
             <MudSelect @bind-Value="_inventoryModel.ProductId"
                        T="Guid"
-                       ToStringFunc="@(id=> _allProductModels.First(productModel=>productModel.Id == id).Name)"
+                       ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Status"
                        Margin="Margin.Normal"

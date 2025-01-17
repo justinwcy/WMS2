@@ -65,7 +65,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTh><MudTableSortLabel SortBy="new Func<InventoryModel, object>(x=>x.DaysLeadTime)">Lead Time (Days)</MudTableSortLabel></MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Product">@(_allProductModels.First(productModel => productModel.Id == context.ProductId).Name)</MudTd>
+        <MudTd DataLabel="Product">@(_allProductModels.FirstOrDefault(productModel => productModel.Id == context.ProductId)?.Name)</MudTd>
         <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
         <MudTd DataLabel="Lead Time (Days)">@context.DaysLeadTime</MudTd>
     </RowTemplate>
@@ -73,21 +73,21 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     <RowEditingTemplate>
         <MudTd DataLabel="Products">
             <MudSelect @bind-Value="context.ProductId"
-            T="Guid"
-            ToStringFunc="@(id=> _allProductModels.First(productModel=>productModel.Id == id).Name)"
-            Variant="@_defaultVariant"
-            Label="Status"
-            Margin="Margin.Normal"
-            Dense="false"
-            Disabled="false"
-            ReadOnly="false"
-            Placeholder=@("Product")
-            MultiSelection="false"
-            HelperText=@("Please select a product")
-            HelperTextOnFocus="true"
-            Clearable="false"
-            Required="true"
-            RequiredError="Please select a product">
+                       T="Guid"
+                       ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Product")
+                       MultiSelection="false"
+                       HelperText=@("Please select a product")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a product">
                 @foreach (var productModel in _allProductModels)
                 {
                     <MudSelectItem Value="@productModel"></MudSelectItem>
@@ -132,36 +132,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     private List<ProductModel> _allProductModels { get; set; } = [];
     private readonly Variant _defaultVariant = Theme.DefaultInputVariant();
-
-    protected override async Task OnParametersSetAsync()
-    {
-        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
-
-        foreach (var productId in productIds)
-        {
-            var getProductByIdQuery = new GetProductByIdQuery(productId);
-            var productDTO = await Mediator.Send(getProductByIdQuery);
-
-            var productModel = new ProductModel()
-            {
-                Id = productDTO.Id,
-                Name = productDTO.Name,
-                Description = productDTO.Description,
-                Height = productDTO.Height,
-                Length = productDTO.Length,
-                Price = productDTO.Price,
-                ProductGroupIds = productDTO.ProductGroupIds,
-                ShopIds = productDTO.ShopIds,
-                Sku = productDTO.Sku,
-                Tag = productDTO.Tag,
-                Weight = productDTO.Weight,
-                Width = productDTO.Width,
-            };
-            _allProductModels.Add(productModel);
-        }
-    }
-
+    
     protected override async Task OnParametersSetAsync()
     {
         _loading = true;
@@ -182,6 +153,32 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             InventoryModels.Add(inventoryModel);
         }
+
+        // to get all products
+        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
+        foreach (var productId in productIds)
+        {
+            var getProductByIdQuery = new GetProductByIdQuery(productId);
+            var productDTO = await Mediator.Send(getProductByIdQuery);
+
+            var productModel = new ProductModel()
+                {
+                    Id = productDTO.Id,
+                    Name = productDTO.Name,
+                    Description = productDTO.Description,
+                    Height = productDTO.Height,
+                    Length = productDTO.Length,
+                    Price = productDTO.Price,
+                    ProductGroupIds = productDTO.ProductGroupIds,
+                    ShopIds = productDTO.ShopIds,
+                    Sku = productDTO.Sku,
+                    Tag = productDTO.Tag,
+                    Weight = productDTO.Weight,
+                    Width = productDTO.Width,
+                };
+            _allProductModels.Add(productModel);
+        }
         _loading = false;
     }
 
@@ -190,8 +187,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
 
-        var productName = _allProductModels.First(productModel => productModel.Id == inventoryModel.ProductId).Name;
-        if (productName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        var productName = _allProductModels.FirstOrDefault(productModel => productModel.Id == inventoryModel.ProductId)?.Name;
+        if (productName != null && productName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
 
         return false;

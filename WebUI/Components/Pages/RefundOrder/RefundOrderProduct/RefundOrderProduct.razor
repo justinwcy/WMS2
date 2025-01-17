@@ -68,7 +68,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderProductModel, object>(x => x.Quantity)">Quantity</MudTableSortLabel></MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Product">@(_allProductModels.First(productModel => productModel.Id == context.ProductId).Name)</MudTd>
+        <MudTd DataLabel="Product">@(_allProductModels.FirstOrDefault(productModel => productModel.Id == context.ProductId)?.Name)</MudTd>
         <MudTd DataLabel="Status">@context.Status</MudTd>
         <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
     </RowTemplate>
@@ -77,7 +77,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Products">
             <MudSelect @bind-Value="context.ProductId"
                        T="Guid"
-                       ToStringFunc="@(id=> _allProductModels.First(productModel=>productModel.Id == id).Name)"
+                       ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Status"
                        Margin="Margin.Normal"
@@ -168,7 +168,6 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
         _loading = true;
         await base.OnParametersSetAsync();
-
         
         var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);

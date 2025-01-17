@@ -97,12 +97,12 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTh>Details</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Customer">@_allCustomerModels.First(customerModel => customerModel.Id == context.CustomerId).FirstName @_allCustomerModels.First(customerModel => customerModel.Id == context.CustomerId).LastName</MudTd>
+        <MudTd DataLabel="Customer">@_allCustomerModels.FirstOrDefault(customerModel => customerModel.Id == context.CustomerId)?.FirstName @_allCustomerModels.FirstOrDefault(customerModel => customerModel.Id == context.CustomerId)?.LastName</MudTd>
         <MudTd DataLabel="Expected Arrival Date">@context.ExpectedArrivalDate</MudTd>
-        <MudTd DataLabel="Courier">@_allCourierModels.First(courierModel => courierModel.Id == context.CourierId).Name</MudTd>
+        <MudTd DataLabel="Courier">@_allCourierModels.FirstOrDefault(courierModel => courierModel.Id == context.CourierId)?.Name</MudTd>
         <MudTd DataLabel="Order Creation Date">@context.OrderCreationDate</MudTd>
         <MudTd DataLabel="Order Address">@context.OrderAddress</MudTd>
-        <MudTd DataLabel="Bin">@_allBinModels.First(binModel=>binModel.Id == context.BinId).Name</MudTd>
+        <MudTd DataLabel="Bin">@_allBinModels.FirstOrDefault(binModel => binModel.Id == context.BinId)?.Name</MudTd>
         <MudTd DataLabel="Details">
             <MudButton OnClick="@(() => ViewDialogUtilities.OpenCustomerOrderDetailDialogAsync(@context.CustomerOrderDetailIds, CurrentStaff, Dialog))"
             Variant="Variant.Filled"
@@ -118,7 +118,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Customer">
             <MudSelect @bind-Value="context.CustomerId"
                        T="Guid"
-                       ToStringFunc="@(id => $"{_allCustomerModels.First(customerModel => customerModel.Id == id).FirstName} {_allCustomerModels.First(customerModel => customerModel.Id == id).LastName}")"
+                       ToStringFunc="@(id => $"{_allCustomerModels.FirstOrDefault(customerModel => customerModel.Id == id)?.FirstName} {_allCustomerModels.FirstOrDefault(customerModel => customerModel.Id == id)?.LastName}")"
                        Variant="@_defaultVariant"
                        Label="Status"
                        Margin="Margin.Normal"
@@ -149,7 +149,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Courier">
             <MudSelect @bind-Value="context.CourierId"
                        T="Guid"
-                       ToStringFunc="@(id => _allCourierModels.First(courierModel => courierModel.Id == id).Name)"
+                       ToStringFunc="@(id => _allCourierModels.FirstOrDefault(courierModel => courierModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Status"
                        Margin="Margin.Normal"
@@ -184,9 +184,9 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Bin">
             <MudSelect @bind-Value="context.BinId"
                        T="Guid"
-                       ToStringFunc="@(id => _allBinModels.First(binModel => binModel.Id == id).Name)"
+                       ToStringFunc="@(id => _allBinModels.FirstOrDefault(binModel => binModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
-                       Label="Status"
+                       Label="Bin"
                        Margin="Margin.Normal"
                        Dense="false"
                        Disabled="false"
@@ -238,59 +238,6 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private List<CourierModel> _allCourierModels { get; set; } = [];
     private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
 
-    protected override async Task OnInitializedAsync()
-    {
-        var getAllCustomerIdsByCompanyIdQuery = new GetAllCustomerIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var customerIds = await Mediator.Send(getAllCustomerIdsByCompanyIdQuery);
-        foreach (var customerId in customerIds)
-        {
-            var getCustomerByIdQuery = new GetCustomerByIdQuery(customerId);
-            var customerDTO = await Mediator.Send(getCustomerByIdQuery);
-            var customerModel = new CustomerModel()
-                {
-                    Id = customerDTO.Id,
-                    Address = customerDTO.Address,
-                    CustomerOrderIds = customerDTO.CustomerOrderIds,
-                    Email = customerDTO.Email,
-                    FirstName = customerDTO.FirstName,
-                    LastName = customerDTO.LastName,
-                };
-            _allCustomerModels.Add(customerModel);
-        }
-
-        var getAllBinIdsByCompanyIdQuery = new GetAllBinIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var binIds = await Mediator.Send(getAllBinIdsByCompanyIdQuery);
-        foreach (var binId in binIds)
-        {
-            var getBinByIdQuery = new GetBinByIdQuery(binId);
-            var binDTO = await Mediator.Send(getBinByIdQuery);
-            var binModel = new BinModel()
-                {
-                    Id = binDTO.Id,
-                    CustomerOrderIds = binDTO.CustomerOrderIds,
-                    Name = binDTO.Name,
-                };
-            _allBinModels.Add(binModel);
-        }
-
-        var getAllCourierIdsByCompanyIdQuery = new GetAllCourierIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var courierIds = await Mediator.Send(getAllCourierIdsByCompanyIdQuery);
-        foreach (var courierId in courierIds)
-        {
-            var getCourierByIdQuery = new GetCourierByIdQuery(courierId);
-            var courierDTO = await Mediator.Send(getCourierByIdQuery);
-            var courierModel = new CourierModel()
-                {
-                    Id = courierDTO.Id,
-                    CustomerOrderIds = courierDTO.CustomerOrderIds,
-                    Name = courierDTO.Name,
-                    Remark = courierDTO.Remark,
-                    Price = courierDTO.Price,
-                };
-            _allCourierModels.Add(courierModel);
-        }
-    }
-
     protected override async Task OnParametersSetAsync()
     {
         _loading = true;
@@ -314,6 +261,56 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             };
 
             CustomerOrderModels.Add(customerOrderModel);
+        }
+
+        var getAllCustomerIdsByCompanyIdQuery = new GetAllCustomerIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var customerIds = await Mediator.Send(getAllCustomerIdsByCompanyIdQuery);
+        foreach (var customerId in customerIds)
+        {
+            var getCustomerByIdQuery = new GetCustomerByIdQuery(customerId);
+            var customerDTO = await Mediator.Send(getCustomerByIdQuery);
+            var customerModel = new CustomerModel()
+            {
+                Id = customerDTO.Id,
+                Address = customerDTO.Address,
+                CustomerOrderIds = customerDTO.CustomerOrderIds,
+                Email = customerDTO.Email,
+                FirstName = customerDTO.FirstName,
+                LastName = customerDTO.LastName,
+            };
+            _allCustomerModels.Add(customerModel);
+        }
+
+        var getAllBinIdsByCompanyIdQuery = new GetAllBinIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var binIds = await Mediator.Send(getAllBinIdsByCompanyIdQuery);
+        foreach (var binId in binIds)
+        {
+            var getBinByIdQuery = new GetBinByIdQuery(binId);
+            var binDTO = await Mediator.Send(getBinByIdQuery);
+            var binModel = new BinModel()
+            {
+                Id = binDTO.Id,
+                CustomerOrderIds = binDTO.CustomerOrderIds,
+                Name = binDTO.Name,
+            };
+            _allBinModels.Add(binModel);
+        }
+
+        var getAllCourierIdsByCompanyIdQuery = new GetAllCourierIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var courierIds = await Mediator.Send(getAllCourierIdsByCompanyIdQuery);
+        foreach (var courierId in courierIds)
+        {
+            var getCourierByIdQuery = new GetCourierByIdQuery(courierId);
+            var courierDTO = await Mediator.Send(getCourierByIdQuery);
+            var courierModel = new CourierModel()
+            {
+                Id = courierDTO.Id,
+                CustomerOrderIds = courierDTO.CustomerOrderIds,
+                Name = courierDTO.Name,
+                Remark = courierDTO.Remark,
+                Price = courierDTO.Price,
+            };
+            _allCourierModels.Add(courierModel);
         }
         _loading = false;
     }

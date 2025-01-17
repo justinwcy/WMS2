@@ -12,7 +12,7 @@
             
             <MudSelect @bind-Value="_rackModel.ZoneId"
                        T="Guid"
-                       ToStringFunc="@(id=> _allZoneModels.First(zoneModel=>zoneModel.Id == id).Name)"
+                       ToStringFunc="@(id=> _allZoneModels.FirstOrDefault(zoneModel=>zoneModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Status"
                        Margin="Margin.Normal"
@@ -84,7 +84,7 @@
 
     private List<ZoneModel> _allZoneModels { get; set; } = [];
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         var getAllZoneIdsByCompanyIdQuery = new GetAllZoneIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         var zoneIds = await Mediator.Send(getAllZoneIdsByCompanyIdQuery);

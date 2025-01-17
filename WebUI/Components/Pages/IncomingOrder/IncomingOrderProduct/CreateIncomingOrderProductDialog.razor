@@ -14,7 +14,7 @@
             
             <MudSelect @bind-Value="_incomingOrderProductModel.ProductId"
                        T="Guid"
-                       ToStringFunc="@(id=> _allProductModels.First(productModel=>productModel.Id == id).Name)"
+                       ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Status"
                        Margin="Margin.Normal"
@@ -116,12 +116,14 @@
 
             
         }
+    }
 
+    protected override async Task OnInitializedAsync()
+    {
         _orderStates = typeof(OrderState)
             .GetFields(BindingFlags.Public | BindingFlags.Static)
             .Select(field => field.GetValue(null).ToString())
             .ToList();
-
     }
 
     private async Task Submit()

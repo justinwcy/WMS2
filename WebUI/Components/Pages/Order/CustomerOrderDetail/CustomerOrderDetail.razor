@@ -160,37 +160,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     protected override async Task OnInitializedAsync()
     {
-        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
-
-        foreach (var productId in productIds)
-        {
-            var getProductByIdQuery = new GetProductByIdQuery(productId);
-            var productDTO = await Mediator.Send(getProductByIdQuery);
-
-            var productModel = new ProductModel()
-            {
-                Id = productDTO.Id,
-                Name = productDTO.Name,
-                Description = productDTO.Description,
-                Height = productDTO.Height,
-                Length = productDTO.Length,
-                Price = productDTO.Price,
-                ProductGroupIds = productDTO.ProductGroupIds,
-                ShopIds = productDTO.ShopIds,
-                Sku = productDTO.Sku,
-                Tag = productDTO.Tag,
-                Weight = productDTO.Weight,
-                Width = productDTO.Width,
-            };
-            _allProductModels.Add(productModel);
-
-            _orderStates = typeof(OrderState)
-                .GetFields(BindingFlags.Public | BindingFlags.Static)
-                .Select(field => field.GetValue(null).ToString())
-                .ToList();
-
-        }
+        _orderStates = typeof(OrderState)
+            .GetFields(BindingFlags.Public | BindingFlags.Static)
+            .Select(field => field.GetValue(null).ToString())
+            .ToList();
     }
 
     protected override async Task OnParametersSetAsync()
@@ -214,6 +187,33 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             CustomerOrderDetailModels.Add(customerOrderDetailModel);
         }
+
+
+        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
+
+        foreach (var productId in productIds)
+        {
+            var getProductByIdQuery = new GetProductByIdQuery(productId);
+            var productDTO = await Mediator.Send(getProductByIdQuery);
+
+            var productModel = new ProductModel()
+                {
+                    Id = productDTO.Id,
+                    Name = productDTO.Name,
+                    Description = productDTO.Description,
+                    Height = productDTO.Height,
+                    Length = productDTO.Length,
+                    Price = productDTO.Price,
+                    ProductGroupIds = productDTO.ProductGroupIds,
+                    ShopIds = productDTO.ShopIds,
+                    Sku = productDTO.Sku,
+                    Tag = productDTO.Tag,
+                    Weight = productDTO.Weight,
+                    Width = productDTO.Width,
+                };
+            _allProductModels.Add(productModel);
+        }
         _loading = false;
     }
 
@@ -222,8 +222,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
 
-        var product = _allProductModels.First(productModel => productModel.Id == customerOrderDetailModel.ProductId);
-        if (product.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        var product = _allProductModels.FirstOrDefault(productModel => productModel.Id == customerOrderDetailModel.ProductId);
+        if (product != null && product.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
 
         return false;
