@@ -129,7 +129,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public List<VendorModel> VendorModels { get; set; } = new List<VendorModel>();
 
     [Parameter]
-    public GetStaffResponseDTO CurrentStaff { get; set; }
+    public GetStaffResponseDTO? CurrentStaff { get; set; }
 
     private HashSet<VendorModel> _selectedVendors = new HashSet<VendorModel>();
     private bool _disableDelete => !_selectedVendors.Any();

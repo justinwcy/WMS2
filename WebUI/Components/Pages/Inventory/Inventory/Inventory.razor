@@ -120,7 +120,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public List<InventoryModel> InventoryModels { get; set; } = new List<InventoryModel>();
 
     [Parameter]
-    public GetStaffResponseDTO CurrentStaff { get; set; }
+    public GetStaffResponseDTO? CurrentStaff { get; set; }
 
     private HashSet<InventoryModel> _selectedInventory = new HashSet<InventoryModel>();
     private bool _disableDelete => !_selectedInventory.Any();

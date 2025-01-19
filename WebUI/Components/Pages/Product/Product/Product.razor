@@ -166,7 +166,7 @@ EditTrigger="TableEditTrigger.RowClick"
     public List<ProductModel> ProductModels { get; set; } = new List<ProductModel>();
 
     [Parameter]
-    public GetStaffResponseDTO CurrentStaff { get; set; }
+    public GetStaffResponseDTO? CurrentStaff { get; set; }
 
     private HashSet<ProductModel> _selectedProducts = new HashSet<ProductModel>();
     private bool _disableDelete => !_selectedProducts.Any();

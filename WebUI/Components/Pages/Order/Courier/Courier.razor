@@ -112,7 +112,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public List<CourierModel> CourierModels { get; set; } = new List<CourierModel>();
 
     [Parameter]
-    public GetStaffResponseDTO CurrentStaff { get; set; }
+    public GetStaffResponseDTO? CurrentStaff { get; set; }
 
     private HashSet<CourierModel> _selectedCouriers = new HashSet<CourierModel>();
     private bool _disableDelete => !_selectedCouriers.Any();

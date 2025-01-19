@@ -141,7 +141,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public List<Guid> ZoneIds { get; set; } = new List<Guid>();
     public List<ZoneModel> ZoneModels { get; set; } = new List<ZoneModel>();
 
-    [Parameter] public GetStaffResponseDTO CurrentStaff { get; set; }
+    [Parameter] public GetStaffResponseDTO? CurrentStaff { get; set; }
 
     private HashSet<ZoneModel> _selectedZones = new HashSet<ZoneModel>();
     private bool _disableDelete => !_selectedZones.Any();
@@ -156,7 +156,6 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     protected override async Task OnParametersSetAsync()
     {
-
         _loading = true;
         await base.OnParametersSetAsync();
 

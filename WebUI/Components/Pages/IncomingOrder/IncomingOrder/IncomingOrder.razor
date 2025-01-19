@@ -176,7 +176,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public List<IncomingOrderModel> IncomingOrderModels { get; set; } = new List<IncomingOrderModel>();
 
     [Parameter]
-    public GetStaffResponseDTO CurrentStaff { get; set; }
+    public GetStaffResponseDTO? CurrentStaff { get; set; }
 
     private Variant _defaultVariant = Theme.DefaultInputVariant();
     private List<string> _orderStates { get; set; }

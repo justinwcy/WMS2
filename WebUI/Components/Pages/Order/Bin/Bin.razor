@@ -98,7 +98,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public List<BinModel> BinModels { get; set; } = new List<BinModel>();
 
     [Parameter]
-    public GetStaffResponseDTO CurrentStaff { get; set; }
+    public GetStaffResponseDTO? CurrentStaff { get; set; }
 
     private HashSet<BinModel> _selectedBins = new HashSet<BinModel>();
     private bool _disableDelete => !_selectedBins.Any();

@@ -223,7 +223,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public List<CustomerOrderModel> CustomerOrderModels { get; set; } = new List<CustomerOrderModel>();
 
     [Parameter]
-    public GetStaffResponseDTO CurrentStaff { get; set; }
+    public GetStaffResponseDTO? CurrentStaff { get; set; }
 
     private HashSet<CustomerOrderModel> _selectedCustomerOrders = new HashSet<CustomerOrderModel>();
     private bool _disableDelete => !_selectedCustomerOrders.Any();

@@ -106,7 +106,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public List<ProductGroupModel> ProductGroupModels { get; set; } = new List<ProductGroupModel>();
 
     [Parameter]
-    public GetStaffResponseDTO CurrentStaff { get; set; }
+    public GetStaffResponseDTO? CurrentStaff { get; set; }
 
     private HashSet<ProductGroupModel> _selectedProductGroups = new HashSet<ProductGroupModel>();
     private bool _disableDelete => !_selectedProductGroups.Any();

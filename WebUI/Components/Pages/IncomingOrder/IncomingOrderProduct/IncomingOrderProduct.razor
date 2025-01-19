@@ -142,7 +142,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public List<IncomingOrderProductModel> IncomingOrderProductModels { get; set; } = new List<IncomingOrderProductModel>();
 
     [Parameter]
-    public GetStaffResponseDTO CurrentStaff { get; set; }
+    public GetStaffResponseDTO? CurrentStaff { get; set; }
 
     private Guid _incomingOrderId { get; set; }
     private GetIncomingOrderResponseDTO _incomingOrder { get; set; }

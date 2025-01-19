@@ -110,7 +110,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public List<CompanyModel> CompanyModels { get; set; } = new List<CompanyModel>();
 
     [Parameter]
-    public GetStaffResponseDTO CurrentStaff { get; set; }
+    public GetStaffResponseDTO? CurrentStaff { get; set; }
 
     private HashSet<CompanyModel> _selectedCompanies = new HashSet<CompanyModel>();
     private bool _disableDelete => !_selectedCompanies.Any();

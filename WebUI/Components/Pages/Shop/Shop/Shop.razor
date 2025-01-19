@@ -119,7 +119,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public List<ShopModel> ShopModels { get; set; } = new List<ShopModel>();
 
     [Parameter]
-    public GetStaffResponseDTO CurrentStaff { get; set; }
+    public GetStaffResponseDTO? CurrentStaff { get; set; }
 
     private HashSet<ShopModel> _selectedShops = new HashSet<ShopModel>();
     private bool _disableDelete => !_selectedShops.Any();

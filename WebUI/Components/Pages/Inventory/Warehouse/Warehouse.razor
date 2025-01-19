@@ -114,7 +114,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public List<WarehouseModel> WarehouseModels { get; set; } = new List<WarehouseModel>();
 
     [Parameter]
-    public GetStaffResponseDTO CurrentStaff { get; set; }
+    public GetStaffResponseDTO? CurrentStaff { get; set; }
 
     private HashSet<WarehouseModel> _selectedWarehouses = new HashSet<WarehouseModel>();
     private bool _disableDelete => !_selectedWarehouses.Any();
