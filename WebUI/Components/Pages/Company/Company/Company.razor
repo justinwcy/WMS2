@@ -122,6 +122,12 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     protected override async Task OnParametersSetAsync()
     {
+        // check to make sure all parameters are set before running
+        if (CurrentStaff == null || !CompanyIds.Any())
+        {
+            return;
+        }
+
         _loading = true;
         await base.OnParametersSetAsync();
 

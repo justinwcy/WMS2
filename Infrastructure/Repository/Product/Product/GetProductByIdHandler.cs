@@ -26,7 +26,7 @@ namespace Infrastructure.Repository
             result.ProductGroupIds = productFound.ProductGroups.Select(productGroup => productGroup.Id).ToList();
             result.ShopIds = productFound.Shops.Select(shop => shop.Id).ToList();
             result.IncomingOrderIds = productFound.IncomingOrders.Select(incomingOrder => incomingOrder.Id).ToList();
-            result.InventoryId = productFound.CurrentInventory.Id;
+            result.InventoryId = productFound.CurrentInventory?.Id;
             result.RefundOrderIds = productFound.RefundOrders.Select(refundOrder => refundOrder.Id).ToList();
             result.RackIds = productFound.Racks.Select(rack => rack.Id).ToList();
             result.CustomerOrderDetailIds = productFound.CustomerOrderDetails.Select(customerOrderDetail => customerOrderDetail.Id).ToList();
