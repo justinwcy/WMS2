@@ -267,6 +267,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 throw new Exception("Customer created is not recognized");
 
             }
+
+            CustomerIds.Add(customerModelCreated.Id);
             CustomerModels.Add(customerModelCreated);
             StateHasChanged();
             SnackBar.Add($"{customerModelCreated.FirstName} {customerModelCreated.LastName} created");

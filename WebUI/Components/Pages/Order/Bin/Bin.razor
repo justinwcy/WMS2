@@ -226,8 +226,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             if (binModelCreated == null)
             {
                 throw new Exception("Bin created is not recognized");
-
             }
+            BinIds.Add(binModelCreated.Id);
             BinModels.Add(binModelCreated);
             StateHasChanged();
             SnackBar.Add($"{binModelCreated.Name} created");

@@ -1,4 +1,3 @@
-
 @inject IDialogService Dialog
 @using System.Reflection
 @using Application.Constants
@@ -338,6 +337,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 throw new Exception("Incoming Order Product created is not recognized");
 
             }
+            IncomingOrderProductIds.Add(incomingOrderProductModelCreated.Id);
             IncomingOrderProductModels.Add(incomingOrderProductModelCreated);
             StateHasChanged();
             SnackBar.Add("Product created in order");

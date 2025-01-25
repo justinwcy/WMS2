@@ -253,6 +253,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 throw new Exception("Warehouse created is not recognized");
 
             }
+            WarehouseIds.Add(warehouseModelCreated.Id);
             WarehouseModels.Add(warehouseModelCreated);
             StateHasChanged();
             SnackBar.Add($"{warehouseModelCreated.Name} created");

@@ -249,8 +249,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             if (courierModelCreated == null)
             {
                 throw new Exception("Courier created is not recognized");
-
             }
+            CourierIds.Add(courierModelCreated.Id);
             CourierModels.Add(courierModelCreated);
             StateHasChanged();
             SnackBar.Add($"{courierModelCreated.Name} created");

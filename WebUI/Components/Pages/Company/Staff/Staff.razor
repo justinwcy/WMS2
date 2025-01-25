@@ -277,6 +277,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 throw new Exception("Staff created is not recognized");
 
             }
+            StaffIds.Add(staffModelCreated.Id);
             StaffModels.Add(staffModelCreated);
             StateHasChanged();
             SnackBar.Add($"{staffModelCreated.FirstName} {staffModelCreated.LastName} created");

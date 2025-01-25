@@ -238,8 +238,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             if (productGroupModelCreated == null)
             {
                 throw new Exception("ProductGroup created is not recognized");
-
             }
+            ProductGroupIds.Add(productGroupModelCreated.Id);
             ProductGroupModels.Add(productGroupModelCreated);
             StateHasChanged();
             SnackBar.Add($"{productGroupModelCreated.Name} created");

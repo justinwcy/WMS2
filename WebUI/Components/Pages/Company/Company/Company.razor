@@ -236,6 +236,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 throw new Exception("Company created is not recognized");
 
             }
+
+            CompanyIds.Add(companyModelCreated.Id);
             CompanyModels.Add(companyModelCreated);
             StateHasChanged();
             SnackBar.Add($"{companyModelCreated.Name} created");

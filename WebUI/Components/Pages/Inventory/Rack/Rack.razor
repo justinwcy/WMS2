@@ -290,6 +290,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 throw new Exception("Rack created is not recognized");
 
             }
+            RackIds.Add(rackModelCreated.Id);
             RackModels.Add(rackModelCreated);
             StateHasChanged();
             SnackBar.Add($"{rackModelCreated.Name} created");

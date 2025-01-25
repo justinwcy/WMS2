@@ -284,6 +284,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 throw new Exception("Inventory created is not recognized");
 
             }
+            InventoryIds.Add(inventoryModelCreated.Id);
             InventoryModels.Add(inventoryModelCreated);
             StateHasChanged();
             SnackBar.Add($"Inventory item created");

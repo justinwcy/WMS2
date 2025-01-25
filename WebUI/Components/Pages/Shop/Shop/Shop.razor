@@ -265,8 +265,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             if (shopModelCreated == null)
             {
                 throw new Exception("Shop created is not recognized");
-
             }
+            ShopIds.Add(shopModelCreated.Id);
             ShopModels.Add(shopModelCreated);
             StateHasChanged();
             SnackBar.Add($"{shopModelCreated.Name} created");

@@ -357,6 +357,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 throw new Exception("IncomingOrder created is not recognized");
 
             }
+            IncomingOrderIds.Add(incomingOrderModelCreated.Id);
             IncomingOrderModels.Add(incomingOrderModelCreated);
             StateHasChanged();
             SnackBar.Add($"{incomingOrderModelCreated.PONumber} created");

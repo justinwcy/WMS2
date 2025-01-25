@@ -304,6 +304,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 throw new Exception("Zone created is not recognized");
 
             }
+
+            ZoneIds.Add(zoneModelCreated.Id);
             ZoneModels.Add(zoneModelCreated);
             StateHasChanged();
             SnackBar.Add($"{zoneModelCreated.Name} created");

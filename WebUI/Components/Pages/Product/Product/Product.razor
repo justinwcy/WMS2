@@ -328,8 +328,15 @@ EditTrigger="TableEditTrigger.RowClick"
         if (dialogResult != null && !dialogResult.Canceled)
         {
             var productModelCreated = (ProductModel)dialogResult.Data;
+            if (productModelCreated == null)
+            {
+                throw new Exception("Product created is not recognized");
+            }
+
+            ProductIds.Add(productModelCreated.Id);
             ProductModels.Add(productModelCreated);
             StateHasChanged();
+            SnackBar.Add($"{productModelCreated.Name} created");
         }
     }
 }

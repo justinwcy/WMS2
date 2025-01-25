@@ -281,6 +281,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 throw new Exception("Vendor created is not recognized");
 
             }
+            VendorIds.Add(vendorModelCreated.Id);
             VendorModels.Add(vendorModelCreated);
             StateHasChanged();
             SnackBar.Add($"{vendorModelCreated.FirstName} {vendorModelCreated.LastName} created");

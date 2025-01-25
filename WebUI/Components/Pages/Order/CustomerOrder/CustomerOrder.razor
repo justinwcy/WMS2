@@ -427,6 +427,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 throw new Exception("CustomerOrder created is not recognized");
 
             }
+            CustomerOrderIds.Add(customerOrderModelCreated.Id);
             CustomerOrderModels.Add(customerOrderModelCreated);
             StateHasChanged();
             SnackBar.Add($"Customer Order created");

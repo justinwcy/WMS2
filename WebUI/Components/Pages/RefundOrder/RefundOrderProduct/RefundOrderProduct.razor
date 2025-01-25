@@ -336,6 +336,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 throw new Exception("RefundOrderProduct created is not recognized");
 
             }
+            RefundOrderProductIds.Add(refundOrderProductModelCreated.Id);
             RefundOrderProductModels.Add(refundOrderProductModelCreated);
             StateHasChanged();
             SnackBar.Add($"Refund order created");

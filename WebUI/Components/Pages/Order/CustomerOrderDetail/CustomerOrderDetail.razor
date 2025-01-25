@@ -320,8 +320,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             if (customerOrderDetailModelCreated == null)
             {
                 throw new Exception("CustomerOrderDetail created is not recognized");
-
             }
+            CustomerOrderDetailIds.Add(customerOrderDetailModelCreated.Id);
             CustomerOrderDetailModels.Add(customerOrderDetailModelCreated);
             StateHasChanged();
             SnackBar.Add($"Customer Order Detail created");
