@@ -36,24 +36,24 @@
 </MudGrid>
 
 <MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
-Filter="new Func<WarehouseModel,bool>(FilterFunc)"
-CanCancelEdit="true"
-Items="@WarehouseModels"
-GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-GroupFooterClass="mb-4"
-Dense="true"
-Loading="@_loading" LoadingProgressColor="Color.Info"
-MultiSelection="true"
-@bind-SelectedItems="_selectedWarehouses"
-SelectOnRowClick="false"
-CommitEditTooltip="Commit Edit"
-CancelEditTooltip="Cancel Edit"
-IsEditRowSwitchingBlocked="false"
-RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-RowEditCommit="ItemHasBeenCommitted"
-ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-@ref="_tableRef">
+          Filter="new Func<WarehouseModel,bool>(FilterFunc)"
+          CanCancelEdit="true"
+          Items="@WarehouseModels"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4"
+          Dense="true"
+          Loading="@_loading" LoadingProgressColor="Color.Info"
+          MultiSelection="true"
+          @bind-SelectedItems="_selectedWarehouses"
+          SelectOnRowClick="false"
+          CommitEditTooltip="Commit Edit"
+          CancelEditTooltip="Cancel Edit"
+          IsEditRowSwitchingBlocked="false"
+          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted"
+          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+          @ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Warehouses</MudText>
@@ -78,13 +78,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Address">@context.Address</MudTd>
         <MudTd DataLabel="Company">
-            <MudButton OnClick="@(() => OpenCompanyDialogAsync(new List<Guid> { @context.CompanyId }))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
-                View (1)
-            </MudButton>
+            @_allCompanyModels.FirstOrDefault(companyModel => companyModel.Id == @context.CompanyId)?.Name
         </MudTd>
         <MudTd DataLabel="Zone">
             <MudButton OnClick="@(() => OpenZoneDialogAsync(@context.ZoneIds))"
@@ -101,9 +95,36 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Name">
             <MudTextField @bind-Value="context.Name" Required />
         </MudTd>
-
-        <MudTd DataLabel="Warehouse"></MudTd>
-        <MudTd DataLabel="Staff"></MudTd>
+        
+        <MudTd DataLabel="Address">
+            <MudTextField @bind-Value="context.Address" Required />
+        </MudTd>
+        
+        <MudTd DataLabel="Company">
+            <MudSelect @bind-Value="context.CompanyId"
+                       T="Guid"
+                       ToStringFunc="@(id=> _allCompanyModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Company"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Company")
+                       MultiSelection="false"
+                       HelperText=@("Please select a company")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a company">
+                @foreach (var companyModel in _allCompanyModels)
+                {
+                    <MudSelectItem Value="companyModel.Id"></MudSelectItem>
+                }
+            </MudSelect>
+            
+            <MudTd DataLabel="Zone"></MudTd>
+        </MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
@@ -145,6 +166,9 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private string searchString = "";
     private MudTable<WarehouseModel> _tableRef;
     private WarehouseModel _warehouseModelBeforeEdit { get; set; }
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
+    private List<CompanyModel> _allCompanyModels { get; set; } = [];
 
     protected override async Task OnParametersSetAsync()
     {
@@ -283,6 +307,23 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 };
 
             WarehouseModels.Add(warehouseModel);
+        }
+
+        var getAllCompanyIdsQuery = new GetAllCompanyIdsQuery();
+        var allCompanyIds = await Mediator.Send(getAllCompanyIdsQuery);
+        foreach (var companyId in allCompanyIds)
+        {
+            var getCompanyByIdQuery = new GetCompanyByIdQuery(companyId);
+            var getCompanyResponseDTO = await Mediator.Send(getCompanyByIdQuery);
+            var companyModel = new CompanyModel()
+                {
+                    Id = companyId,
+                    StaffIds = getCompanyResponseDTO.StaffIds,
+                    WarehouseIds = getCompanyResponseDTO.WarehouseIds,
+                    Name = getCompanyResponseDTO.Name,
+                };
+
+            _allCompanyModels.Add(companyModel);
         }
         return true;
     }

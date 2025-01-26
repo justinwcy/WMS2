@@ -11,11 +11,11 @@
         @if (ShowDeleteButton)
         {
             <MudButton OnClick="@DeleteStaffs"
-                       Color="Color.Error"
-                       Variant="Variant.Filled"
-                       Size="Size.Large"
-                       FullWidth="false"
-                       Disabled="_disableDelete">
+            Color="Color.Error"
+            Variant="Variant.Filled"
+            Size="Size.Large"
+            FullWidth="false"
+            Disabled="_disableDelete">
                 Delete Staff
             </MudButton>
         }
@@ -24,10 +24,10 @@
         @if (ShowCreateButton)
         {
             <MudButton OnClick="@(OpenCreateStaffDialogAsync)"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="false">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Large"
+            FullWidth="false">
                 Create Staff
             </MudButton>
         }
@@ -83,21 +83,15 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Email">@context.Email</MudTd>
         <MudTd DataLabel="Roles">@context.RolesString</MudTd>
         <MudTd DataLabel="Company">
-            <MudButton OnClick="@(() => OpenCompanyDialogAsync(new List<Guid> { @context.CompanyId }))"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Small"
-                       FullWidth="false">
-                View (1)
-            </MudButton>
+            @_allCompanyModels.FirstOrDefault(companyModel => companyModel.Id == @context.CompanyId)?.Name
         </MudTd>
-        
+
         <MudTd DataLabel="Zone">
             <MudButton OnClick="@(() => OpenZoneDialogAsync(@context.ZoneIds))"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Small"
-                       FullWidth="false">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
                 View (@context.ZoneIds.Count)
             </MudButton>
         </MudTd>
@@ -120,7 +114,30 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             <MudTextField @bind-Value="context.RolesString" Required />
         </MudTd>
 
-        <MudTd DataLabel="Company"></MudTd>
+        <MudTd DataLabel="Company">
+            <MudSelect @bind-Value="context.CompanyId"
+                       T="Guid"
+                       ToStringFunc="@(id=> _allCompanyModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Company"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Company")
+                       MultiSelection="false"
+                       HelperText=@("Please select a company")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a company">
+                @foreach (var companyModel in _allCompanyModels)
+                {
+                    <MudSelectItem Value="companyModel.Id"></MudSelectItem>
+                }
+            </MudSelect>
+
+        </MudTd>
         <MudTd DataLabel="Zone"></MudTd>
     </RowEditingTemplate>
 
@@ -139,13 +156,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     [Parameter]
     public bool ShowCreateButton { get; set; }
-    
+
     [Parameter]
     public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }
-    
+
     [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
 
@@ -163,6 +180,9 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private string searchString = "";
     private MudTable<StaffModel> _tableRef;
     private StaffModel _staffModelBeforeEdit { get; set; }
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
+    private List<CompanyModel> _allCompanyModels { get; set; } = [];
 
     protected override async Task OnParametersSetAsync()
     {
@@ -314,6 +334,23 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             };
 
             StaffModels.Add(staffModel);
+        }
+
+        var getAllCompanyIdsQuery = new GetAllCompanyIdsQuery();
+        var allCompanyIds = await Mediator.Send(getAllCompanyIdsQuery);
+        foreach (var companyId in allCompanyIds)
+        {
+            var getCompanyByIdQuery = new GetCompanyByIdQuery(companyId);
+            var getCompanyResponseDTO = await Mediator.Send(getCompanyByIdQuery);
+            var companyModel = new CompanyModel()
+            {
+                Id = companyId,
+                StaffIds = getCompanyResponseDTO.StaffIds,
+                WarehouseIds = getCompanyResponseDTO.WarehouseIds,
+                Name = getCompanyResponseDTO.Name,
+            };
+
+            _allCompanyModels.Add(companyModel);
         }
         return true;
     }

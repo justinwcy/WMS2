@@ -12,11 +12,11 @@
         @if (ShowDeleteButton)
         {
             <MudButton OnClick="@DeleteRacks"
-                       Color="Color.Error"
-                       Variant="Variant.Filled"
-                       Size="Size.Large"
-                       FullWidth="false"
-                       Disabled="_disableDelete">
+            Color="Color.Error"
+            Variant="Variant.Filled"
+            Size="Size.Large"
+            FullWidth="false"
+            Disabled="_disableDelete">
                 Delete Rack
             </MudButton>
         }
@@ -25,10 +25,10 @@
         @if (ShowCreateButton)
         {
             <MudButton OnClick="@(OpenCreateRackDialogAsync)"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="false">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Large"
+            FullWidth="false">
                 Create Rack
             </MudButton>
         }
@@ -86,15 +86,9 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Height">@context.Height</MudTd>
         <MudTd DataLabel="Width">@context.Width</MudTd>
         <MudTd DataLabel="Depth">@context.Depth</MudTd>
-        
+
         <MudTd DataLabel="Zones">
-            <MudButton OnClick="@(() => OpenZoneDialogAsync(new List<Guid> { @context.ZoneId }))"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Small"
-                       FullWidth="false">
-                View (1)
-            </MudButton>
+            @_allZoneModels.FirstOrDefault(zoneModel=>zoneModel.Id == context.ZoneId)?.Name
         </MudTd>
 
         <MudTd DataLabel="Products">
@@ -112,24 +106,46 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Name">
             <MudTextField @bind-Value="context.Name" Required />
         </MudTd>
-        
+
         <MudTd DataLabel="Max Weight (g)">
             <MudTextField @bind-Value="context.MaxWeight" T="double" Required />
         </MudTd>
-        
+
         <MudTd DataLabel="Height">
             <MudTextField @bind-Value="context.Height" T="double" Required />
         </MudTd>
-        
+
         <MudTd DataLabel="Width">
             <MudTextField @bind-Value="context.Width" T="double" Required />
         </MudTd>
-        
+
         <MudTd DataLabel="Depth">
             <MudTextField @bind-Value="context.Depth" T="double" Required />
         </MudTd>
 
-        <MudTd DataLabel="Zones"></MudTd>
+        <MudTd DataLabel="Zones">
+            <MudSelect @bind-Value="context.ZoneId"
+                       T="Guid"
+                       ToStringFunc="@(id=> _allZoneModels.FirstOrDefault(zoneModel=>zoneModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Zone"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Zone")
+                       MultiSelection="false"
+                       HelperText=@("Please select a zone")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a zone">
+                @foreach (var zoneModel in _allZoneModels)
+                {
+                    <MudSelectItem Value="zoneModel.Id"></MudSelectItem>
+                }
+            </MudSelect>
+        </MudTd>
         <MudTd DataLabel="Products"></MudTd>
     </RowEditingTemplate>
 
@@ -148,13 +164,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     [Parameter]
     public bool ShowCreateButton { get; set; }
-    
+
     [Parameter]
     public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }
-    
+
     [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
 
@@ -172,6 +188,9 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private string searchString = "";
     private MudTable<RackModel> _tableRef;
     private RackModel _rackModelBeforeEdit { get; set; }
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
+    private List<ZoneModel> _allZoneModels { get; set; } = [];
 
     protected override async Task OnParametersSetAsync()
     {
@@ -320,6 +339,24 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 };
 
             RackModels.Add(rackModel);
+        }
+
+        var getAllZoneIdsByCompanyIdQuery = new GetAllZoneIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var allZoneIds = await Mediator.Send(getAllZoneIdsByCompanyIdQuery);
+        foreach (var zoneId in allZoneIds)
+        {
+            var getZoneByIdQuery = new GetZoneByIdQuery(zoneId);
+            var getZoneResponseDTO = await Mediator.Send(getZoneByIdQuery);
+            var zoneModel = new ZoneModel()
+            {
+                Id = zoneId,
+                StaffIds = getZoneResponseDTO.StaffIds,
+                Name = getZoneResponseDTO.Name,
+                RackIds = getZoneResponseDTO.RackIds,
+                WarehouseId = getZoneResponseDTO.WarehouseId,
+            };
+
+            _allZoneModels.Add(zoneModel);
         }
         return true;
     }
