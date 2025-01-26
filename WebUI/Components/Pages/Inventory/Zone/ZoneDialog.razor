@@ -1,16 +1,21 @@
-
 @using Application.DTO.Response
+
 <MudDialog>
     <TitleContent>
         Zones
     </TitleContent>
     <DialogContent>
-        <Zone ZoneIds="ZoneIds"
-              CurrentStaff="CurrentStaff" />
+        <Zone ZoneIds="ZoneIds" CurrentStaff="CurrentStaff" MainPage="MainPage" PageComponents="PageComponents"/>
     </DialogContent>
-
 </MudDialog>
+
 @code {
+    [Parameter]
+    public IMainPage MainPage { get; set; }
+
+    [Parameter]
+    public List<IPageComponent> PageComponents { get; set; }
+    
     [Parameter]
     public List<Guid> ZoneIds { get; set; }
 

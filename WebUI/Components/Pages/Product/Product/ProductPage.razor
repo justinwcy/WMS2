@@ -4,11 +4,7 @@
 @using WebUI.Utilities
 @using Application.Service.Queries
 
-<CascadingValue Name="MainPage" Value="MainPage">
-    <CascadingValue Name="PageComponents" Value="PageComponents">
-        <Product ProductIds="ProductIds" CurrentStaff="CurrentStaff"/>
-    </CascadingValue>
-</CascadingValue>
+<Product ProductIds="ProductIds" CurrentStaff="CurrentStaff" MainPage="MainPage" PageComponents="PageComponents"/>
 
 @code {
     private IMainPage MainPage => this;

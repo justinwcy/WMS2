@@ -1,16 +1,21 @@
-
 @using Application.DTO.Response
+
 <MudDialog>
     <TitleContent>
         RefundOrders
     </TitleContent>
     <DialogContent>
-        <RefundOrder RefundOrderIds="RefundOrderIds"
-              CurrentStaff="CurrentStaff" />
+        <RefundOrder RefundOrderIds="RefundOrderIds" CurrentStaff="CurrentStaff" MainPage="MainPage" PageComponents="PageComponents"/>
     </DialogContent>
-
 </MudDialog>
+
 @code {
+    [Parameter]
+    public IMainPage MainPage { get; set; }
+
+    [Parameter]
+    public List<IPageComponent> PageComponents { get; set; }
+    
     [Parameter]
     public List<Guid> RefundOrderIds { get; set; }
 

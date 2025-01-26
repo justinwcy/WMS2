@@ -1,18 +1,26 @@
-﻿@using Application.DTO.Response
+@using Application.DTO.Response
+
 <MudDialog>
     <TitleContent>
-        Companies
+        Companys
     </TitleContent>
     <DialogContent>
-        <Company CompanyIds="CompanyIds"
-                 CurrentStaff="CurrentStaff" />
+        <Company CompanyIds="CompanyIds" CurrentStaff="CurrentStaff" MainPage="MainPage" PageComponents="PageComponents"/>
     </DialogContent>
 </MudDialog>
 
 @code {
+    [Parameter]
+    public IMainPage MainPage { get; set; }
+
+    [Parameter]
+    public List<IPageComponent> PageComponents { get; set; }
+    
     [Parameter]
     public List<Guid> CompanyIds { get; set; }
 
     [Parameter]
     public GetStaffResponseDTO CurrentStaff { get; set; }
 }
+
+    

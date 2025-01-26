@@ -1,16 +1,21 @@
-
 @using Application.DTO.Response
+
 <MudDialog>
     <TitleContent>
         Customers
     </TitleContent>
     <DialogContent>
-        <Customer CustomerIds="CustomerIds"
-                  CurrentStaff="CurrentStaff" />
+        <Customer CustomerIds="CustomerIds" CurrentStaff="CurrentStaff" MainPage="MainPage" PageComponents="PageComponents"/>
     </DialogContent>
 </MudDialog>
 
 @code {
+    [Parameter]
+    public IMainPage MainPage { get; set; }
+
+    [Parameter]
+    public List<IPageComponent> PageComponents { get; set; }
+    
     [Parameter]
     public List<Guid> CustomerIds { get; set; }
 

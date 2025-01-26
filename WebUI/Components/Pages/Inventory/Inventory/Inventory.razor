@@ -117,10 +117,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
 @code {
 
-    [CascadingParameter(Name = "MainPage")]
+    [Parameter]
     public IMainPage MainPage { get; set; }
     
-    [CascadingParameter(Name = "PageComponents")]
+    [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
 
     [Parameter]

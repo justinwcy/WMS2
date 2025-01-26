@@ -139,10 +139,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
 @code {
 
-    [CascadingParameter(Name = "MainPage")]
+    [Parameter]
     public IMainPage MainPage { get; set; }
     
-    [CascadingParameter(Name = "PageComponents")]
+    [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
 
     [Parameter]
@@ -327,7 +327,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     private async Task OpenStaffDialogAsync(List<Guid> staffIds)
     {
-        var dialogResult = await ViewDialogUtilities.OpenStaffDialogAsync(staffIds, CurrentStaff, Dialog);
+        var dialogResult = await ViewDialogUtilities.OpenStaffDialogAsync(staffIds, CurrentStaff, Dialog, MainPage, PageComponents);
         await MainPage.InitializeData();
         foreach (var pageComponent in PageComponents)
         {
@@ -340,7 +340,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     private async Task OpenRackDialogAsync(List<Guid> rackIds)
     {
-        var dialogResult = await ViewDialogUtilities.OpenRackDialogAsync(rackIds, CurrentStaff, Dialog);
+        var dialogResult = await ViewDialogUtilities.OpenRackDialogAsync(rackIds, CurrentStaff, Dialog, MainPage, PageComponents);
         await MainPage.InitializeData();
         foreach (var pageComponent in PageComponents)
         {

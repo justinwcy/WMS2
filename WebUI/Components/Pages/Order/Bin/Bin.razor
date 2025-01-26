@@ -95,10 +95,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
 @code {
 
-    [CascadingParameter(Name = "MainPage")]
+    [Parameter]
     public IMainPage MainPage { get; set; }
     
-    [CascadingParameter(Name = "PageComponents")]
+    [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
 
     [Parameter]
@@ -248,7 +248,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     private async Task OpenCustomerOrderDialogAsync(List<Guid> customerOrderIds)
     {
-        var dialogResult = await ViewDialogUtilities.OpenCustomerOrderDialogAsync(customerOrderIds, CurrentStaff, Dialog);
+        var dialogResult = await ViewDialogUtilities.OpenCustomerOrderDialogAsync(customerOrderIds, CurrentStaff, Dialog, MainPage, PageComponents);
         await MainPage.InitializeData();
         foreach (var pageComponent in PageComponents)
         {

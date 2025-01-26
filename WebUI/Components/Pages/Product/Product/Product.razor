@@ -162,10 +162,10 @@ EditTrigger="TableEditTrigger.RowClick"
 
 @code {
 
-    [CascadingParameter(Name = "MainPage")]
+    [Parameter]
     public IMainPage MainPage { get; set; }
     
-    [CascadingParameter(Name = "PageComponents")]
+    [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
 
     [Parameter]
@@ -354,7 +354,7 @@ EditTrigger="TableEditTrigger.RowClick"
 
     private async Task OpenShopDialogAsync(List<Guid> shopIds)
     {
-        var dialogResult = await ViewDialogUtilities.OpenShopDialogAsync(shopIds, CurrentStaff, Dialog);
+        var dialogResult = await ViewDialogUtilities.OpenShopDialogAsync(shopIds, CurrentStaff, Dialog, MainPage, PageComponents);
         await MainPage.InitializeData();
         foreach (var pageComponent in PageComponents)
         {
@@ -367,7 +367,7 @@ EditTrigger="TableEditTrigger.RowClick"
 
     private async Task OpenProductGroupDialogAsync(List<Guid> productGroupIds)
     {
-        var dialogResult = await ViewDialogUtilities.OpenProductGroupDialogAsync(productGroupIds, CurrentStaff, Dialog);
+        var dialogResult = await ViewDialogUtilities.OpenProductGroupDialogAsync(productGroupIds, CurrentStaff, Dialog, MainPage, PageComponents);
         await MainPage.InitializeData();
         foreach (var pageComponent in PageComponents)
         {

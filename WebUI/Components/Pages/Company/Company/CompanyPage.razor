@@ -1,15 +1,10 @@
-﻿@page "/company"
+@page "/company"
 @implements IMainPage
 @using Application.DTO.Response
 @using WebUI.Utilities
 @using Application.Service.Queries
 
-<CascadingValue Name="MainPage" Value="MainPage">
-    <CascadingValue Name="PageComponents" Value="PageComponents">
-        <Company CompanyIds="CompanyIds"
-                 CurrentStaff="CurrentStaff"/>
-    </CascadingValue>
-</CascadingValue>
+<Company CompanyIds="CompanyIds" CurrentStaff="CurrentStaff" MainPage="MainPage" PageComponents="PageComponents"/>
 
 @code {
     private IMainPage MainPage => this;
@@ -23,7 +18,7 @@
         await base.OnInitializedAsync();
         await InitializeData();
     }
-
+    
     public async Task InitializeData()
     {
         CurrentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
