@@ -1,4 +1,3 @@
-
 @inject IDialogService Dialog
 @implements IPageComponent
 @using Application.Service.Queries
@@ -102,6 +101,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 </MudTable>
 
 @code {
+
+    public string Name => "ProductGroup";
 
     [Parameter]
     public IMainPage MainPage { get; set; }
@@ -241,6 +242,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     public async Task<bool> FetchData()
     {
+        ProductGroupModels.Clear();
         foreach (var productGroupId in ProductGroupIds)
         {
             var getProductGroupByIdQuery = new GetProductGroupByIdQuery(productGroupId);

@@ -138,6 +138,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
 @code {
 
+    public string Name => "Rack";
+
     [Parameter]
     public IMainPage MainPage { get; set; }
     
@@ -287,6 +289,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     public async Task<bool> FetchData()
     {
+        RackModels.Clear();
         foreach (var rackId in RackIds)
         {
             var getRackByIdQuery = new GetRackByIdQuery(rackId);

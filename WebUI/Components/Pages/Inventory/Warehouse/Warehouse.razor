@@ -111,6 +111,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
 @code {
 
+    public string Name => "Warehouse";
+
     [Parameter]
     public IMainPage MainPage { get; set; }
     
@@ -253,6 +255,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     public async Task<bool> FetchData()
     {
+        WarehouseModels.Clear();
         foreach (var warehouseId in WarehouseIds)
         {
             var getWarehouseByIdQuery = new GetWarehouseByIdQuery(warehouseId);

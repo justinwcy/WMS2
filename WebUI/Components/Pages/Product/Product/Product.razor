@@ -162,6 +162,8 @@ EditTrigger="TableEditTrigger.RowClick"
 
 @code {
 
+    public string Name => "Product";
+
     [Parameter]
     public IMainPage MainPage { get; set; }
     
@@ -326,6 +328,7 @@ EditTrigger="TableEditTrigger.RowClick"
 
     public async Task<bool> FetchData()
     {
+        ProductModels.Clear();
         foreach (var productId in ProductIds)
         {
             var getProductByIdQuery = new GetProductByIdQuery(productId);

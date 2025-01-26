@@ -220,6 +220,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
 @code {
 
+    public string Name => "CustomerOrder";
+
     [Parameter]
     public IMainPage MainPage { get; set; }
     
@@ -374,7 +376,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     public async Task<bool> FetchData()
     {
-
+        CustomerOrderModels.Clear();
         foreach (var customerOrderId in CustomerOrderIds)
         {
             var getCustomerOrderByIdQuery = new GetCustomerOrderByIdQuery(customerOrderId);

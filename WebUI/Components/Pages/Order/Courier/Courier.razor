@@ -109,6 +109,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
 @code {
 
+    public string Name => "Courier";
+
     [Parameter]
     public IMainPage MainPage { get; set; }
     
@@ -250,6 +252,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     public async Task<bool> FetchData()
     {
+        CourierModels.Clear();
         foreach (var courierId in CourierIds)
         {
             var getCourierByIdQuery = new GetCourierByIdQuery(courierId);

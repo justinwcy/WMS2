@@ -137,6 +137,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
 @code {
 
+    public string Name => "RefundOrderProduct";
+
     [Parameter]
     public IMainPage MainPage { get; set; }
     
@@ -293,6 +295,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     public async Task<bool> FetchData()
     {
+        RefundOrderProductModels.Clear();
         var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
 
@@ -337,18 +340,18 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             RefundOrderProductModels.Add(refundOrderProductModel);
         }
 
-        var uniqueIncomingOrders = RefundOrderProductModels
+        var uniqueRefundOrders = RefundOrderProductModels
             .GroupBy(incomingOrderProductModel => incomingOrderProductModel.RefundOrderId)
             .Select(x => x.Key)
             .ToList();
 
-        if (uniqueIncomingOrders.Count != 1)
+        if (uniqueRefundOrders.Count != 1)
         {
             throw new Exception("Refund orders passed is not unique");
         }
         else
         {
-            _refundOrderId = uniqueIncomingOrders.First();
+            _refundOrderId = uniqueRefundOrders.First();
             var getRefundOrderByIdQuery = new GetRefundOrderByIdQuery(_refundOrderId);
             _refundOrder = await Mediator.Send(getRefundOrderByIdQuery);
         }

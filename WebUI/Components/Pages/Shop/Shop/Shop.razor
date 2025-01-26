@@ -116,6 +116,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
 @code {
 
+    public string Name => "Shop";
+
     [Parameter]
     public IMainPage MainPage { get; set; }
     
@@ -265,6 +267,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     public async Task<bool> FetchData()
     {
+        ShopModels.Clear();
         foreach (var shopId in ShopIds)
         {
             var getShopByIdQuery = new GetShopByIdQuery(shopId);

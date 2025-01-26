@@ -18,12 +18,18 @@
         await base.OnInitializedAsync();
         await InitializeData();
     }
-    
+
     public async Task InitializeData()
     {
+        var oldCompanyIds = CompanyIds.ToList();
         CurrentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
 
         var getAllCompanyIdsQuery = new GetAllCompanyIdsQuery();
         CompanyIds = await Mediator.Send(getAllCompanyIdsQuery);
+
+        // if (!oldCompanyIds.All(companyId => CompanyIds.Contains(companyId)) || !CompanyIds.All(companyId => oldCompanyIds.Contains(companyId)))
+        // {
+        //     StateHasChanged();
+        // }
     }
 }

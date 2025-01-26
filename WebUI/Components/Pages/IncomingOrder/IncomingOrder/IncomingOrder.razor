@@ -8,6 +8,7 @@
 @using Application.DTO.Request
 @using Application.DTO.Response
 @using WebUI.Utilities
+
 <MudGrid Class="mb-3">
     <MudItem xs="9">
         <MudButton OnClick="@DeleteIncomingOrders"
@@ -173,6 +174,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
 @code {
 
+    public string Name => "IncomingOrder";
+
     [Parameter]
     public IMainPage MainPage { get; set; }
     
@@ -334,6 +337,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     public async Task<bool> FetchData()
     {
+        IncomingOrderModels.Clear();
         foreach (var incomingOrderId in IncomingOrderIds)
         {
             var getIncomingOrderByIdQuery = new GetIncomingOrderByIdQuery(incomingOrderId);

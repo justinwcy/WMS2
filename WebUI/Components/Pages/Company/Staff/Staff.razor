@@ -129,6 +129,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
 @code {
 
+    public string Name => "Staff";
+
     [Parameter]
     public IMainPage MainPage { get; set; }
     
@@ -282,6 +284,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     public async Task<bool> FetchData()
     {
+        StaffModels.Clear();
         foreach (var staffId in StaffIds)
         {
             var getStaffByIdQuery = new GetStaffByIdQuery(staffId);

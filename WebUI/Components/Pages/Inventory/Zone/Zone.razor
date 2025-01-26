@@ -139,6 +139,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
 @code {
 
+    public string Name => "Zone";
+
     [Parameter]
     public IMainPage MainPage { get; set; }
     
@@ -286,7 +288,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     public async Task<bool> FetchData()
     {
-
+        ZoneModels.Clear();
         foreach (var zoneId in ZoneIds)
         {
             var getZoneByIdQuery = new GetZoneByIdQuery(zoneId);

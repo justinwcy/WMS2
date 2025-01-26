@@ -126,6 +126,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
 @code {
 
+    public string Name => "Vendor";
+
     [Parameter]
     public IMainPage MainPage { get; set; }
     
@@ -279,6 +281,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     public async Task<bool> FetchData()
     {
+        VendorModels.Clear();
         foreach (var vendorId in VendorIds)
         {
             var getVendorByIdQuery = new GetVendorByIdQuery(vendorId);

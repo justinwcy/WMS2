@@ -131,6 +131,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
 @code {
 
+    public string Name => "RefundOrder";
+
     [Parameter]
     public IMainPage MainPage { get; set; }
     
@@ -283,6 +285,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     public async Task<bool> FetchData()
     {
+        RefundOrderModels.Clear();
         foreach (var refundOrderId in RefundOrderIds)
         {
             var getRefundOrderByIdQuery = new GetRefundOrderByIdQuery(refundOrderId);

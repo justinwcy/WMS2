@@ -6,6 +6,8 @@
 @using Application.DTO.Request
 @using Application.DTO.Response
 @using WebUI.Utilities
+
+@if (s)
 <MudGrid Class="mb-3">
     <MudItem xs="9">
         <MudButton OnClick="@DeleteCompanies"
@@ -106,6 +108,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 </MudTable>
 
 @code {
+
+    public string Name => "Company";
 
     [Parameter]
     public IMainPage MainPage { get; set; }
@@ -245,6 +249,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     public async Task<bool> FetchData()
     {
+        CompanyModels.Clear();
         foreach (var companyId in CompanyIds)
         {
             var getCompanyByIdQuery = new GetCompanyByIdQuery(companyId);
@@ -260,7 +265,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             CompanyModels.Add(companyModel);
         }
-
+        
         return true;
     }
 

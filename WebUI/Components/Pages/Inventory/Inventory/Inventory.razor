@@ -117,6 +117,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
 @code {
 
+    public string Name => "Inventory";
+
     [Parameter]
     public IMainPage MainPage { get; set; }
     
@@ -259,6 +261,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     public async Task<bool> FetchData()
     {
+        InventoryModels.Clear();
         foreach (var inventoryId in InventoryIds)
         {
             var getInventoryByIdQuery = new GetInventoryByIdQuery(inventoryId);
