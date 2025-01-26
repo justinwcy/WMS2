@@ -99,7 +99,7 @@ EditTrigger="TableEditTrigger.RowClick"
         <MudTd DataLabel="Length (cm)">@context.Length</MudTd>
         <MudTd DataLabel="Width (cm)">@context.Width</MudTd>
         <MudTd DataLabel="Shop">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenShopDialogAsync(context.ShopIds, CurrentStaff, Dialog))"
+            <MudButton OnClick="@(() => OpenShopDialogAsync(context.ShopIds))"
             Variant="Variant.Filled"
             Color="Color.Primary"
             Size="Size.Large"
@@ -108,7 +108,7 @@ EditTrigger="TableEditTrigger.RowClick"
             </MudButton>
         </MudTd>
         <MudTd DataLabel="Product Group">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductGroupDialogAsync(context.ProductGroupIds, CurrentStaff, Dialog))"
+            <MudButton OnClick="@(() => OpenProductGroupDialogAsync(context.ProductGroupIds))"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
                        Size="Size.Large"
@@ -350,5 +350,31 @@ EditTrigger="TableEditTrigger.RowClick"
             ProductModels.Add(productModel);
         }
         return true;
+    }
+
+    private async Task OpenShopDialogAsync(List<Guid> shopIds)
+    {
+        var dialogResult = await ViewDialogUtilities.OpenShopDialogAsync(shopIds, CurrentStaff, Dialog);
+        await MainPage.InitializeData();
+        foreach (var pageComponent in PageComponents)
+        {
+            if (pageComponent != this)
+            {
+                var success = await pageComponent.FetchData();
+            }
+        }
+    }
+
+    private async Task OpenProductGroupDialogAsync(List<Guid> productGroupIds)
+    {
+        var dialogResult = await ViewDialogUtilities.OpenProductGroupDialogAsync(productGroupIds, CurrentStaff, Dialog);
+        await MainPage.InitializeData();
+        foreach (var pageComponent in PageComponents)
+        {
+            if (pageComponent != this)
+            {
+                var success = await pageComponent.FetchData();
+            }
+        }
     }
 }

@@ -82,7 +82,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Depth">@context.Depth</MudTd>
         
         <MudTd DataLabel="Zones">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenZoneDialogAsync(@context.ZoneId, CurrentStaff, Dialog))"
+            <MudButton OnClick="@(() => OpenZoneDialogAsync(new List<Guid> { @context.ZoneId }))"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
                        Size="Size.Small"
@@ -92,7 +92,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         </MudTd>
 
         <MudTd DataLabel="Products">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.ProductIds, CurrentStaff, Dialog))"
+            <MudButton OnClick="@(() => OpenProductDialogAsync(@context.ProductIds))"
             Variant="Variant.Filled"
             Color="Color.Primary"
             Size="Size.Small"
@@ -307,6 +307,32 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             RackModels.Add(rackModel);
         }
         return true;
+    }
+
+    private async Task OpenZoneDialogAsync(List<Guid> zoneIds)
+    {
+        var dialogResult = await ViewDialogUtilities.OpenZoneDialogAsync(zoneIds, CurrentStaff, Dialog);
+        await MainPage.InitializeData();
+        foreach (var pageComponent in PageComponents)
+        {
+            if (pageComponent != this)
+            {
+                var success = await pageComponent.FetchData();
+            }
+        }
+    }
+
+    private async Task OpenProductDialogAsync(List<Guid> productIds)
+    {
+        var dialogResult = await ViewDialogUtilities.OpenProductDialogAsync(productIds, CurrentStaff, Dialog);
+        await MainPage.InitializeData();
+        foreach (var pageComponent in PageComponents)
+        {
+            if (pageComponent != this)
+            {
+                var success = await pageComponent.FetchData();
+            }
+        }
     }
 }
 

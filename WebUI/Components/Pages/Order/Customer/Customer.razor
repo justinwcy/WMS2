@@ -76,7 +76,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Email">@context.Email</MudTd>
         <MudTd DataLabel="Address">@context.Address</MudTd>
         <MudTd DataLabel="Customer Orders">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenProductDialogAsync(@context.CustomerOrderIds, CurrentStaff, Dialog))"
+            <MudButton OnClick="@(() => OpenProductDialogAsync(@context.CustomerOrderIds))"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
                        Size="Size.Small"
@@ -285,6 +285,19 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             CustomerModels.Add(customerModel);
         }
         return true;
+    }
+
+    private async Task OpenProductDialogAsync(List<Guid> productIds)
+    {
+        var dialogResult = await ViewDialogUtilities.OpenProductDialogAsync(productIds, CurrentStaff, Dialog);
+        await MainPage.InitializeData();
+        foreach (var pageComponent in PageComponents)
+        {
+            if (pageComponent != this)
+            {
+                var success = await pageComponent.FetchData();
+            }
+        }
     }
 }
 

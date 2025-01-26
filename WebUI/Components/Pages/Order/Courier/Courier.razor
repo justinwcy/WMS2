@@ -72,7 +72,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Price">@context.Price</MudTd>
         <MudTd DataLabel="Remark">@context.Remark</MudTd>
         <MudTd DataLabel="Customer Orders">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenCustomerOrderDialogAsync(@context.CustomerOrderIds, CurrentStaff, Dialog))"
+            <MudButton OnClick="@(() => OpenCustomerOrderDialogAsync(@context.CustomerOrderIds))"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
                        Size="Size.Small"
@@ -267,6 +267,19 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             CourierModels.Add(courierModel);
         }
         return true;
+    }
+
+    private async Task OpenCustomerOrderDialogAsync(List<Guid> customerOrderIds)
+    {
+        var dialogResult = await ViewDialogUtilities.OpenCustomerOrderDialogAsync(customerOrderIds, CurrentStaff, Dialog);
+        await MainPage.InitializeData();
+        foreach (var pageComponent in PageComponents)
+        {
+            if (pageComponent != this)
+            {
+                var success = await pageComponent.FetchData();
+            }
+        }
     }
 }
 

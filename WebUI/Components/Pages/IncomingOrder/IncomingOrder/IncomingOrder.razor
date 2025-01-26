@@ -83,7 +83,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         </MudTd>
 
         <MudTd DataLabel="Details">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenIncomingOrderProductDialogAsync(@context.IncomingOrderProductIds, CurrentStaff, Dialog))"
+            <MudButton OnClick="@(() => OpenIncomingOrderProductDialogAsync(@context.IncomingOrderProductIds))"
             Variant="Variant.Filled"
             Color="Color.Primary"
             Size="Size.Small"
@@ -374,6 +374,19 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             _allVendorModels.Add(vendorModel);
         }
         return true;
+    }
+
+    private async Task OpenIncomingOrderProductDialogAsync(List<Guid> incomingOrderProductIds)
+    {
+        var dialogResult = await ViewDialogUtilities.OpenIncomingOrderProductDialogAsync(incomingOrderProductIds, CurrentStaff, Dialog);
+        await MainPage.InitializeData();
+        foreach (var pageComponent in PageComponents)
+        {
+            if (pageComponent != this)
+            {
+                var success = await pageComponent.FetchData();
+            }
+        }
     }
 }
 

@@ -66,7 +66,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Customer Orders">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenCustomerOrderDialogAsync(@context.CustomerOrderIds, CurrentStaff, Dialog))"
+            <MudButton OnClick="@(() => OpenCustomerOrderDialogAsync(@context.CustomerOrderIds))"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
                        Size="Size.Small"
@@ -244,6 +244,19 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             BinModels.Add(binModel);
         }
         return true;
+    }
+
+    private async Task OpenCustomerOrderDialogAsync(List<Guid> customerOrderIds)
+    {
+        var dialogResult = await ViewDialogUtilities.OpenCustomerOrderDialogAsync(customerOrderIds, CurrentStaff, Dialog);
+        await MainPage.InitializeData();
+        foreach (var pageComponent in PageComponents)
+        {
+            if (pageComponent != this)
+            {
+                var success = await pageComponent.FetchData();
+            }
+        }
     }
 }
 

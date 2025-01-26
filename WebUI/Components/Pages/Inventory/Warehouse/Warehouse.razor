@@ -72,7 +72,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Address">@context.Address</MudTd>
         <MudTd DataLabel="Company">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenCompanyDialogAsync(@context.CompanyId, CurrentStaff, Dialog))"
+            <MudButton OnClick="@(() => OpenCompanyDialogAsync(new List<Guid> { @context.CompanyId }))"
             Variant="Variant.Filled"
             Color="Color.Primary"
             Size="Size.Small"
@@ -81,7 +81,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             </MudButton>
         </MudTd>
         <MudTd DataLabel="Zone">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenZoneDialogAsync(@context.ZoneIds, CurrentStaff, Dialog))"
+            <MudButton OnClick="@(() => OpenZoneDialogAsync(@context.ZoneIds))"
             Variant="Variant.Filled"
             Color="Color.Primary"
             Size="Size.Small"
@@ -270,5 +270,31 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             WarehouseModels.Add(warehouseModel);
         }
         return true;
+    }
+
+    private async Task OpenCompanyDialogAsync(List<Guid> companyIds)
+    {
+        var dialogResult = await ViewDialogUtilities.OpenCompanyDialogAsync(companyIds, CurrentStaff, Dialog);
+        await MainPage.InitializeData();
+        foreach (var pageComponent in PageComponents)
+        {
+            if (pageComponent != this)
+            {
+                var success = await pageComponent.FetchData();
+            }
+        }
+    }
+
+    private async Task OpenZoneDialogAsync(List<Guid> zoneIds)
+    {
+        var dialogResult = await ViewDialogUtilities.OpenZoneDialogAsync(zoneIds, CurrentStaff, Dialog);
+        await MainPage.InitializeData();
+        foreach (var pageComponent in PageComponents)
+        {
+            if (pageComponent != this)
+            {
+                var success = await pageComponent.FetchData();
+            }
+        }
     }
 }

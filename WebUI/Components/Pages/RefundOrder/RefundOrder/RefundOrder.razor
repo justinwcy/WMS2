@@ -74,7 +74,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Status">@context.Status</MudTd>
         <MudTd DataLabel="Reason">@context.RefundReason</MudTd>
         <MudTd DataLabel="Details">
-            <MudButton OnClick="@(() => ViewDialogUtilities.OpenRefundOrderProductDialogAsync(@context.RefundOrderProductIds, CurrentStaff, Dialog))"
+            <MudButton OnClick="@(() => OpenRefundOrderProductDialogAsync(@context.RefundOrderProductIds))"
             Variant="Variant.Filled"
             Color="Color.Primary"
             Size="Size.Small"
@@ -300,6 +300,19 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             RefundOrderModels.Add(refundOrderModel);
         }
         return true;
+    }
+
+    private async Task OpenRefundOrderProductDialogAsync(List<Guid> refundOrderProductIds)
+    {
+        var dialogResult = await ViewDialogUtilities.OpenRefundOrderProductDialogAsync(refundOrderProductIds, CurrentStaff, Dialog);
+        await MainPage.InitializeData();
+        foreach (var pageComponent in PageComponents)
+        {
+            if (pageComponent != this)
+            {
+                var success = await pageComponent.FetchData();
+            }
+        }
     }
 }
 

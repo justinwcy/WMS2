@@ -277,9 +277,9 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         }
     }
 
-    private async Task OpenStaffDialogAsync(List<Guid> warehouseIds)
+    private async Task OpenStaffDialogAsync(List<Guid> staffIds)
     {
-        var dialogResult = await ViewDialogUtilities.OpenStaffDialogAsync(warehouseIds, CurrentStaff, Dialog);
+        var dialogResult = await ViewDialogUtilities.OpenStaffDialogAsync(staffIds, CurrentStaff, Dialog);
         await MainPage.InitializeData();
         foreach (var pageComponent in PageComponents)
         {
