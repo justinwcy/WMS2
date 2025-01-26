@@ -1,5 +1,6 @@
 @inject IDialogService Dialog
 @implements IPageComponent
+@using System.Globalization
 @using System.Reflection
 @using Application.Constants
 @using Application.Service.Queries
@@ -66,11 +67,11 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <col style="max-width: 50px" />
         <col style="max-width: 50px" />
         <col style="min-width: 100px" />
-        <col style="min-width: 100px" />
-        <col style="min-width: 100px" />
         <col style="min-width: 80px" />
-        <col style="min-width: 100px" />
-        <col style="min-width: 100px" />
+        <col style="min-width: 80px" />
+        <col style="min-width: 80px" />
+        <col style="min-width: 200px" />
+        <col style="min-width: 150px" />
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderModel, object>(x=>x.PONumber)">PO Number</MudTableSortLabel></MudTh>
@@ -82,11 +83,11 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="PO Number">@context.PONumber</MudTd>
-        <MudTd DataLabel="Incoming Date">@context.IncomingDate</MudTd>
-        <MudTd DataLabel="Receiving Date">@context.ReceivingDate</MudTd>
+        <MudTd DataLabel="Incoming Date">@context.IncomingDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</MudTd>
+        <MudTd DataLabel="Receiving Date">@context.ReceivingDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</MudTd>
         <MudTd DataLabel="Status">@context.Status</MudTd>
         <MudTd DataLabel="Vendor">
-            @context.VendorId
+            @($"{_allVendorModels.FirstOrDefault(vendorModel => vendorModel.Id == context.VendorId)?.FirstName} {_allVendorModels.FirstOrDefault(vendorModel => vendorModel.Id == context.VendorId)?.LastName}")
         </MudTd>
 
         <MudTd DataLabel="Details">
@@ -121,19 +122,19 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
         <MudTd DataLabel="Status">
             <MudSelect @bind-Value="context.Status"
-            Variant="@_defaultVariant"
-            Label="Status"
-            Margin="Margin.Normal"
-            Dense="false"
-            Disabled="false"
-            ReadOnly="false"
-            Placeholder=@("Status")
-            MultiSelection="false"
-            HelperText=@("Please select a status")
-            HelperTextOnFocus="true"
-            Clearable="false"
-            Required="true"
-            RequiredError="Please select a status">
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Status")
+                       MultiSelection="false"
+                       HelperText=@("Please select a status")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a status">
                 @foreach (var orderState in _orderStates)
                 {
                     <MudSelectItem Value="@orderState">@orderState</MudSelectItem>
@@ -143,21 +144,21 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
         <MudTd DataLabel="Vendor">
             <MudSelect @bind-Value="context.VendorId"
-            T="Guid"
-            ToStringFunc="@(id=> $"{_allVendorModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.FirstName} {_allVendorModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.LastName}")"
-            Variant="@_defaultVariant"
-            Label="Vendor"
-            Margin="Margin.Normal"
-            Dense="false"
-            Disabled="false"
-            ReadOnly="false"
-            Placeholder=@("Vendor")
-            MultiSelection="false"
-            HelperText=@("Please select a vendor")
-            HelperTextOnFocus="true"
-            Clearable="false"
-            Required="true"
-            RequiredError="Please select a vendor">
+                       T="Guid"
+                       ToStringFunc="@(id=> $"{_allVendorModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.FirstName} {_allVendorModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.LastName}")"
+                       Variant="@_defaultVariant"
+                       Label="Vendor"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Vendor")
+                       MultiSelection="false"
+                       HelperText=@("Please select a vendor")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a vendor">
                 @foreach (var vendorModel in _allVendorModels)
                 {
                     <MudSelectItem Value="vendorModel.Id"></MudSelectItem>

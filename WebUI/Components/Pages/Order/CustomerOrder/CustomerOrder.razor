@@ -1,5 +1,6 @@
 @inject IDialogService Dialog
 @implements IPageComponent
+@using System.Globalization
 @using Application.Service.Queries
 @using WebUI.Components.Models
 @using Application.Service.Commands
@@ -105,9 +106,9 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Customer">@_allCustomerModels.FirstOrDefault(customerModel => customerModel.Id == context.CustomerId)?.FirstName @_allCustomerModels.FirstOrDefault(customerModel => customerModel.Id == context.CustomerId)?.LastName</MudTd>
-        <MudTd DataLabel="Expected Arrival Date">@context.ExpectedArrivalDate</MudTd>
+        <MudTd DataLabel="Expected Arrival Date">@context.ExpectedArrivalDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</MudTd>
         <MudTd DataLabel="Courier">@_allCourierModels.FirstOrDefault(courierModel => courierModel.Id == context.CourierId)?.Name</MudTd>
-        <MudTd DataLabel="Order Creation Date">@context.OrderCreationDate</MudTd>
+        <MudTd DataLabel="Order Creation Date">@context.OrderCreationDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</MudTd>
         <MudTd DataLabel="Order Address">@context.OrderAddress</MudTd>
         <MudTd DataLabel="Bin">@_allBinModels.FirstOrDefault(binModel => binModel.Id == context.BinId)?.Name</MudTd>
         <MudTd DataLabel="Details">

@@ -1,5 +1,6 @@
 @inject IDialogService Dialog
 @implements IPageComponent
+@using System.Globalization
 @using System.Reflection
 @using Application.Constants
 @using Application.Service.Queries
@@ -64,7 +65,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     <ColGroup>
         <col style="max-width: 50px" />
         <col style="max-width: 50px" />
-        <col style="min-width: 150px" />
+        <col style="min-width: 80px" />
         <col style="min-width: 100px" />
         <col style="min-width: 150px" />
         <col style="min-width: 150px" />
@@ -76,7 +77,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTh>Details</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Refund Date">@context.RefundDate</MudTd>
+        <MudTd DataLabel="Refund Date">@context.RefundDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</MudTd>
         <MudTd DataLabel="Status">@context.Status</MudTd>
         <MudTd DataLabel="Reason">@context.RefundReason</MudTd>
         <MudTd DataLabel="Details">
