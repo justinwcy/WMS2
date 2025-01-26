@@ -5,7 +5,12 @@
         Staffs
     </TitleContent>
     <DialogContent>
-        <Staff StaffIds="StaffIds" CurrentStaff="CurrentStaff" MainPage="MainPage" PageComponents="PageComponents"/>
+        <Staff StaffIds="StaffIds" 
+            CurrentStaff="CurrentStaff" 
+            MainPage="MainPage" 
+            PageComponents="PageComponents"
+            ShowCreateButton=@ShowCreateButton
+            ShowDeleteButton=@ShowDeleteButton/>
     </DialogContent>
 </MudDialog>
 
@@ -21,6 +26,17 @@
 
     [Parameter]
     public GetStaffResponseDTO CurrentStaff { get; set; }
+    
+    private bool ShowCreateButton { get; set; }
+
+    private bool ShowDeleteButton { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        ShowCreateButton = !PageComponents.Select(pageComponent => pageComponent.Name).Contains("Staff");
+        ShowDeleteButton = !PageComponents.Select(pageComponent => pageComponent.Name).Contains("Staff");
+    }
 }
 
     

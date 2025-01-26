@@ -2,10 +2,15 @@
 
 <MudDialog>
     <TitleContent>
-        Companys
+        Companies
     </TitleContent>
     <DialogContent>
-        <Company CompanyIds="CompanyIds" CurrentStaff="CurrentStaff" MainPage="MainPage" PageComponents="PageComponents"/>
+        <Company CompanyIds="CompanyIds" 
+                 CurrentStaff="CurrentStaff" 
+                 MainPage="MainPage" 
+                 PageComponents="PageComponents"
+                 ShowCreateButton=@ShowCreateButton
+                 ShowDeleteButton=@ShowDeleteButton/>
     </DialogContent>
 </MudDialog>
 
@@ -15,12 +20,23 @@
 
     [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
-    
+
     [Parameter]
     public List<Guid> CompanyIds { get; set; }
 
     [Parameter]
     public GetStaffResponseDTO CurrentStaff { get; set; }
+
+    private bool ShowCreateButton { get; set; }
+
+    private bool ShowDeleteButton { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        ShowCreateButton = !PageComponents.Select(pageComponent => pageComponent.Name).Contains("Company");
+        ShowDeleteButton = !PageComponents.Select(pageComponent => pageComponent.Name).Contains("Company");
+    }
 }
 
     
