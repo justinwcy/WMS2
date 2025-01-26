@@ -9,24 +9,30 @@
 @using Application.DTO.Response
 <MudGrid Class="mb-3">
     <MudItem xs="9">
-        <MudButton OnClick="@DeleteIncomingOrderProducts"
-        Color="Color.Error"
-        Variant="Variant.Filled"
-        Size="Size.Large"
-        FullWidth="false"
-                   Disabled="_disableDelete">
-            <IncomingOrderProduct />
-            Delete IncomingOrderProduct
-        </MudButton>
+        @if (ShowDeleteButton)
+        {
+            <MudButton OnClick="@DeleteIncomingOrderProducts"
+                       Color="Color.Error"
+                       Variant="Variant.Filled"
+                       Size="Size.Large"
+                       FullWidth="false"
+                       Disabled="_disableDelete">
+                <IncomingOrderProduct/>
+                Delete IncomingOrderProduct
+            </MudButton>
+        }
     </MudItem>
     <MudItem xs="3">
-        <MudButton OnClick="@(OpenCreateIncomingOrderProductDialogAsync)"
-        Variant="Variant.Filled"
-        Color="Color.Primary"
-        Size="Size.Large"
-        FullWidth="false">
-            Create Incoming Order Product
-        </MudButton>
+        @if (ShowCreateButton)
+        {
+            <MudButton OnClick="@(OpenCreateIncomingOrderProductDialogAsync)"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Large"
+                       FullWidth="false">
+                Create Incoming Order Product
+            </MudButton>
+        }
     </MudItem>
 </MudGrid>
 
@@ -137,6 +143,12 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 @code {
 
     public string Name => "IncomingOrderProduct";
+
+    [Parameter]
+    public bool ShowCreateButton { get; set; }
+    
+    [Parameter]
+    public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }

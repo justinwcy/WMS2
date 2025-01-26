@@ -9,23 +9,29 @@
 
 <MudGrid Class="mb-3">
     <MudItem xs="9">
-        <MudButton OnClick="@DeleteProducts"
-        Color="Color.Error"
-        Variant="Variant.Filled"
-        Size="Size.Large"
-        FullWidth="false"
-        Disabled="_disableDelete">
-            Delete Product
-        </MudButton>
+        @if (ShowDeleteButton)
+        {
+            <MudButton OnClick="@DeleteProducts"
+                       Color="Color.Error"
+                       Variant="Variant.Filled"
+                       Size="Size.Large"
+                       FullWidth="false"
+                       Disabled="_disableDelete">
+                Delete Product
+            </MudButton>
+        }
     </MudItem>
     <MudItem xs="3">
-        <MudButton OnClick="@(OpenCreateProductDialogAsync)"
-        Variant="Variant.Filled"
-        Color="Color.Primary"
-        Size="Size.Large"
-        FullWidth="true">
-            Create Product
-        </MudButton>
+        @if (ShowCreateButton)
+        {
+            <MudButton OnClick="@(OpenCreateProductDialogAsync)"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Large"
+                       FullWidth="true">
+                Create Product
+            </MudButton>
+        }
     </MudItem>
 </MudGrid>
 
@@ -163,6 +169,12 @@ EditTrigger="TableEditTrigger.RowClick"
 @code {
 
     public string Name => "Product";
+
+    [Parameter]
+    public bool ShowCreateButton { get; set; }
+    
+    [Parameter]
+    public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }

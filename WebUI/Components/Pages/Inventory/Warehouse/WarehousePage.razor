@@ -4,7 +4,12 @@
 @using WebUI.Utilities
 @using Application.Service.Queries
 
-<Warehouse WarehouseIds="WarehouseIds" CurrentStaff="CurrentStaff" MainPage="MainPage" PageComponents="PageComponents"/>
+<Warehouse WarehouseIds="WarehouseIds" 
+    CurrentStaff="CurrentStaff" 
+    MainPage="MainPage" 
+    PageComponents="PageComponents"
+    ShowCreateButton="true"
+    ShowDeleteButton="true"/>
 
 @code {
     private IMainPage MainPage => this;

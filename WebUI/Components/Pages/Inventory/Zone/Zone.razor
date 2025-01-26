@@ -8,23 +8,29 @@
 @using WebUI.Utilities
 <MudGrid Class="mb-3">
     <MudItem xs="9">
-        <MudButton OnClick="@DeleteZones"
-        Color="Color.Error"
-        Variant="Variant.Filled"
-        Size="Size.Large"
-        FullWidth="false"
-        Disabled="_disableDelete">
-            Delete Zone
-        </MudButton>
+        @if (ShowDeleteButton)
+        {
+            <MudButton OnClick="@DeleteZones"
+                       Color="Color.Error"
+                       Variant="Variant.Filled"
+                       Size="Size.Large"
+                       FullWidth="false"
+                       Disabled="_disableDelete">
+                Delete Zone
+            </MudButton>
+        }
     </MudItem>
     <MudItem xs="3">
-        <MudButton OnClick="@(OpenCreateZoneDialogAsync)"
-        Variant="Variant.Filled"
-        Color="Color.Primary"
-        Size="Size.Large"
-        FullWidth="false">
-            Create Zone
-        </MudButton>
+        @if (ShowCreateButton)
+        {
+            <MudButton OnClick="@(OpenCreateZoneDialogAsync)"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Large"
+                       FullWidth="false">
+                Create Zone
+            </MudButton>
+        }
     </MudItem>
 </MudGrid>
 
@@ -140,6 +146,12 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 @code {
 
     public string Name => "Zone";
+
+    [Parameter]
+    public bool ShowCreateButton { get; set; }
+    
+    [Parameter]
+    public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }

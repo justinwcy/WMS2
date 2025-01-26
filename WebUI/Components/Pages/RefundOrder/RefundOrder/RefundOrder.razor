@@ -10,23 +10,29 @@
 @using WebUI.Utilities
 <MudGrid Class="mb-3">
     <MudItem xs="9">
-        <MudButton OnClick="@DeleteRefundOrders"
-        Color="Color.Error"
-        Variant="Variant.Filled"
-        Size="Size.Large"
-        FullWidth="false"
-        Disabled="_disableDelete">
-            Delete Refund Order
-        </MudButton>
+        @if (ShowDeleteButton)
+        {
+            <MudButton OnClick="@DeleteRefundOrders"
+                       Color="Color.Error"
+                       Variant="Variant.Filled"
+                       Size="Size.Large"
+                       FullWidth="false"
+                       Disabled="_disableDelete">
+                Delete Refund Order
+            </MudButton>
+        }
     </MudItem>
     <MudItem xs="3">
-        <MudButton OnClick="@(OpenCreateRefundOrderDialogAsync)"
-        Variant="Variant.Filled"
-        Color="Color.Primary"
-        Size="Size.Large"
-        FullWidth="false">
-            Create Refund Order
-        </MudButton>
+        @if (ShowCreateButton)
+        {
+            <MudButton OnClick="@(OpenCreateRefundOrderDialogAsync)"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Large"
+                       FullWidth="false">
+                Create Refund Order
+            </MudButton>
+        }
     </MudItem>
 </MudGrid>
 
@@ -132,6 +138,12 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 @code {
 
     public string Name => "RefundOrder";
+
+    [Parameter]
+    public bool ShowCreateButton { get; set; }
+    
+    [Parameter]
+    public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }

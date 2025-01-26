@@ -11,23 +11,29 @@
 
 <MudGrid Class="mb-3">
     <MudItem xs="9">
-        <MudButton OnClick="@DeleteIncomingOrders"
-        Color="Color.Error"
-        Variant="Variant.Filled"
-        Size="Size.Large"
-        FullWidth="false"
-        Disabled="_disableDelete">
-            Delete IncomingOrder
-        </MudButton>
+        @if (ShowDeleteButton)
+        {
+            <MudButton OnClick="@DeleteIncomingOrders"
+                       Color="Color.Error"
+                       Variant="Variant.Filled"
+                       Size="Size.Large"
+                       FullWidth="false"
+                       Disabled="_disableDelete">
+                Delete IncomingOrder
+            </MudButton>
+        }
     </MudItem>
     <MudItem xs="3">
-        <MudButton OnClick="@(OpenCreateIncomingOrderDialogAsync)"
-        Variant="Variant.Filled"
-        Color="Color.Primary"
-        Size="Size.Large"
-        FullWidth="false">
-            Create Incoming Order
-        </MudButton>
+        @if (ShowCreateButton)
+        {
+            <MudButton OnClick="@(OpenCreateIncomingOrderDialogAsync)"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Large"
+                       FullWidth="false">
+                Create Incoming Order
+            </MudButton>
+        }
     </MudItem>
 </MudGrid>
 
@@ -175,6 +181,12 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 @code {
 
     public string Name => "IncomingOrder";
+
+    [Parameter]
+    public bool ShowCreateButton { get; set; }
+    
+    [Parameter]
+    public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }

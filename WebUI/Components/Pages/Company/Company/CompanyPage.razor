@@ -4,7 +4,13 @@
 @using WebUI.Utilities
 @using Application.Service.Queries
 
-<Company CompanyIds="CompanyIds" CurrentStaff="CurrentStaff" MainPage="MainPage" PageComponents="PageComponents"/>
+<Company CompanyIds="CompanyIds" 
+         CurrentStaff="CurrentStaff" 
+         MainPage="MainPage" 
+         PageComponents="PageComponents"
+         ShowCreateButton="true"
+         ShowDeleteButton="true"
+         />
 
 @code {
     private IMainPage MainPage => this;
@@ -21,15 +27,9 @@
 
     public async Task InitializeData()
     {
-        var oldCompanyIds = CompanyIds.ToList();
         CurrentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
 
         var getAllCompanyIdsQuery = new GetAllCompanyIdsQuery();
         CompanyIds = await Mediator.Send(getAllCompanyIdsQuery);
-
-        // if (!oldCompanyIds.All(companyId => CompanyIds.Contains(companyId)) || !CompanyIds.All(companyId => oldCompanyIds.Contains(companyId)))
-        // {
-        //     StateHasChanged();
-        // }
     }
 }
