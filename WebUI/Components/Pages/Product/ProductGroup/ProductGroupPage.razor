@@ -1,23 +1,33 @@
-
 @page "/productGroup"
+@implements IMainPage
 @using Application.DTO.Response
 @using WebUI.Utilities
 @using Application.Service.Queries
-<ProductGroup ProductGroupIds="ProductGroupIds"
-      CurrentStaff="CurrentStaff" />
+
+<CascadingValue Name="MainPage" Value="MainPage">
+    <CascadingValue Name="PageComponents" Value="PageComponents">
+        <ProductGroup ProductGroupIds="ProductGroupIds" CurrentStaff="CurrentStaff"/>
+    </CascadingValue>
+</CascadingValue>
 
 @code {
+    private IMainPage MainPage => this;
+    private List<IPageComponent> PageComponents = [];
+
     private List<Guid> ProductGroupIds { get; set; } = new List<Guid>();
     private GetStaffResponseDTO CurrentStaff { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+        await InitializeData();
+    }
+    
+    public async Task InitializeData()
+    {
         CurrentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
 
         var getAllProductGroupIdsByCompanyIdQuery = new GetAllProductGroupIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         ProductGroupIds = await Mediator.Send(getAllProductGroupIdsByCompanyIdQuery);
     }
 }
-
-    

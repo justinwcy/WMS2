@@ -1,5 +1,6 @@
 
 @inject IDialogService Dialog
+@implements IPageComponent
 @using Application.Service.Queries
 @using WebUI.Components.Models
 @using Application.Service.Commands
@@ -115,6 +116,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 </MudTable>
 
 @code {
+
+    [CascadingParameter(Name = "MainPage")]
+    public IMainPage MainPage { get; set; }
+    
+    [CascadingParameter(Name = "PageComponents")]
+    public List<IPageComponent> PageComponents { get; set; }
+
     [Parameter]
     public List<Guid> CustomerIds { get; set; } = new List<Guid>();
     public List<CustomerModel> CustomerModels { get; set; } = new List<CustomerModel>();
@@ -138,33 +146,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             return;
         }
 
-
-        // check to make sure all parameters are set before running
-        if (CurrentStaff == null || !CustomerIds.Any())
-        {
-            return;
-        }
-
         _loading = true;
         await base.OnParametersSetAsync();
-
-        foreach (var customerId in CustomerIds)
+        var success = await FetchData();
+        if (!PageComponents.Contains(this))
         {
-            var getCustomerByIdQuery = new GetCustomerByIdQuery(customerId);
-            var customerDTO = await Mediator.Send(getCustomerByIdQuery);
-
-            var customerModel = new CustomerModel()
-            {
-                Id = customerDTO.Id,
-                Address = customerDTO.Address,
-                Email = customerDTO.Email,
-                FirstName = customerDTO.FirstName,
-                LastName = customerDTO.LastName,
-                CustomerOrderIds = customerDTO.CustomerOrderIds,
-            };
-
-            CustomerModels.Add(customerModel);
+            PageComponents.Add(this);
         }
+
         _loading = false;
     }
 
@@ -194,6 +183,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             if (result.Success)
             {
+                CustomerIds.Remove(customerModel.Id);
                 CustomerModels.Remove(customerModel);
             }
 
@@ -273,6 +263,28 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             StateHasChanged();
             SnackBar.Add($"{customerModelCreated.FirstName} {customerModelCreated.LastName} created");
         }
+    }
+
+    public async Task<bool> FetchData()
+    {
+        foreach (var customerId in CustomerIds)
+        {
+            var getCustomerByIdQuery = new GetCustomerByIdQuery(customerId);
+            var customerDTO = await Mediator.Send(getCustomerByIdQuery);
+
+            var customerModel = new CustomerModel()
+                {
+                    Id = customerDTO.Id,
+                    Address = customerDTO.Address,
+                    Email = customerDTO.Email,
+                    FirstName = customerDTO.FirstName,
+                    LastName = customerDTO.LastName,
+                    CustomerOrderIds = customerDTO.CustomerOrderIds,
+                };
+
+            CustomerModels.Add(customerModel);
+        }
+        return true;
     }
 }
 

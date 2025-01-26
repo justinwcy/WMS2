@@ -1,4 +1,5 @@
 @inject IDialogService Dialog
+@implements IPageComponent
 @using Application.Service.Queries
 @using WebUI.Components.Models
 @using Application.Service.Commands
@@ -127,6 +128,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 </MudTable>
 
 @code {
+
+    [CascadingParameter(Name = "MainPage")]
+    public IMainPage MainPage { get; set; }
+    
+    [CascadingParameter(Name = "PageComponents")]
+    public List<IPageComponent> PageComponents { get; set; }
+
     [Parameter]
     public List<Guid> StaffIds { get; set; } = new List<Guid>();
     public List<StaffModel> StaffModels { get; set; } = new List<StaffModel>();
@@ -151,26 +159,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         }
 
         _loading = true;
-        await base.OnParametersSetAsync();
-
-        foreach (var staffId in StaffIds)
+        await base.OnParametersSetAsync(); 
+        var success = await FetchData();
+        if (!PageComponents.Contains(this))
         {
-            var getStaffByIdQuery = new GetStaffByIdQuery(staffId);
-            var staffDTO = await Mediator.Send(getStaffByIdQuery);
-
-            var staffModel = new StaffModel()
-            {
-                Id = staffDTO.Id,
-                CompanyId = staffDTO.CompanyId,
-                FirstName = staffDTO.FirstName,
-                LastName = staffDTO.LastName,
-                Email = staffDTO.Email,
-                RolesString = string.Join(", ", staffDTO.Roles),
-                ZoneIds = staffDTO.ZoneIds
-            };
-
-            StaffModels.Add(staffModel);
+            PageComponents.Add(this);
         }
+
         _loading = false;
     }
 
@@ -200,6 +195,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             if (result.Success)
             {
+                StaffIds.Remove(staffModel.Id);
                 StaffModels.Remove(staffModel);
             }
 
@@ -283,6 +279,28 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             SnackBar.Add($"{staffModelCreated.FirstName} {staffModelCreated.LastName} created");
         }
     }
+
+    public async Task<bool> FetchData()
+    {
+        foreach (var staffId in StaffIds)
+        {
+            var getStaffByIdQuery = new GetStaffByIdQuery(staffId);
+            var staffDTO = await Mediator.Send(getStaffByIdQuery);
+
+            var staffModel = new StaffModel()
+            {
+                Id = staffDTO.Id,
+                CompanyId = staffDTO.CompanyId,
+                FirstName = staffDTO.FirstName,
+                LastName = staffDTO.LastName,
+                Email = staffDTO.Email,
+                RolesString = string.Join(", ", staffDTO.Roles),
+                ZoneIds = staffDTO.ZoneIds
+            };
+
+            StaffModels.Add(staffModel);
+        }
+        return true;
+    }
 }
 
-    

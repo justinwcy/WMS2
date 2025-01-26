@@ -1,4 +1,5 @@
 ﻿@inject IDialogService Dialog
+@implements IPageComponent
 @using Application.Service.Queries
 @using WebUI.Components.Models
 @using Application.Service.Commands
@@ -114,6 +115,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 </MudTable>
 
 @code {
+
+    [CascadingParameter(Name = "MainPage")]
+    public IMainPage MainPage { get; set; }
+    
+    [CascadingParameter(Name = "PageComponents")]
+    public List<IPageComponent> PageComponents { get; set; }
+
     [Parameter]
     public List<Guid> ShopIds { get; set; } = new List<Guid>();
     public List<ShopModel> ShopModels { get; set; } = new List<ShopModel>();
@@ -137,33 +145,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             return;
         }
 
-
-        // check to make sure all parameters are set before running
-        if (CurrentStaff == null || !ShopIds.Any())
-        {
-            return;
-        }
-
         _loading = true;
         await base.OnParametersSetAsync();
-
-        foreach (var shopId in ShopIds)
+        var success = await FetchData();
+        if (!PageComponents.Contains(this))
         {
-            var getShopByIdQuery = new GetShopByIdQuery(shopId);
-            var shopDTO = await Mediator.Send(getShopByIdQuery);
-
-            var shopModel = new ShopModel()
-            {
-                ProductIds = shopDTO.ProductIds,
-                Platform = shopDTO.Platform,
-                Address = shopDTO.Address,
-                Id = shopDTO.Id,
-                Name = shopDTO.Name,
-                Website = shopDTO.Website
-            };
-
-            ShopModels.Add(shopModel);
+            PageComponents.Add(this);
         }
+
         _loading = false;
     }
 
@@ -193,6 +182,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             if (result.Success)
             {
+                ShopIds.Remove(shopModel.Id);
                 ShopModels.Remove(shopModel);
             }
 
@@ -271,5 +261,27 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             StateHasChanged();
             SnackBar.Add($"{shopModelCreated.Name} created");
         }
+    }
+
+    public async Task<bool> FetchData()
+    {
+        foreach (var shopId in ShopIds)
+        {
+            var getShopByIdQuery = new GetShopByIdQuery(shopId);
+            var shopDTO = await Mediator.Send(getShopByIdQuery);
+
+            var shopModel = new ShopModel()
+                {
+                    ProductIds = shopDTO.ProductIds,
+                    Platform = shopDTO.Platform,
+                    Address = shopDTO.Address,
+                    Id = shopDTO.Id,
+                    Name = shopDTO.Name,
+                    Website = shopDTO.Website
+                };
+
+            ShopModels.Add(shopModel);
+        }
+        return true;
     }
 }

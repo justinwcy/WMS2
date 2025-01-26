@@ -1,4 +1,5 @@
 @inject IDialogService Dialog
+@implements IPageComponent
 @using System.Reflection
 @using Application.Constants
 @using Application.Service.Queries
@@ -134,6 +135,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 </MudTable>
 
 @code {
+
+    [CascadingParameter(Name = "MainPage")]
+    public IMainPage MainPage { get; set; }
+    
+    [CascadingParameter(Name = "PageComponents")]
+    public List<IPageComponent> PageComponents { get; set; }
+
     private readonly Variant _defaultVariant = Theme.DefaultInputVariant();
 
     [Parameter]
@@ -172,76 +180,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             return;
         }
 
-
-        // check to make sure all parameters are set before running
-        if (CurrentStaff == null || !IncomingOrderProductIds.Any())
-        {
-            return;
-        }
-
         _loading = true;
         await base.OnParametersSetAsync();
-
-        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
-
-        foreach (var productId in productIds)
+        var success = await FetchData();
+        if (!PageComponents.Contains(this))
         {
-            var getProductByIdQuery = new GetProductByIdQuery(productId);
-            var productDTO = await Mediator.Send(getProductByIdQuery);
-
-            var productModel = new ProductModel()
-            {
-                Id = productDTO.Id,
-                Name = productDTO.Name,
-                Description = productDTO.Description,
-                Height = productDTO.Height,
-                Length = productDTO.Length,
-                Price = productDTO.Price,
-                ProductGroupIds = productDTO.ProductGroupIds,
-                ShopIds = productDTO.ShopIds,
-                Sku = productDTO.Sku,
-                Tag = productDTO.Tag,
-                Weight = productDTO.Weight,
-                Width = productDTO.Width,
-            };
-            _allProductModels.Add(productModel);
+            PageComponents.Add(this);
         }
 
-        foreach (var incomingOrderProductId in IncomingOrderProductIds)
-        {
-            var getIncomingOrderProductByIdQuery = new GetIncomingOrderProductByIdQuery(incomingOrderProductId);
-            var incomingOrderProductDTO = await Mediator.Send(getIncomingOrderProductByIdQuery);
-
-            var incomingOrderProductModel = new IncomingOrderProductModel()
-            {
-                Id = incomingOrderProductDTO.Id,
-                ProductId = incomingOrderProductDTO.ProductId,
-                IncomingOrderId = incomingOrderProductDTO.IncomingOrderId,
-                Quantity = incomingOrderProductDTO.Quantity,
-                Status = incomingOrderProductDTO.Status,
-            };
-
-            IncomingOrderProductModels.Add(incomingOrderProductModel);
-        }
-
-        var uniqueIncomingOrders = IncomingOrderProductModels
-            .GroupBy(incomingOrderProductModel => incomingOrderProductModel.IncomingOrderId)
-            .Select(x => x.Key)
-            .ToList();
-
-        if (uniqueIncomingOrders.Count != 1)
-        {
-            throw new Exception("Incoming orders passed is not unique");
-        }
-        else
-        {
-            _incomingOrderId = uniqueIncomingOrders.First();
-            var getIncomingOrderByIdQuery = new GetIncomingOrderByIdQuery(_incomingOrderId);
-            var incomingOrderDTO = await Mediator.Send(getIncomingOrderByIdQuery);
-
-            _incomingOrder = incomingOrderDTO;
-        }
         _loading = false;
     }
 
@@ -265,6 +211,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             if (result.Success)
             {
+                IncomingOrderProductIds.Remove(incomingOrderProductModel.Id);
                 IncomingOrderProductModels.Remove(incomingOrderProductModel);
             }
 
@@ -342,6 +289,71 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             StateHasChanged();
             SnackBar.Add("Product created in order");
         }
+    }
+
+    public async Task<bool> FetchData()
+    {
+        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
+
+        foreach (var productId in productIds)
+        {
+            var getProductByIdQuery = new GetProductByIdQuery(productId);
+            var productDTO = await Mediator.Send(getProductByIdQuery);
+
+            var productModel = new ProductModel()
+                {
+                    Id = productDTO.Id,
+                    Name = productDTO.Name,
+                    Description = productDTO.Description,
+                    Height = productDTO.Height,
+                    Length = productDTO.Length,
+                    Price = productDTO.Price,
+                    ProductGroupIds = productDTO.ProductGroupIds,
+                    ShopIds = productDTO.ShopIds,
+                    Sku = productDTO.Sku,
+                    Tag = productDTO.Tag,
+                    Weight = productDTO.Weight,
+                    Width = productDTO.Width,
+                };
+            _allProductModels.Add(productModel);
+        }
+
+        foreach (var incomingOrderProductId in IncomingOrderProductIds)
+        {
+            var getIncomingOrderProductByIdQuery = new GetIncomingOrderProductByIdQuery(incomingOrderProductId);
+            var incomingOrderProductDTO = await Mediator.Send(getIncomingOrderProductByIdQuery);
+
+            var incomingOrderProductModel = new IncomingOrderProductModel()
+                {
+                    Id = incomingOrderProductDTO.Id,
+                    ProductId = incomingOrderProductDTO.ProductId,
+                    IncomingOrderId = incomingOrderProductDTO.IncomingOrderId,
+                    Quantity = incomingOrderProductDTO.Quantity,
+                    Status = incomingOrderProductDTO.Status,
+                };
+
+            IncomingOrderProductModels.Add(incomingOrderProductModel);
+        }
+
+        var uniqueIncomingOrders = IncomingOrderProductModels
+            .GroupBy(incomingOrderProductModel => incomingOrderProductModel.IncomingOrderId)
+            .Select(x => x.Key)
+            .ToList();
+
+        if (uniqueIncomingOrders.Count != 1)
+        {
+            throw new Exception("Incoming orders passed is not unique");
+        }
+        else
+        {
+            _incomingOrderId = uniqueIncomingOrders.First();
+            var getIncomingOrderByIdQuery = new GetIncomingOrderByIdQuery(_incomingOrderId);
+            var incomingOrderDTO = await Mediator.Send(getIncomingOrderByIdQuery);
+
+            _incomingOrder = incomingOrderDTO;
+        }
+        return true;
     }
 }
 

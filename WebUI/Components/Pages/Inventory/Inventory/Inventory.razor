@@ -1,4 +1,5 @@
 @inject IDialogService Dialog
+@implements IPageComponent
 @using Application.Service.Queries
 @using WebUI.Components.Models
 @using Application.Service.Commands
@@ -115,6 +116,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 </MudTable>
 
 @code {
+
+    [CascadingParameter(Name = "MainPage")]
+    public IMainPage MainPage { get; set; }
+    
+    [CascadingParameter(Name = "PageComponents")]
+    public List<IPageComponent> PageComponents { get; set; }
+
     [Parameter]
     public List<Guid> InventoryIds { get; set; } = new List<Guid>();
     public List<InventoryModel> InventoryModels { get; set; } = new List<InventoryModel>();
@@ -141,57 +149,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             return;
         }
 
-
-        // check to make sure all parameters are set before running
-        if (CurrentStaff == null || !InventoryIds.Any())
-        {
-            return;
-        }
-
         _loading = true;
         await base.OnParametersSetAsync();
-
-        foreach (var inventoryId in InventoryIds)
+        var success = await FetchData();
+        if (!PageComponents.Contains(this))
         {
-            var getInventoryByIdQuery = new GetInventoryByIdQuery(inventoryId);
-            var inventoryDTO = await Mediator.Send(getInventoryByIdQuery);
-
-            var inventoryModel = new InventoryModel()
-            {
-                Id = inventoryDTO.Id,
-                Quantity = inventoryDTO.Quantity,
-                DaysLeadTime = inventoryDTO.DaysLeadTime,
-                ProductId = inventoryDTO.ProductId,
-            };
-
-            InventoryModels.Add(inventoryModel);
+            PageComponents.Add(this);
         }
 
-        // to get all products
-        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
-        foreach (var productId in productIds)
-        {
-            var getProductByIdQuery = new GetProductByIdQuery(productId);
-            var productDTO = await Mediator.Send(getProductByIdQuery);
-
-            var productModel = new ProductModel()
-                {
-                    Id = productDTO.Id,
-                    Name = productDTO.Name,
-                    Description = productDTO.Description,
-                    Height = productDTO.Height,
-                    Length = productDTO.Length,
-                    Price = productDTO.Price,
-                    ProductGroupIds = productDTO.ProductGroupIds,
-                    ShopIds = productDTO.ShopIds,
-                    Sku = productDTO.Sku,
-                    Tag = productDTO.Tag,
-                    Weight = productDTO.Weight,
-                    Width = productDTO.Width,
-                };
-            _allProductModels.Add(productModel);
-        }
         _loading = false;
     }
 
@@ -217,6 +182,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             if (result.Success)
             {
+                InventoryIds.Remove(inventoryModel.Id);
                 InventoryModels.Remove(inventoryModel);
             }
 
@@ -289,6 +255,52 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             StateHasChanged();
             SnackBar.Add($"Inventory item created");
         }
+    }
+
+    public async Task<bool> FetchData()
+    {
+        foreach (var inventoryId in InventoryIds)
+        {
+            var getInventoryByIdQuery = new GetInventoryByIdQuery(inventoryId);
+            var inventoryDTO = await Mediator.Send(getInventoryByIdQuery);
+
+            var inventoryModel = new InventoryModel()
+            {
+                Id = inventoryDTO.Id,
+                Quantity = inventoryDTO.Quantity,
+                DaysLeadTime = inventoryDTO.DaysLeadTime,
+                ProductId = inventoryDTO.ProductId,
+            };
+
+            InventoryModels.Add(inventoryModel);
+        }
+
+        // to get all products
+        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
+        foreach (var productId in productIds)
+        {
+            var getProductByIdQuery = new GetProductByIdQuery(productId);
+            var productDTO = await Mediator.Send(getProductByIdQuery);
+
+            var productModel = new ProductModel()
+            {
+                Id = productDTO.Id,
+                Name = productDTO.Name,
+                Description = productDTO.Description,
+                Height = productDTO.Height,
+                Length = productDTO.Length,
+                Price = productDTO.Price,
+                ProductGroupIds = productDTO.ProductGroupIds,
+                ShopIds = productDTO.ShopIds,
+                Sku = productDTO.Sku,
+                Tag = productDTO.Tag,
+                Weight = productDTO.Weight,
+                Width = productDTO.Width,
+            };
+            _allProductModels.Add(productModel);
+        }
+        return true;
     }
 }
 

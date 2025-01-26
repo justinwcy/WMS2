@@ -1,4 +1,5 @@
 @inject IDialogService Dialog
+@implements IPageComponent
 @using System.Reflection
 @using Application.Constants
 @using Application.Service.Queries
@@ -139,6 +140,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 </MudTable>
 
 @code {
+
+    [CascadingParameter(Name = "MainPage")]
+    public IMainPage MainPage { get; set; }
+    
+    [CascadingParameter(Name = "PageComponents")]
+    public List<IPageComponent> PageComponents { get; set; }
+
     [Parameter]
     public List<Guid> CustomerOrderDetailIds { get; set; } = new List<Guid>();
     public List<CustomerOrderDetailModel> CustomerOrderDetailModels { get; set; } = new List<CustomerOrderDetailModel>();
@@ -174,59 +182,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             return;
         }
 
-
-        // check to make sure all parameters are set before running
-        if (CurrentStaff == null || !CustomerOrderDetailIds.Any())
-        {
-            return;
-        }
-
         _loading = true;
         await base.OnParametersSetAsync();
-
-        foreach (var customerOrderDetailId in CustomerOrderDetailIds)
+        var success = await FetchData();
+        if (!PageComponents.Contains(this))
         {
-            var getCustomerOrderDetailByIdQuery = new GetCustomerOrderDetailByIdQuery(customerOrderDetailId);
-            var customerOrderDetailDTO = await Mediator.Send(getCustomerOrderDetailByIdQuery);
-
-            var customerOrderDetailModel = new CustomerOrderDetailModel()
-            {
-                Id = customerOrderDetailDTO.Id,
-                Status = customerOrderDetailDTO.Status,
-                CustomerOrderId = customerOrderDetailDTO.CustomerOrderId,
-                ProductId = customerOrderDetailDTO.ProductId,
-                Quantity = customerOrderDetailDTO.Quantity
-            };
-
-            CustomerOrderDetailModels.Add(customerOrderDetailModel);
+            PageComponents.Add(this);
         }
 
-
-        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
-
-        foreach (var productId in productIds)
-        {
-            var getProductByIdQuery = new GetProductByIdQuery(productId);
-            var productDTO = await Mediator.Send(getProductByIdQuery);
-
-            var productModel = new ProductModel()
-                {
-                    Id = productDTO.Id,
-                    Name = productDTO.Name,
-                    Description = productDTO.Description,
-                    Height = productDTO.Height,
-                    Length = productDTO.Length,
-                    Price = productDTO.Price,
-                    ProductGroupIds = productDTO.ProductGroupIds,
-                    ShopIds = productDTO.ShopIds,
-                    Sku = productDTO.Sku,
-                    Tag = productDTO.Tag,
-                    Weight = productDTO.Weight,
-                    Width = productDTO.Width,
-                };
-            _allProductModels.Add(productModel);
-        }
         _loading = false;
     }
 
@@ -252,6 +215,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             if (result.Success)
             {
+                CustomerOrderDetailIds.Remove(customerOrderDetailModel.Id);
                 CustomerOrderDetailModels.Remove(customerOrderDetailModel);
             }
 
@@ -326,6 +290,54 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             StateHasChanged();
             SnackBar.Add($"Customer Order Detail created");
         }
+    }
+
+    public async Task<bool> FetchData()
+    {
+        foreach (var customerOrderDetailId in CustomerOrderDetailIds)
+        {
+            var getCustomerOrderDetailByIdQuery = new GetCustomerOrderDetailByIdQuery(customerOrderDetailId);
+            var customerOrderDetailDTO = await Mediator.Send(getCustomerOrderDetailByIdQuery);
+
+            var customerOrderDetailModel = new CustomerOrderDetailModel()
+            {
+                Id = customerOrderDetailDTO.Id,
+                Status = customerOrderDetailDTO.Status,
+                CustomerOrderId = customerOrderDetailDTO.CustomerOrderId,
+                ProductId = customerOrderDetailDTO.ProductId,
+                Quantity = customerOrderDetailDTO.Quantity
+            };
+
+            CustomerOrderDetailModels.Add(customerOrderDetailModel);
+        }
+
+
+        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
+
+        foreach (var productId in productIds)
+        {
+            var getProductByIdQuery = new GetProductByIdQuery(productId);
+            var productDTO = await Mediator.Send(getProductByIdQuery);
+
+            var productModel = new ProductModel()
+            {
+                Id = productDTO.Id,
+                Name = productDTO.Name,
+                Description = productDTO.Description,
+                Height = productDTO.Height,
+                Length = productDTO.Length,
+                Price = productDTO.Price,
+                ProductGroupIds = productDTO.ProductGroupIds,
+                ShopIds = productDTO.ShopIds,
+                Sku = productDTO.Sku,
+                Tag = productDTO.Tag,
+                Weight = productDTO.Weight,
+                Width = productDTO.Width,
+            };
+            _allProductModels.Add(productModel);
+        }
+        return true;
     }
 }
 

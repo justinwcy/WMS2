@@ -1,5 +1,6 @@
 
 @inject IDialogService Dialog
+@implements IPageComponent
 @using Application.Service.Queries
 @using WebUI.Components.Models
 @using Application.Service.Commands
@@ -101,6 +102,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 </MudTable>
 
 @code {
+
+    [CascadingParameter(Name = "MainPage")]
+    public IMainPage MainPage { get; set; }
+    
+    [CascadingParameter(Name = "PageComponents")]
+    public List<IPageComponent> PageComponents { get; set; }
+
     [Parameter]
     public List<Guid> ProductGroupIds { get; set; } = new List<Guid>();
     public List<ProductGroupModel> ProductGroupModels { get; set; } = new List<ProductGroupModel>();
@@ -124,30 +132,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             return;
         }
 
-
-        // check to make sure all parameters are set before running
-        if (CurrentStaff == null || !ProductGroupIds.Any())
-        {
-            return;
-        }
-
         _loading = true;
         await base.OnParametersSetAsync();
-
-        foreach (var productGroupId in ProductGroupIds)
+        var success = await FetchData();
+        if (!PageComponents.Contains(this))
         {
-            var getProductGroupByIdQuery = new GetProductGroupByIdQuery(productGroupId);
-            var productGroupDTO = await Mediator.Send(getProductGroupByIdQuery);
-
-            var productGroupModel = new ProductGroupModel()
-            {
-                Description = productGroupDTO.Description,
-                Id = productGroupDTO.Id,
-                Name = productGroupDTO.Name,
-                ProductIds = productGroupDTO.ProductIds,
-            };
-            ProductGroupModels.Add(productGroupModel);
+            PageComponents.Add(this);
         }
+
         _loading = false;
     }
 
@@ -173,6 +165,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             if (result.Success)
             {
+                ProductGroupIds.Remove(productGroupModel.Id);
                 ProductGroupModels.Remove(productGroupModel);
             }
 
@@ -244,6 +237,25 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             StateHasChanged();
             SnackBar.Add($"{productGroupModelCreated.Name} created");
         }
+    }
+
+    public async Task<bool> FetchData()
+    {
+        foreach (var productGroupId in ProductGroupIds)
+        {
+            var getProductGroupByIdQuery = new GetProductGroupByIdQuery(productGroupId);
+            var productGroupDTO = await Mediator.Send(getProductGroupByIdQuery);
+
+            var productGroupModel = new ProductGroupModel()
+                {
+                    Description = productGroupDTO.Description,
+                    Id = productGroupDTO.Id,
+                    Name = productGroupDTO.Name,
+                    ProductIds = productGroupDTO.ProductIds,
+                };
+            ProductGroupModels.Add(productGroupModel);
+        }
+        return true;
     }
 }
 

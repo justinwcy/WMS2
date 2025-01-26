@@ -1,5 +1,6 @@
 
 @inject IDialogService Dialog
+@implements IPageComponent
 @using System.Reflection
 @using Application.Constants
 @using Application.Service.Queries
@@ -135,6 +136,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 </MudTable>
 
 @code {
+
+    [CascadingParameter(Name = "MainPage")]
+    public IMainPage MainPage { get; set; }
+    
+    [CascadingParameter(Name = "PageComponents")]
+    public List<IPageComponent> PageComponents { get; set; }
+
     [Parameter]
     public List<Guid> RefundOrderProductIds { get; set; } = new List<Guid>();
     public List<RefundOrderProductModel> RefundOrderProductModels { get; set; } = new List<RefundOrderProductModel>();
@@ -172,75 +180,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             return;
         }
 
-
-        // check to make sure all parameters are set before running
-        if (CurrentStaff == null || !RefundOrderProductIds.Any())
-        {
-            return;
-        }
-
         _loading = true;
         await base.OnParametersSetAsync();
+        var success = await FetchData();
+        if (!PageComponents.Contains(this))
+        {
+            PageComponents.Add(this);
+        }
         
-        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
-
-        foreach (var productId in productIds)
-        {
-            var getProductByIdQuery = new GetProductByIdQuery(productId);
-            var productDTO = await Mediator.Send(getProductByIdQuery);
-
-            var productModel = new ProductModel()
-            {
-                Id = productDTO.Id,
-                Name = productDTO.Name,
-                Description = productDTO.Description,
-                Height = productDTO.Height,
-                Length = productDTO.Length,
-                Price = productDTO.Price,
-                ProductGroupIds = productDTO.ProductGroupIds,
-                ShopIds = productDTO.ShopIds,
-                Sku = productDTO.Sku,
-                Tag = productDTO.Tag,
-                Weight = productDTO.Weight,
-                Width = productDTO.Width,
-            };
-            _allProductModels.Add(productModel);
-
-        }
-
-        foreach (var refundOrderProductId in RefundOrderProductIds)
-        {
-            var getRefundOrderProductByIdQuery = new GetRefundOrderProductByIdQuery(refundOrderProductId);
-            var refundOrderProductDTO = await Mediator.Send(getRefundOrderProductByIdQuery);
-
-            var refundOrderProductModel = new RefundOrderProductModel()
-            {
-                Id = refundOrderProductDTO.Id,
-                ProductId = refundOrderProductDTO.ProductId,
-                RefundOrderId = refundOrderProductDTO.RefundOrderId,
-                Quantity = refundOrderProductDTO.Quantity,
-                Status = refundOrderProductDTO.Status,
-            };
-
-            RefundOrderProductModels.Add(refundOrderProductModel);
-        }
-
-        var uniqueIncomingOrders = RefundOrderProductModels
-            .GroupBy(incomingOrderProductModel => incomingOrderProductModel.RefundOrderId)
-            .Select(x => x.Key)
-            .ToList();
-
-        if (uniqueIncomingOrders.Count != 1)
-        {
-            throw new Exception("Refund orders passed is not unique");
-        }
-        else
-        {
-            _refundOrderId = uniqueIncomingOrders.First();
-            var getRefundOrderByIdQuery = new GetRefundOrderByIdQuery(_refundOrderId);
-            _refundOrder = await Mediator.Send(getRefundOrderByIdQuery);
-        }
         _loading = false;
     }
 
@@ -264,6 +211,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             if (result.Success)
             {
+                RefundOrderProductIds.Remove(refundOrderProductModel.Id);
                 RefundOrderProductModels.Remove(refundOrderProductModel);
             }
 
@@ -341,6 +289,70 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             StateHasChanged();
             SnackBar.Add($"Refund order created");
         }
+    }
+
+    public async Task<bool> FetchData()
+    {
+        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
+
+        foreach (var productId in productIds)
+        {
+            var getProductByIdQuery = new GetProductByIdQuery(productId);
+            var productDTO = await Mediator.Send(getProductByIdQuery);
+
+            var productModel = new ProductModel()
+                {
+                    Id = productDTO.Id,
+                    Name = productDTO.Name,
+                    Description = productDTO.Description,
+                    Height = productDTO.Height,
+                    Length = productDTO.Length,
+                    Price = productDTO.Price,
+                    ProductGroupIds = productDTO.ProductGroupIds,
+                    ShopIds = productDTO.ShopIds,
+                    Sku = productDTO.Sku,
+                    Tag = productDTO.Tag,
+                    Weight = productDTO.Weight,
+                    Width = productDTO.Width,
+                };
+            _allProductModels.Add(productModel);
+
+        }
+
+        foreach (var refundOrderProductId in RefundOrderProductIds)
+        {
+            var getRefundOrderProductByIdQuery = new GetRefundOrderProductByIdQuery(refundOrderProductId);
+            var refundOrderProductDTO = await Mediator.Send(getRefundOrderProductByIdQuery);
+
+            var refundOrderProductModel = new RefundOrderProductModel()
+                {
+                    Id = refundOrderProductDTO.Id,
+                    ProductId = refundOrderProductDTO.ProductId,
+                    RefundOrderId = refundOrderProductDTO.RefundOrderId,
+                    Quantity = refundOrderProductDTO.Quantity,
+                    Status = refundOrderProductDTO.Status,
+                };
+
+            RefundOrderProductModels.Add(refundOrderProductModel);
+        }
+
+        var uniqueIncomingOrders = RefundOrderProductModels
+            .GroupBy(incomingOrderProductModel => incomingOrderProductModel.RefundOrderId)
+            .Select(x => x.Key)
+            .ToList();
+
+        if (uniqueIncomingOrders.Count != 1)
+        {
+            throw new Exception("Refund orders passed is not unique");
+        }
+        else
+        {
+            _refundOrderId = uniqueIncomingOrders.First();
+            var getRefundOrderByIdQuery = new GetRefundOrderByIdQuery(_refundOrderId);
+            _refundOrder = await Mediator.Send(getRefundOrderByIdQuery);
+        }
+        return true;
     }
 }
 

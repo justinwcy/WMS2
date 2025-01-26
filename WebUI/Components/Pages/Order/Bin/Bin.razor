@@ -1,4 +1,5 @@
 @inject IDialogService Dialog
+@implements IPageComponent
 @using Application.Service.Queries
 @using WebUI.Components.Models
 @using Application.Service.Commands
@@ -93,6 +94,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 </MudTable>
 
 @code {
+
+    [CascadingParameter(Name = "MainPage")]
+    public IMainPage MainPage { get; set; }
+    
+    [CascadingParameter(Name = "PageComponents")]
+    public List<IPageComponent> PageComponents { get; set; }
+
     [Parameter]
     public List<Guid> BinIds { get; set; } = new List<Guid>();
     public List<BinModel> BinModels { get; set; } = new List<BinModel>();
@@ -116,30 +124,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             return;
         }
 
-
-        // check to make sure all parameters are set before running
-        if (CurrentStaff == null || !BinIds.Any())
-        {
-            return;
-        }
-
         _loading = true;
         await base.OnParametersSetAsync();
-
-        foreach (var binId in BinIds)
+        var success = await FetchData();
+        if (!PageComponents.Contains(this))
         {
-            var getBinByIdQuery = new GetBinByIdQuery(binId);
-            var binDTO = await Mediator.Send(getBinByIdQuery);
-
-            var binModel = new BinModel()
-            {
-                Id = binDTO.Id,
-                Name = binDTO.Name,
-                CustomerOrderIds = binDTO.CustomerOrderIds
-            };
-
-            BinModels.Add(binModel);
+            PageComponents.Add(this);
         }
+
         _loading = false;
     }
 
@@ -163,6 +155,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             if (result.Success)
             {
+                BinIds.Remove(binModel.Id);
                 BinModels.Remove(binModel);
             }
 
@@ -232,6 +225,25 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             StateHasChanged();
             SnackBar.Add($"{binModelCreated.Name} created");
         }
+    }
+
+    public async Task<bool> FetchData()
+    {
+        foreach (var binId in BinIds)
+        {
+            var getBinByIdQuery = new GetBinByIdQuery(binId);
+            var binDTO = await Mediator.Send(getBinByIdQuery);
+
+            var binModel = new BinModel()
+                {
+                    Id = binDTO.Id,
+                    Name = binDTO.Name,
+                    CustomerOrderIds = binDTO.CustomerOrderIds
+                };
+
+            BinModels.Add(binModel);
+        }
+        return true;
     }
 }
 

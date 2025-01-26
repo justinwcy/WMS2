@@ -25,12 +25,12 @@ namespace WebUI.Utilities
 {
     public static class ViewDialogUtilities
     {
-        public static async Task OpenCompanyDialogAsync(Guid companyId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenCompanyDialogAsync(Guid companyId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
-            await OpenCompanyDialogAsync([companyId], currentStaff, dialogService);
+            return await OpenCompanyDialogAsync([companyId], currentStaff, dialogService);
         }
 
-        public static async Task OpenCompanyDialogAsync(List<Guid> companyIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenCompanyDialogAsync(List<Guid> companyIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
             var parameters = new DialogParameters<CompanyDialog>()
             {
@@ -40,14 +40,15 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<CompanyDialog>("Company", parameters, options);
+            return await dialog.Result;
         }
 
-        public static async Task OpenStaffDialogAsync(Guid staffId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenStaffDialogAsync(Guid staffId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
-            await OpenStaffDialogAsync([staffId], currentStaff, dialogService);
+            return await OpenStaffDialogAsync([staffId], currentStaff, dialogService);
         }
 
-        public static async Task OpenStaffDialogAsync(List<Guid> staffIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenStaffDialogAsync(List<Guid> staffIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
             var parameters = new DialogParameters<StaffDialog>()
             {
@@ -57,14 +58,15 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<StaffDialog>("Staff", parameters, options);
+            return await dialog.Result;
         }
 
-        public static async Task OpenIncomingOrderDialogAsync(Guid incomingOrderId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenIncomingOrderDialogAsync(Guid incomingOrderId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
-            await OpenIncomingOrderDialogAsync([incomingOrderId], currentStaff, dialogService);
+            return await OpenIncomingOrderDialogAsync([incomingOrderId], currentStaff, dialogService);
         }
 
-        public static async Task OpenIncomingOrderDialogAsync(List<Guid> incomingOrderIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenIncomingOrderDialogAsync(List<Guid> incomingOrderIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
             var parameters = new DialogParameters<IncomingOrderDialog>()
             {
@@ -74,14 +76,15 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<IncomingOrderDialog>("IncomingOrder", parameters, options);
+            return await dialog.Result;
         }
 
-        public static async Task OpenIncomingOrderProductDialogAsync(Guid incomingOrderProductId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenIncomingOrderProductDialogAsync(Guid incomingOrderProductId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
-            await OpenIncomingOrderProductDialogAsync([incomingOrderProductId], currentStaff, dialogService);
+            return await OpenIncomingOrderProductDialogAsync([incomingOrderProductId], currentStaff, dialogService);
         }
 
-        public static async Task OpenIncomingOrderProductDialogAsync(List<Guid> incomingOrderProductIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenIncomingOrderProductDialogAsync(List<Guid> incomingOrderProductIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
             var parameters = new DialogParameters<IncomingOrderProductDialog>()
             {
@@ -91,14 +94,15 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<IncomingOrderProductDialog>("IncomingOrderProduct", parameters, options);
+            return await dialog.Result;
         }
 
-        public static async Task OpenVendorDialogAsync(Guid vendorId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenVendorDialogAsync(Guid vendorId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
-            await OpenVendorDialogAsync([vendorId], currentStaff, dialogService);
+            return await OpenVendorDialogAsync([vendorId], currentStaff, dialogService);
         }
 
-        public static async Task OpenVendorDialogAsync(List<Guid> vendorIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenVendorDialogAsync(List<Guid> vendorIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
             var parameters = new DialogParameters<VendorDialog>()
             {
@@ -108,14 +112,15 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<VendorDialog>("Vendor", parameters, options);
+            return await dialog.Result;
         }
 
-        public static async Task OpenInventoryDialogAsync(Guid inventoryId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenInventoryDialogAsync(Guid inventoryId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
-            await OpenInventoryDialogAsync([inventoryId], currentStaff, dialogService);
+            return await OpenInventoryDialogAsync([inventoryId], currentStaff, dialogService);
         }
 
-        public static async Task OpenInventoryDialogAsync(List<Guid> inventoryIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenInventoryDialogAsync(List<Guid> inventoryIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
             var parameters = new DialogParameters<InventoryDialog>()
             {
@@ -125,14 +130,15 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<InventoryDialog>("Inventory", parameters, options);
+            return await dialog.Result;
         }
 
-        public static async Task OpenRackDialogAsync(Guid rackId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenRackDialogAsync(Guid rackId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
-            await OpenRackDialogAsync([rackId], currentStaff, dialogService);
+            return await OpenRackDialogAsync([rackId], currentStaff, dialogService);
         }
 
-        public static async Task OpenRackDialogAsync(List<Guid> rackIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenRackDialogAsync(List<Guid> rackIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
             var parameters = new DialogParameters<RackDialog>()
             {
@@ -142,14 +148,15 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<RackDialog>("Rack", parameters, options);
+            return await dialog.Result;
         }
 
-        public static async Task OpenWarehouseDialogAsync(Guid warehouseId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenWarehouseDialogAsync(Guid warehouseId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
-            await OpenWarehouseDialogAsync([warehouseId], currentStaff, dialogService);
+            return await OpenWarehouseDialogAsync([warehouseId], currentStaff, dialogService);
         }
 
-        public static async Task OpenWarehouseDialogAsync(List<Guid> warehouseIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenWarehouseDialogAsync(List<Guid> warehouseIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
             var parameters = new DialogParameters<WarehouseDialog>()
             {
@@ -159,14 +166,15 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<WarehouseDialog>("Warehouse", parameters, options);
+            return await dialog.Result;
         }
 
-        public static async Task OpenZoneDialogAsync(Guid zoneId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenZoneDialogAsync(Guid zoneId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
-            await OpenZoneDialogAsync([zoneId], currentStaff, dialogService);
+            return await OpenZoneDialogAsync([zoneId], currentStaff, dialogService);
         }
 
-        public static async Task OpenZoneDialogAsync(List<Guid> zoneIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenZoneDialogAsync(List<Guid> zoneIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
             var parameters = new DialogParameters<ZoneDialog>()
             {
@@ -176,14 +184,15 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<ZoneDialog>("Zone", parameters, options);
+            return await dialog.Result;
         }
 
-        public static async Task OpenBinDialogAsync(Guid binId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenBinDialogAsync(Guid binId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
-            await OpenBinDialogAsync([binId], currentStaff, dialogService);
+            return await OpenBinDialogAsync([binId], currentStaff, dialogService);
         }
 
-        public static async Task OpenBinDialogAsync(List<Guid> binIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenBinDialogAsync(List<Guid> binIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
             var parameters = new DialogParameters<BinDialog>()
             {
@@ -193,14 +202,15 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<BinDialog>("Bin", parameters, options);
+            return await dialog.Result;
         }
 
-        public static async Task OpenCourierDialogAsync(Guid courierId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenCourierDialogAsync(Guid courierId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
-            await OpenCourierDialogAsync([courierId], currentStaff, dialogService);
+            return await OpenCourierDialogAsync([courierId], currentStaff, dialogService);
         }
 
-        public static async Task OpenCourierDialogAsync(List<Guid> courierIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenCourierDialogAsync(List<Guid> courierIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
             var parameters = new DialogParameters<CourierDialog>()
             {
@@ -210,14 +220,15 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<CourierDialog>("Courier", parameters, options);
+            return await dialog.Result;
         }
 
-        public static async Task OpenCustomerDialogAsync(Guid customerId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenCustomerDialogAsync(Guid customerId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
-            await OpenCustomerDialogAsync([customerId], currentStaff, dialogService);
+            return await OpenCustomerDialogAsync([customerId], currentStaff, dialogService);
         }
 
-        public static async Task OpenCustomerDialogAsync(List<Guid> customerIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenCustomerDialogAsync(List<Guid> customerIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
             var parameters = new DialogParameters<CustomerDialog>()
             {
@@ -227,14 +238,15 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<CustomerDialog>("Customer", parameters, options);
+            return await dialog.Result;
         }
 
-        public static async Task OpenCustomerOrderDialogAsync(Guid customerOrderId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenCustomerOrderDialogAsync(Guid customerOrderId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
-            await OpenCustomerOrderDialogAsync([customerOrderId], currentStaff, dialogService);
+            return await OpenCustomerOrderDialogAsync([customerOrderId], currentStaff, dialogService);
         }
 
-        public static async Task OpenCustomerOrderDialogAsync(List<Guid> customerOrderIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenCustomerOrderDialogAsync(List<Guid> customerOrderIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
             var parameters = new DialogParameters<CustomerOrderDialog>()
             {
@@ -244,14 +256,15 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<CustomerOrderDialog>("CustomerOrder", parameters, options);
+            return await dialog.Result;
         }
 
-        public static async Task OpenCustomerOrderDetailDialogAsync(Guid customerOrderDetailId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenCustomerOrderDetailDialogAsync(Guid customerOrderDetailId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
-            await OpenCustomerOrderDetailDialogAsync([customerOrderDetailId], currentStaff, dialogService);
+            return await OpenCustomerOrderDetailDialogAsync([customerOrderDetailId], currentStaff, dialogService);
         }
 
-        public static async Task OpenCustomerOrderDetailDialogAsync(List<Guid> customerOrderDetailIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenCustomerOrderDetailDialogAsync(List<Guid> customerOrderDetailIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
             var parameters = new DialogParameters<CustomerOrderDetailDialog>()
             {
@@ -261,14 +274,15 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<CustomerOrderDetailDialog>("CustomerOrderDetail", parameters, options);
+            return await dialog.Result;
         }
 
-        public static async Task OpenProductDialogAsync(Guid productId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenProductDialogAsync(Guid productId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
-            await OpenProductDialogAsync([productId], currentStaff, dialogService);
+            return await OpenProductDialogAsync([productId], currentStaff, dialogService);
         }
 
-        public static async Task OpenProductDialogAsync(List<Guid> productIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenProductDialogAsync(List<Guid> productIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
             var parameters = new DialogParameters<ProductDialog>()
             {
@@ -278,14 +292,15 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<ProductDialog>("Product", parameters, options);
+            return await dialog.Result;
         }
 
-        public static async Task OpenProductGroupDialogAsync(Guid productGroupId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenProductGroupDialogAsync(Guid productGroupId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
-            await OpenProductGroupDialogAsync([productGroupId], currentStaff, dialogService);
+            return await OpenProductGroupDialogAsync([productGroupId], currentStaff, dialogService);
         }
 
-        public static async Task OpenProductGroupDialogAsync(List<Guid> productGroupIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenProductGroupDialogAsync(List<Guid> productGroupIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
             var parameters = new DialogParameters<ProductGroupDialog>()
             {
@@ -295,14 +310,15 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<ProductGroupDialog>("ProductGroup", parameters, options);
+            return await dialog.Result;
         }
 
-        public static async Task OpenRefundOrderDialogAsync(Guid refundOrderId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenRefundOrderDialogAsync(Guid refundOrderId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
-            await OpenRefundOrderDialogAsync([refundOrderId], currentStaff, dialogService);
+            return await OpenRefundOrderDialogAsync([refundOrderId], currentStaff, dialogService);
         }
 
-        public static async Task OpenRefundOrderDialogAsync(List<Guid> refundOrderIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenRefundOrderDialogAsync(List<Guid> refundOrderIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
             var parameters = new DialogParameters<RefundOrderDialog>()
             {
@@ -312,14 +328,15 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<RefundOrderDialog>("RefundOrder", parameters, options);
+            return await dialog.Result;
         }
 
-        public static async Task OpenRefundOrderProductDialogAsync(Guid refundOrderProductId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenRefundOrderProductDialogAsync(Guid refundOrderProductId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
-            await OpenRefundOrderProductDialogAsync([refundOrderProductId], currentStaff, dialogService);
+            return await OpenRefundOrderProductDialogAsync([refundOrderProductId], currentStaff, dialogService);
         }
 
-        public static async Task OpenRefundOrderProductDialogAsync(List<Guid> refundOrderProductIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenRefundOrderProductDialogAsync(List<Guid> refundOrderProductIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
             var parameters = new DialogParameters<RefundOrderProductDialog>()
             {
@@ -329,14 +346,15 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<RefundOrderProductDialog>("RefundOrderProduct", parameters, options);
+            return await dialog.Result;
         }
 
-        public static async Task OpenShopDialogAsync(Guid shopId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenShopDialogAsync(Guid shopId, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
-            await OpenShopDialogAsync([shopId], currentStaff, dialogService);
+            return await OpenShopDialogAsync([shopId], currentStaff, dialogService);
         }
 
-        public static async Task OpenShopDialogAsync(List<Guid> shopIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
+        public static async Task<DialogResult?> OpenShopDialogAsync(List<Guid> shopIds, GetStaffResponseDTO currentStaff, IDialogService dialogService)
         {
             var parameters = new DialogParameters<ShopDialog>()
             {
@@ -346,6 +364,7 @@ namespace WebUI.Utilities
 
             var options = Theme.DefaultViewDialogOptions();
             var dialog = await dialogService.ShowAsync<ShopDialog>("Shop", parameters, options);
+            return await dialog.Result;
         }
     }
 }

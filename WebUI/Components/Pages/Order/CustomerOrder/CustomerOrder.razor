@@ -1,4 +1,5 @@
 @inject IDialogService Dialog
+@implements IPageComponent
 @using Application.Service.Queries
 @using WebUI.Components.Models
 @using Application.Service.Commands
@@ -218,6 +219,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 </MudTable>
 
 @code {
+
+    [CascadingParameter(Name = "MainPage")]
+    public IMainPage MainPage { get; set; }
+    
+    [CascadingParameter(Name = "PageComponents")]
+    public List<IPageComponent> PageComponents { get; set; }
+
     [Parameter]
     public List<Guid> CustomerOrderIds { get; set; } = new List<Guid>();
     public List<CustomerOrderModel> CustomerOrderModels { get; set; } = new List<CustomerOrderModel>();
@@ -246,85 +254,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             return;
         }
 
-
-        // check to make sure all parameters are set before running
-        if (CurrentStaff == null || !CustomerOrderIds.Any())
-        {
-            return;
-        }
-
         _loading = true;
         await base.OnParametersSetAsync();
-
-        foreach (var customerOrderId in CustomerOrderIds)
+        var success = await FetchData();
+        if (!PageComponents.Contains(this))
         {
-            var getCustomerOrderByIdQuery = new GetCustomerOrderByIdQuery(customerOrderId);
-            var customerOrderDTO = await Mediator.Send(getCustomerOrderByIdQuery);
-
-            var customerOrderModel = new CustomerOrderModel()
-            {
-                Id = customerOrderDTO.Id,
-                OrderAddress = customerOrderDTO.OrderAddress,
-                BinId = customerOrderDTO.BinId,
-                CourierId = customerOrderDTO.CourierId,
-                CustomerId = customerOrderDTO.CustomerId,
-                CustomerOrderDetailIds = customerOrderDTO.CustomerOrderDetailIds,
-                ExpectedArrivalDate = customerOrderDTO.ExpectedArrivalDate,
-                OrderCreationDate = customerOrderDTO.OrderCreationDate
-            };
-
-            CustomerOrderModels.Add(customerOrderModel);
+            PageComponents.Add(this);
         }
 
-        var getAllCustomerIdsByCompanyIdQuery = new GetAllCustomerIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var customerIds = await Mediator.Send(getAllCustomerIdsByCompanyIdQuery);
-        foreach (var customerId in customerIds)
-        {
-            var getCustomerByIdQuery = new GetCustomerByIdQuery(customerId);
-            var customerDTO = await Mediator.Send(getCustomerByIdQuery);
-            var customerModel = new CustomerModel()
-            {
-                Id = customerDTO.Id,
-                Address = customerDTO.Address,
-                CustomerOrderIds = customerDTO.CustomerOrderIds,
-                Email = customerDTO.Email,
-                FirstName = customerDTO.FirstName,
-                LastName = customerDTO.LastName,
-            };
-            _allCustomerModels.Add(customerModel);
-        }
-
-        var getAllBinIdsByCompanyIdQuery = new GetAllBinIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var binIds = await Mediator.Send(getAllBinIdsByCompanyIdQuery);
-        foreach (var binId in binIds)
-        {
-            var getBinByIdQuery = new GetBinByIdQuery(binId);
-            var binDTO = await Mediator.Send(getBinByIdQuery);
-            var binModel = new BinModel()
-            {
-                Id = binDTO.Id,
-                CustomerOrderIds = binDTO.CustomerOrderIds,
-                Name = binDTO.Name,
-            };
-            _allBinModels.Add(binModel);
-        }
-
-        var getAllCourierIdsByCompanyIdQuery = new GetAllCourierIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var courierIds = await Mediator.Send(getAllCourierIdsByCompanyIdQuery);
-        foreach (var courierId in courierIds)
-        {
-            var getCourierByIdQuery = new GetCourierByIdQuery(courierId);
-            var courierDTO = await Mediator.Send(getCourierByIdQuery);
-            var courierModel = new CourierModel()
-            {
-                Id = courierDTO.Id,
-                CustomerOrderIds = courierDTO.CustomerOrderIds,
-                Name = courierDTO.Name,
-                Remark = courierDTO.Remark,
-                Price = courierDTO.Price,
-            };
-            _allCourierModels.Add(courierModel);
-        }
         _loading = false;
     }
 
@@ -348,6 +285,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             if (result.Success)
             {
+                CustomerOrderIds.Remove(customerOrderModel.Id);
                 CustomerOrderModels.Remove(customerOrderModel);
             }
 
@@ -432,6 +370,81 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             StateHasChanged();
             SnackBar.Add($"Customer Order created");
         }
+    }
+
+    public async Task<bool> FetchData()
+    {
+
+        foreach (var customerOrderId in CustomerOrderIds)
+        {
+            var getCustomerOrderByIdQuery = new GetCustomerOrderByIdQuery(customerOrderId);
+            var customerOrderDTO = await Mediator.Send(getCustomerOrderByIdQuery);
+
+            var customerOrderModel = new CustomerOrderModel()
+                {
+                    Id = customerOrderDTO.Id,
+                    OrderAddress = customerOrderDTO.OrderAddress,
+                    BinId = customerOrderDTO.BinId,
+                    CourierId = customerOrderDTO.CourierId,
+                    CustomerId = customerOrderDTO.CustomerId,
+                    CustomerOrderDetailIds = customerOrderDTO.CustomerOrderDetailIds,
+                    ExpectedArrivalDate = customerOrderDTO.ExpectedArrivalDate,
+                    OrderCreationDate = customerOrderDTO.OrderCreationDate
+                };
+
+            CustomerOrderModels.Add(customerOrderModel);
+        }
+
+        var getAllCustomerIdsByCompanyIdQuery = new GetAllCustomerIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var customerIds = await Mediator.Send(getAllCustomerIdsByCompanyIdQuery);
+        foreach (var customerId in customerIds)
+        {
+            var getCustomerByIdQuery = new GetCustomerByIdQuery(customerId);
+            var customerDTO = await Mediator.Send(getCustomerByIdQuery);
+            var customerModel = new CustomerModel()
+                {
+                    Id = customerDTO.Id,
+                    Address = customerDTO.Address,
+                    CustomerOrderIds = customerDTO.CustomerOrderIds,
+                    Email = customerDTO.Email,
+                    FirstName = customerDTO.FirstName,
+                    LastName = customerDTO.LastName,
+                };
+            _allCustomerModels.Add(customerModel);
+        }
+
+        var getAllBinIdsByCompanyIdQuery = new GetAllBinIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var binIds = await Mediator.Send(getAllBinIdsByCompanyIdQuery);
+        foreach (var binId in binIds)
+        {
+            var getBinByIdQuery = new GetBinByIdQuery(binId);
+            var binDTO = await Mediator.Send(getBinByIdQuery);
+            var binModel = new BinModel()
+                {
+                    Id = binDTO.Id,
+                    CustomerOrderIds = binDTO.CustomerOrderIds,
+                    Name = binDTO.Name,
+                };
+            _allBinModels.Add(binModel);
+        }
+
+        var getAllCourierIdsByCompanyIdQuery = new GetAllCourierIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var courierIds = await Mediator.Send(getAllCourierIdsByCompanyIdQuery);
+        foreach (var courierId in courierIds)
+        {
+            var getCourierByIdQuery = new GetCourierByIdQuery(courierId);
+            var courierDTO = await Mediator.Send(getCourierByIdQuery);
+            var courierModel = new CourierModel()
+                {
+                    Id = courierDTO.Id,
+                    CustomerOrderIds = courierDTO.CustomerOrderIds,
+                    Name = courierDTO.Name,
+                    Remark = courierDTO.Remark,
+                    Price = courierDTO.Price,
+                };
+            _allCourierModels.Add(courierModel);
+        }
+        return true;
     }
 }
 

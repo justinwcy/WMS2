@@ -1,22 +1,33 @@
 @page "/customerOrder"
+@implements IMainPage
 @using Application.DTO.Response
 @using WebUI.Utilities
 @using Application.Service.Queries
-<CustomerOrder CustomerOrderIds="CustomerOrderIds"
-               CurrentStaff="CurrentStaff" />
+
+<CascadingValue Name="MainPage" Value="MainPage">
+    <CascadingValue Name="PageComponents" Value="PageComponents">
+        <CustomerOrder CustomerOrderIds="CustomerOrderIds" CurrentStaff="CurrentStaff"/>
+    </CascadingValue>
+</CascadingValue>
 
 @code {
+    private IMainPage MainPage => this;
+    private List<IPageComponent> PageComponents = [];
+
     private List<Guid> CustomerOrderIds { get; set; } = new List<Guid>();
     private GetStaffResponseDTO CurrentStaff { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+        await InitializeData();
+    }
+    
+    public async Task InitializeData()
+    {
         CurrentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
 
         var getAllCustomerOrderIdsByCompanyIdQuery = new GetAllCustomerOrderIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         CustomerOrderIds = await Mediator.Send(getAllCustomerOrderIdsByCompanyIdQuery);
     }
 }
-
-    

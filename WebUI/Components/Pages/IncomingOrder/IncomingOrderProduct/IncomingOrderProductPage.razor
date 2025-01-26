@@ -1,4 +1,4 @@
-@page "/bin"
+@page "/incomingOrderProduct"
 @implements IMainPage
 @using Application.DTO.Response
 @using WebUI.Utilities
@@ -6,7 +6,7 @@
 
 <CascadingValue Name="MainPage" Value="MainPage">
     <CascadingValue Name="PageComponents" Value="PageComponents">
-        <Bin BinIds="BinIds" CurrentStaff="CurrentStaff"/>
+        <IncomingOrderProduct IncomingOrderProductIds="IncomingOrderProductIds" CurrentStaff="CurrentStaff"/>
     </CascadingValue>
 </CascadingValue>
 
@@ -14,7 +14,7 @@
     private IMainPage MainPage => this;
     private List<IPageComponent> PageComponents = [];
 
-    private List<Guid> BinIds { get; set; } = new List<Guid>();
+    private List<Guid> IncomingOrderProductIds { get; set; } = new List<Guid>();
     private GetStaffResponseDTO CurrentStaff { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -27,7 +27,7 @@
     {
         CurrentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
 
-        var getAllBinIdsByCompanyIdQuery = new GetAllBinIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        BinIds = await Mediator.Send(getAllBinIdsByCompanyIdQuery);
+        var getAllIncomingOrderProductIdsByCompanyIdQuery = new GetAllIncomingOrderProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        IncomingOrderProductIds = await Mediator.Send(getAllIncomingOrderProductIdsByCompanyIdQuery);
     }
 }

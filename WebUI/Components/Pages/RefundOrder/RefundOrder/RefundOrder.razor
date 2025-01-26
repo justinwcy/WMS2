@@ -1,4 +1,5 @@
 @inject IDialogService Dialog
+@implements IPageComponent
 @using System.Reflection
 @using Application.Constants
 @using Application.Service.Queries
@@ -129,6 +130,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 </MudTable>
 
 @code {
+
+    [CascadingParameter(Name = "MainPage")]
+    public IMainPage MainPage { get; set; }
+    
+    [CascadingParameter(Name = "PageComponents")]
+    public List<IPageComponent> PageComponents { get; set; }
+
     [Parameter]
     public List<Guid> RefundOrderIds { get; set; } = new List<Guid>();
     public List<RefundOrderModel> RefundOrderModels { get; set; } = new List<RefundOrderModel>();
@@ -162,32 +170,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             return;
         }
 
-
-        // check to make sure all parameters are set before running
-        if (CurrentStaff == null || !RefundOrderIds.Any())
-        {
-            return;
-        }
-
         _loading = true;
         await base.OnParametersSetAsync();
-
-        foreach (var refundOrderId in RefundOrderIds)
+        var success = await FetchData();
+        if (!PageComponents.Contains(this))
         {
-            var getRefundOrderByIdQuery = new GetRefundOrderByIdQuery(refundOrderId);
-            var refundOrderDTO = await Mediator.Send(getRefundOrderByIdQuery);
-
-            var refundOrderModel = new RefundOrderModel()
-            {
-                Id = refundOrderDTO.Id,
-                Status = refundOrderDTO.Status,
-                RefundReason = refundOrderDTO.RefundReason,
-                RefundDate = refundOrderDTO.RefundDate,
-                RefundOrderProductIds = refundOrderDTO.RefundOrderProductIds,
-            };
-
-            RefundOrderModels.Add(refundOrderModel);
+            PageComponents.Add(this);
         }
+
         _loading = false;
     }
 
@@ -213,6 +203,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             if (result.Success)
             {
+                RefundOrderIds.Remove(refundOrderModel.Id);
                 RefundOrderModels.Remove(refundOrderModel);
             }
 
@@ -288,6 +279,27 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             StateHasChanged();
             SnackBar.Add($"Refund on {refundOrderModelCreated.RefundDate} created");
         }
+    }
+
+    public async Task<bool> FetchData()
+    {
+        foreach (var refundOrderId in RefundOrderIds)
+        {
+            var getRefundOrderByIdQuery = new GetRefundOrderByIdQuery(refundOrderId);
+            var refundOrderDTO = await Mediator.Send(getRefundOrderByIdQuery);
+
+            var refundOrderModel = new RefundOrderModel()
+                {
+                    Id = refundOrderDTO.Id,
+                    Status = refundOrderDTO.Status,
+                    RefundReason = refundOrderDTO.RefundReason,
+                    RefundDate = refundOrderDTO.RefundDate,
+                    RefundOrderProductIds = refundOrderDTO.RefundOrderProductIds,
+                };
+
+            RefundOrderModels.Add(refundOrderModel);
+        }
+        return true;
     }
 }
 

@@ -1,12 +1,18 @@
-﻿@page "/product"
+@page "/product"
+@implements IMainPage
+@using Application.DTO.Response
 @using WebUI.Utilities
 @using Application.Service.Queries
-@using Application.DTO.Response
 
-<Product ProductIds="ProductIds"
-         CurrentStaff="CurrentStaff"/>
+<CascadingValue Name="MainPage" Value="MainPage">
+    <CascadingValue Name="PageComponents" Value="PageComponents">
+        <Product ProductIds="ProductIds" CurrentStaff="CurrentStaff"/>
+    </CascadingValue>
+</CascadingValue>
 
 @code {
+    private IMainPage MainPage => this;
+    private List<IPageComponent> PageComponents = [];
 
     private List<Guid> ProductIds { get; set; } = new List<Guid>();
     private GetStaffResponseDTO CurrentStaff { get; set; }
@@ -14,10 +20,14 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+        await InitializeData();
+    }
+    
+    public async Task InitializeData()
+    {
         CurrentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
 
         var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         ProductIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
     }
 }
-

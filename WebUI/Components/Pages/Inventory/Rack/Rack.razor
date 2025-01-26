@@ -1,5 +1,6 @@
 
 @inject IDialogService Dialog
+@implements IPageComponent
 @using Application.Service.Queries
 @using WebUI.Components.Models
 @using Application.Service.Commands
@@ -136,6 +137,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 </MudTable>
 
 @code {
+
+    [CascadingParameter(Name = "MainPage")]
+    public IMainPage MainPage { get; set; }
+    
+    [CascadingParameter(Name = "PageComponents")]
+    public List<IPageComponent> PageComponents { get; set; }
+
     [Parameter]
     public List<Guid> RackIds { get; set; } = new List<Guid>();
     public List<RackModel> RackModels { get; set; } = new List<RackModel>();
@@ -159,35 +167,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             return;
         }
 
-
-        // check to make sure all parameters are set before running
-        if (CurrentStaff == null || !RackIds.Any())
-        {
-            return;
-        }
-
         _loading = true;
         await base.OnParametersSetAsync();
-
-        foreach (var rackId in RackIds)
+        var success = await FetchData();
+        if (!PageComponents.Contains(this))
         {
-            var getRackByIdQuery = new GetRackByIdQuery(rackId);
-            var rackDTO = await Mediator.Send(getRackByIdQuery);
-
-            var rackModel = new RackModel()
-            {
-                Id = rackDTO.Id,
-                ProductIds = rackDTO.ProductIds,
-                Name = rackDTO.Name,
-                MaxWeight = rackDTO.MaxWeight,
-                Width = rackDTO.Width,
-                Depth = rackDTO.Depth,
-                Height = rackDTO.Height,
-                ZoneId = rackDTO.ZoneId,
-            };
-
-            RackModels.Add(rackModel);
+            PageComponents.Add(this);
         }
+
         _loading = false;
     }
 
@@ -211,6 +198,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             if (result.Success)
             {
+                RackIds.Remove(rackModel.Id);
                 RackModels.Remove(rackModel);
             }
 
@@ -295,6 +283,30 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             StateHasChanged();
             SnackBar.Add($"{rackModelCreated.Name} created");
         }
+    }
+
+    public async Task<bool> FetchData()
+    {
+        foreach (var rackId in RackIds)
+        {
+            var getRackByIdQuery = new GetRackByIdQuery(rackId);
+            var rackDTO = await Mediator.Send(getRackByIdQuery);
+
+            var rackModel = new RackModel()
+                {
+                    Id = rackDTO.Id,
+                    ProductIds = rackDTO.ProductIds,
+                    Name = rackDTO.Name,
+                    MaxWeight = rackDTO.MaxWeight,
+                    Width = rackDTO.Width,
+                    Depth = rackDTO.Depth,
+                    Height = rackDTO.Height,
+                    ZoneId = rackDTO.ZoneId,
+                };
+
+            RackModels.Add(rackModel);
+        }
+        return true;
     }
 }
 

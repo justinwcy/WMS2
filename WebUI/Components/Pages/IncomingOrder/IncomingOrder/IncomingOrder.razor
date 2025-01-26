@@ -1,4 +1,5 @@
 @inject IDialogService Dialog
+@implements IPageComponent
 @using System.Reflection
 @using Application.Constants
 @using Application.Service.Queries
@@ -171,6 +172,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 </MudTable>
 
 @code {
+
+    [CascadingParameter(Name = "MainPage")]
+    public IMainPage MainPage { get; set; }
+    
+    [CascadingParameter(Name = "PageComponents")]
+    public List<IPageComponent> PageComponents { get; set; }
+
     [Parameter]
     public List<Guid> IncomingOrderIds { get; set; } = new List<Guid>();
     public List<IncomingOrderModel> IncomingOrderModels { get; set; } = new List<IncomingOrderModel>();
@@ -206,55 +214,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             return;
         }
 
-
-        // check to make sure all parameters are set before running
-        if (CurrentStaff == null || !IncomingOrderIds.Any())
-        {
-            return;
-        }
-
         _loading = true;
         await base.OnParametersSetAsync();
-
-        foreach (var incomingOrderId in IncomingOrderIds)
+        var success = await FetchData();
+        if (!PageComponents.Contains(this))
         {
-            var getIncomingOrderByIdQuery = new GetIncomingOrderByIdQuery(incomingOrderId);
-            var incomingOrderDTO = await Mediator.Send(getIncomingOrderByIdQuery);
-
-            var incomingOrderModel = new IncomingOrderModel()
-            {
-                Id = incomingOrderDTO.Id,
-                IncomingOrderProductIds = incomingOrderDTO.IncomingOrderProductIds,
-                IncomingDate = incomingOrderDTO.IncomingDate,
-                PONumber = incomingOrderDTO.PONumber,
-                ReceivingDate = incomingOrderDTO.ReceivingDate,
-                Status = incomingOrderDTO.Status,
-                VendorId = incomingOrderDTO.VendorId,
-            };
-
-            IncomingOrderModels.Add(incomingOrderModel);
+            PageComponents.Add(this);
         }
 
-        var getAllVendorIdsByCompanyIdQuery = new GetAllVendorIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var vendorIds = await Mediator.Send(getAllVendorIdsByCompanyIdQuery);
-
-        foreach (var vendorId in vendorIds)
-        {
-            var getVendorByIdQuery = new GetVendorByIdQuery(vendorId);
-            var vendorDTO = await Mediator.Send(getVendorByIdQuery);
-
-            var vendorModel = new VendorModel()
-                {
-                    Id = vendorDTO.Id,
-                    Address = vendorDTO.Address,
-                    Email = vendorDTO.Email,
-                    FirstName = vendorDTO.FirstName,
-                    LastName = vendorDTO.LastName,
-                    PhoneNumber = vendorDTO.PhoneNumber,
-                    IncomingOrderIds = vendorDTO.IncomingOrderIds,
-                };
-            _allVendorModels.Add(vendorModel);
-        }
         _loading = false;
     }
 
@@ -280,6 +247,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             if (result.Success)
             {
+                IncomingOrderIds.Remove(incomingOrderModel.Id);
                 IncomingOrderModels.Remove(incomingOrderModel);
             }
 
@@ -362,6 +330,50 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             StateHasChanged();
             SnackBar.Add($"{incomingOrderModelCreated.PONumber} created");
         }
+    }
+
+    public async Task<bool> FetchData()
+    {
+        foreach (var incomingOrderId in IncomingOrderIds)
+        {
+            var getIncomingOrderByIdQuery = new GetIncomingOrderByIdQuery(incomingOrderId);
+            var incomingOrderDTO = await Mediator.Send(getIncomingOrderByIdQuery);
+
+            var incomingOrderModel = new IncomingOrderModel()
+            {
+                Id = incomingOrderDTO.Id,
+                IncomingOrderProductIds = incomingOrderDTO.IncomingOrderProductIds,
+                IncomingDate = incomingOrderDTO.IncomingDate,
+                PONumber = incomingOrderDTO.PONumber,
+                ReceivingDate = incomingOrderDTO.ReceivingDate,
+                Status = incomingOrderDTO.Status,
+                VendorId = incomingOrderDTO.VendorId,
+            };
+
+            IncomingOrderModels.Add(incomingOrderModel);
+        }
+
+        var getAllVendorIdsByCompanyIdQuery = new GetAllVendorIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var vendorIds = await Mediator.Send(getAllVendorIdsByCompanyIdQuery);
+
+        foreach (var vendorId in vendorIds)
+        {
+            var getVendorByIdQuery = new GetVendorByIdQuery(vendorId);
+            var vendorDTO = await Mediator.Send(getVendorByIdQuery);
+
+            var vendorModel = new VendorModel()
+            {
+                Id = vendorDTO.Id,
+                Address = vendorDTO.Address,
+                Email = vendorDTO.Email,
+                FirstName = vendorDTO.FirstName,
+                LastName = vendorDTO.LastName,
+                PhoneNumber = vendorDTO.PhoneNumber,
+                IncomingOrderIds = vendorDTO.IncomingOrderIds,
+            };
+            _allVendorModels.Add(vendorModel);
+        }
+        return true;
     }
 }
 
