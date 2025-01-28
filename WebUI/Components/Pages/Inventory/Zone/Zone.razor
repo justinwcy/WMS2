@@ -11,11 +11,11 @@
         @if (ShowDeleteButton)
         {
             <MudButton OnClick="@DeleteZones"
-                       Color="Color.Error"
-                       Variant="Variant.Filled"
-                       Size="Size.Large"
-                       FullWidth="false"
-                       Disabled="_disableDelete">
+            Color="Color.Error"
+            Variant="Variant.Filled"
+            Size="Size.Large"
+            FullWidth="false"
+            Disabled="_disableDelete">
                 Delete Zone
             </MudButton>
         }
@@ -24,10 +24,10 @@
         @if (ShowCreateButton)
         {
             <MudButton OnClick="@(OpenCreateZoneDialogAsync)"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="false">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Large"
+            FullWidth="false">
                 Create Zone
             </MudButton>
         }
@@ -84,20 +84,20 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
         <MudTd DataLabel="Staff">
             <MudButton OnClick="@(() => OpenStaffDialogAsync(@context.StaffIds))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
                 View (@context.StaffIds.Count)
             </MudButton>
         </MudTd>
 
         <MudTd DataLabel="Rack">
             <MudButton OnClick="@(() => OpenRackDialogAsync(@context.RackIds))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
                 View (@context.RackIds.Count)
             </MudButton>
         </MudTd>
@@ -107,13 +107,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Name">
             <MudTextField @bind-Value="context.Name" Required />
         </MudTd>
-        
-       <MudTd DataLabel="Warehouse">
+
+        <MudTd DataLabel="Warehouse">
             <MudSelect @bind-Value="context.WarehouseId"
                        T="Guid"
                        ToStringFunc="@(id=> _allWarehouseModels.FirstOrDefault(warehouseModel=>warehouseModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
-                       Label="Status"
+                       Label="Warehouse"
                        Margin="Margin.Normal"
                        Dense="false"
                        Disabled="false"
@@ -131,8 +131,56 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 }
             </MudSelect>
         </MudTd>
-        <MudTd DataLabel="Staff"></MudTd>
-        <MudTd DataLabel="Rack"></MudTd>
+        <MudTd DataLabel="Staff">
+            <MudSelect T="Guid"
+                       ToStringFunc="@(id=> _allStaffModels.FirstOrDefault(staffModel=>staffModel.Id == id)?.FullName)"
+                       Variant="@_defaultVariant"
+                       Label="Staff"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Staff")
+                       MultiSelection="true"
+                       HelperText=@("Please select a staff")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="false"
+                       RequiredError="Please select a staff"
+                       SelectedValues="@(context.StaffIds)"
+                       SelectedValuesChanged="@(x=> HandleSelectedStaffChanged(x,context))"
+            >
+                @foreach (var staffModel in _allStaffModels)
+                {
+                    <MudSelectItem T="Guid" Value="@staffModel.Id" />
+                }
+            </MudSelect>
+        </MudTd>
+
+        <MudTd DataLabel="Rack">
+            <MudSelect T="Guid"
+                       ToStringFunc="@(id=> _allRackModels.FirstOrDefault(rackModel=>rackModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Rack"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Rack")
+                       MultiSelection="true"
+                       HelperText=@("Please select a rack")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="false"
+                       RequiredError="Please select a rack"
+                       SelectedValues="@(context.RackIds)"
+                       SelectedValuesChanged="@(x=> HandleSelectedRackChanged(x,context))">
+                @foreach (var rackModel in _allRackModels)
+                {
+                    <MudSelectItem T="Guid" Value="@rackModel.Id" />
+                }
+            </MudSelect>
+        </MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
@@ -150,13 +198,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     [Parameter]
     public bool ShowCreateButton { get; set; }
-    
+
     [Parameter]
     public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }
-    
+
     [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
 
@@ -175,6 +223,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private ZoneModel _zoneModelBeforeEdit { get; set; }
 
     private List<WarehouseModel> _allWarehouseModels { get; set; } = [];
+    private List<StaffModel> _allStaffModels { get; set; } = [];
+    private List<RackModel> _allRackModels { get; set; } = [];
     private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
 
     protected override async Task OnParametersSetAsync()
@@ -272,6 +322,16 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         StateHasChanged();
     }
 
+    private void HandleSelectedStaffChanged(IEnumerable<Guid> changedValues, ZoneModel zoneModel)
+    {
+        zoneModel.StaffIds = changedValues.ToList();
+    }
+
+    private void HandleSelectedRackChanged(IEnumerable<Guid> changedValues, ZoneModel zoneModel)
+    {
+        zoneModel.RackIds = changedValues.ToList();
+    }
+
     private async Task OpenCreateZoneDialogAsync()
     {
         var parameters = new DialogParameters<CreateZoneDialog>()
@@ -320,6 +380,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         }
 
         // set warehouse ids
+        _allWarehouseModels.Clear();
         var getAllWarehouseIdsByCompanyIdQuery = new GetAllWarehouseIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         var warehouseIds = await Mediator.Send(getAllWarehouseIdsByCompanyIdQuery);
         foreach (var warehouseId in warehouseIds)
@@ -337,6 +398,52 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 };
             _allWarehouseModels.Add(warehouseModel);
         }
+
+        // set staff models
+        _allStaffModels.Clear();
+        var getAllStaffIdsByCompanyIdQuery = new GetAllStaffIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var staffIds = await Mediator.Send(getAllStaffIdsByCompanyIdQuery);
+        foreach (var staffId in staffIds)
+        {
+            var getStaffByIdQuery = new GetStaffByIdQuery(staffId);
+            var getStaffResponseDTO = await Mediator.Send(getStaffByIdQuery);
+
+            var staffModel = new StaffModel()
+            {
+                Id = getStaffResponseDTO.Id,
+                Roles = getStaffResponseDTO.Roles,
+                Email = getStaffResponseDTO.Email,
+                FirstName = getStaffResponseDTO.FirstName,
+                LastName = getStaffResponseDTO.LastName,
+                ZoneIds = getStaffResponseDTO.ZoneIds,
+                CompanyId = getStaffResponseDTO.CompanyId,
+            };
+            _allStaffModels.Add(staffModel);
+        }
+
+        // set rack models
+        _allRackModels.Clear();
+        var getAllRackIdsByCompanyIdQuery = new GetAllRackIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var rackIds = await Mediator.Send(getAllRackIdsByCompanyIdQuery);
+        foreach (var rackId in rackIds)
+        {
+            var getRackByIdQuery = new GetRackByIdQuery(rackId);
+            var getRackResponseDTO = await Mediator.Send(getRackByIdQuery);
+
+            var rackModel = new RackModel()
+            {
+                Id = getRackResponseDTO.Id,
+                Name = getRackResponseDTO.Name,
+                ProductIds = getRackResponseDTO.ProductIds,
+                Depth = getRackResponseDTO.Depth,
+                MaxWeight = getRackResponseDTO.MaxWeight,
+                Width = getRackResponseDTO.Width,
+                Height = getRackResponseDTO.Height,
+                ZoneId = getRackResponseDTO.ZoneId,
+            };
+            _allRackModels.Add(rackModel);
+        }
+
         return true;
     }
 

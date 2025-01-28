@@ -28,23 +28,25 @@
                   Required="true" RequiredError="Email is required!"
                   Validation="@(new EmailAddressAttribute() { ErrorMessage = "The email address is invalid" })" />
 
-    <MudSelect @bind-Value="_profileModel.RolesString"
+    <MudSelect T="string"
                Variant="@_defaultVariant"
                Label="Role"
                Margin="Margin.Normal"
                Dense="false"
                Disabled="false"
                ReadOnly="false"
+               Placeholder=@("Role")
                MultiSelection="true"
-               Placeholder=@("User Role")
-               HelperText=@("Please select a role for the user")
+               HelperText=@("Please select a role")
                HelperTextOnFocus="true"
                Clearable="false"
                Required="true"
-               RequiredError="Please select a role for the user">
-        @foreach (var staffRoles in _allStaffRoles)
+               RequiredError="Please select a role"
+               SelectedValues="@(_profileModel.Roles)"
+               SelectedValuesChanged="@(x=> _profileModel.Roles = x.ToList())">
+        @foreach (var staffRole in _allStaffRoles)
         {
-            <MudSelectItem Value="staffRoles">@staffRoles</MudSelectItem>
+            <MudSelectItem T="string" Value="@staffRole" />
         }
     </MudSelect>
 
@@ -76,7 +78,7 @@
         return _initialProfileModel.LastName == _profileModel.LastName &&
                _initialProfileModel.FirstName == _profileModel.FirstName &&
                _initialProfileModel.Email == _profileModel.Email &&
-               _initialProfileModel.RolesString == _profileModel.RolesString &&
+               _initialProfileModel.Roles == _profileModel.Roles &&
                !_isFormValid;
     }
 
@@ -106,7 +108,7 @@
                 FirstName = getStaffResponseDTO.FirstName,
                 LastName = getStaffResponseDTO.LastName,
                 Email = getStaffResponseDTO.Email,
-                RolesString = string.Join(", ", getStaffResponseDTO.Roles)
+                Roles = getStaffResponseDTO.Roles
             };
         }
 
@@ -137,7 +139,7 @@
                 FirstName = _profileModel.FirstName,
                 LastName = _profileModel.LastName,
                 Id = staffId,
-                Roles = _profileModel.GetRoleList(),
+                Roles = _profileModel.Roles,
             };
 
             var updateStaffCommand = new UpdateStaffCommand(updateStaffRequestDTO);

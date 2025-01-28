@@ -8,13 +8,18 @@
         public string Email { get; set; } = "";
         public string Password { get; set; } = "";
         public string ConfirmPassword { get; set; } = "";
+        public List<string> Roles { get; set; } = [];
+
         public string RolesString { get; set; } = "";
+
         public Guid CompanyId { get; set; }
         public List<Guid> ZoneIds { get; set; } = [];
+
+        public string FullName => $"{FirstName} {LastName}";
         public List<string> GetRoleList()
         {
             return RolesString.Split(',')
-                .Select(role=>role.Trim())
+                .Select(role => role.Trim())
                 .ToList();
         }
 
@@ -28,7 +33,8 @@
                 Email = Email, 
                 Password = Password, 
                 ConfirmPassword = ConfirmPassword,
-                RolesString = RolesString
+                RolesString = RolesString,
+                Roles = Roles,
             };
         }
     }

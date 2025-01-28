@@ -33,7 +33,7 @@ namespace Infrastructure.Repository
 
             var userRoles = await accountService.GetRolesByEmailAsync(userFound.Email);
             var getStaffResponseDTO = userFound.Adapt<GetStaffResponseDTO>();
-            getStaffResponseDTO.Roles = userRoles;
+            getStaffResponseDTO.Roles = userRoles.ToList();
 
             getStaffResponseDTO.CompanyId = staffFound.CompanyId;
             getStaffResponseDTO.CreatedBy = staffFound.CreatedBy;
