@@ -107,29 +107,30 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Name">
             <MudTextField @bind-Value="context.Name" Required />
         </MudTd>
-
-        <MudSelect @bind-Value="context.WarehouseId"
-        T="Guid"
-        ToStringFunc="@(id=> _allWarehouseModels.FirstOrDefault(warehouseModel=>warehouseModel.Id == id)?.Name)"
-        Variant="@_defaultVariant"
-        Label="Status"
-        Margin="Margin.Normal"
-        Dense="false"
-        Disabled="false"
-        ReadOnly="false"
-        Placeholder=@("Warehouse")
-        MultiSelection="false"
-        HelperText=@("Please select a warehouse")
-        HelperTextOnFocus="true"
-        Clearable="false"
-        Required="true"
-        RequiredError="Please select a product">
-            @foreach (var warehouseModel in _allWarehouseModels)
-            {
-                <MudSelectItem Value="@warehouseModel"/>
-            }
-        </MudSelect>
-
+        
+       <MudTd DataLabel="Warehouse">
+            <MudSelect @bind-Value="context.WarehouseId"
+                       T="Guid"
+                       ToStringFunc="@(id=> _allWarehouseModels.FirstOrDefault(warehouseModel=>warehouseModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Warehouse")
+                       MultiSelection="false"
+                       HelperText=@("Please select a warehouse")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a warehouse">
+                @foreach (var warehouseModel in _allWarehouseModels)
+                {
+                    <MudSelectItem Value="@warehouseModel.Id"/>
+                }
+            </MudSelect>
+        </MudTd>
         <MudTd DataLabel="Staff"></MudTd>
         <MudTd DataLabel="Rack"></MudTd>
     </RowEditingTemplate>
