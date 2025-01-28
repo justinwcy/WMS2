@@ -73,7 +73,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.FirstName)">First Name</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.LastName)">Last Name</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.Email)">Email</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.RolesString)">Roles</MudTableSortLabel></MudTh>
+        <MudTh>Roles</MudTh>
         <MudTh>Company</MudTh>
         <MudTh>Zone</MudTh>
     </HeaderContent>
@@ -81,7 +81,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Name">@context.FirstName</MudTd>
         <MudTd DataLabel="Last Name">@context.LastName</MudTd>
         <MudTd DataLabel="Email">@context.Email</MudTd>
-        <MudTd DataLabel="Roles">@context.RolesString</MudTd>
+        <MudTd DataLabel="Roles">@string.Join(", ", context.Roles)</MudTd>
         <MudTd DataLabel="Company">
             @_allCompanyModels.FirstOrDefault(companyModel => companyModel.Id == @context.CompanyId)?.Name
         </MudTd>
@@ -111,7 +111,26 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         </MudTd>
 
         <MudTd DataLabel="Roles">
-            <MudTextField @bind-Value="context.RolesString" Required />
+            <MudSelect T="string" Variant="@_defaultVariant"
+                       Label="Role"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Role")
+                       MultiSelection="true"
+                       HelperText=@("Please select a role")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a role"
+                       SelectedValues="@(context.Roles)"
+                       SelectedValuesChanged="@(x=> context.Roles = x.ToList())">
+                @foreach (var staffRole in _allStaffRoles)
+                {
+                    <MudSelectItem T="string" Value="@staffRole" />
+                }
+            </MudSelect>
         </MudTd>
 
         <MudTd DataLabel="Company">
@@ -183,6 +202,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
 
     private List<CompanyModel> _allCompanyModels { get; set; } = [];
+    private List<string> _allStaffRoles = new();
 
     protected override async Task OnParametersSetAsync()
     {
@@ -213,7 +233,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             return true;
         if (staffModel.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (staffModel.RolesString.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (string.Join(", ", staffModel.Roles).Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
 
         return false;
@@ -250,7 +270,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             LastName = ((StaffModel)staffModel).LastName,
             Email = ((StaffModel)staffModel).Email,
             ZoneIds = ((StaffModel)staffModel).ZoneIds,
-            RolesString = string.Join(", ", ((StaffModel)staffModel).RolesString),
+            Roles = ((StaffModel)staffModel).Roles,
         };
         StateHasChanged();
     }
@@ -262,7 +282,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         ((StaffModel)staffModel).FirstName = _staffModelBeforeEdit.FirstName;
         ((StaffModel)staffModel).LastName = _staffModelBeforeEdit.LastName;
         ((StaffModel)staffModel).Email  = _staffModelBeforeEdit.Email;
-        ((StaffModel)staffModel).RolesString = _staffModelBeforeEdit.RolesString;
+        ((StaffModel)staffModel).Roles = _staffModelBeforeEdit.Roles;
         ((StaffModel)staffModel).ZoneIds = _staffModelBeforeEdit.ZoneIds;
 
         StateHasChanged();
@@ -280,7 +300,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             LastName = staffModelConverted.LastName,
             Email = staffModelConverted.Email,
             ZoneIds = staffModelConverted.ZoneIds,
-            Roles = staffModelConverted.GetRoleList(),
+            Roles = staffModelConverted.Roles,
         };
         var updateStaffCommand = new UpdateStaffCommand(updateStaffDTO);
         var response = await Mediator.Send(updateStaffCommand);
@@ -329,7 +349,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 FirstName = staffDTO.FirstName,
                 LastName = staffDTO.LastName,
                 Email = staffDTO.Email,
-                RolesString = string.Join(", ", staffDTO.Roles),
+                Roles = staffDTO.Roles,
                 ZoneIds = staffDTO.ZoneIds
             };
 
@@ -352,6 +372,11 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
             _allCompanyModels.Add(companyModel);
         }
+
+        var getAllStaffRolesQuery = new GetAllStaffRolesQuery();
+        var allStaffRoles = await Mediator.Send(getAllStaffRolesQuery);
+        _allStaffRoles = allStaffRoles.ToList();
+
         return true;
     }
 

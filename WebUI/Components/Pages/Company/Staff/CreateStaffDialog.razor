@@ -14,17 +14,17 @@
             <MudGrid>
                 <MudItem xs="6">
                     <MudTextField @bind-value="_staffModel.FirstName"
-                    Variant="@_defaultVariant"
-                    T="string"
-                    Label="First Name"
-                    Required="true" RequiredError="First name is required!"/>
+                                  Variant="@_defaultVariant"
+                                  T="string"
+                                  Label="First Name"
+                                  Required="true" RequiredError="First name is required!"/>
                 </MudItem>
                 <MudItem xs="6">
                     <MudTextField @bind-value="_staffModel.LastName"
-                    Variant="@_defaultVariant"
-                    T="string"
-                    Label="Last Name"
-                    Required="true" RequiredError="Last name is required!"/>
+                                  Variant="@_defaultVariant"
+                                  T="string"
+                                  Label="Last Name"
+                                  Required="true" RequiredError="Last name is required!"/>
                 </MudItem>
             </MudGrid>
 
@@ -49,26 +49,27 @@
                           Label="Confirm Password" InputType="InputType.Password"
                           Validation="@(new Func<string, string>(PasswordMatch))"/>
 
-            <MudSelect @bind-Value="_staffModel.RolesString"
-                       Variant="@_defaultVariant"
+            <MudSelect T="string" Variant="@_defaultVariant"
                        Label="Role"
                        Margin="Margin.Normal"
                        Dense="false"
                        Disabled="false"
                        ReadOnly="false"
-                       Placeholder=@("User Role")
+                       Placeholder=@("Role")
                        MultiSelection="true"
-                       HelperText=@("Please select a role for the user")
+                       HelperText=@("Please select a role")
                        HelperTextOnFocus="true"
                        Clearable="false"
                        Required="true"
-                       RequiredError="Please select a role for the user">
-                @foreach (var staffRoles in _allStaffRoles)
+                       RequiredError="Please select a role"
+                       SelectedValues="@(_staffModel.Roles)"
+                       SelectedValuesChanged="@(x=> _staffModel.Roles = x.ToList())">
+                @foreach (var staffRole in _allStaffRoles)
                 {
-                    <MudSelectItem Value="staffRoles"></MudSelectItem>
+                    <MudSelectItem T="string" Value="@staffRole" />
                 }
             </MudSelect>
-            
+
             <MudSelect @bind-Value="_staffModel.CompanyId"
                        T="Guid"
                        ToStringFunc="@(id=> _allCompanyModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.Name)"
@@ -148,7 +149,7 @@
             FirstName = _staffModel.FirstName,
             LastName = _staffModel.LastName,
             Email = _staffModel.Email,
-            Roles = _staffModel.GetRoleList(),
+            Roles = _staffModel.Roles,
             Password = _staffModel.Password,
             ConfirmPassword = _staffModel.ConfirmPassword,
             ZoneIds = _staffModel.ZoneIds,
@@ -165,7 +166,7 @@
             Password = _staffModel.Password,
             ConfirmPassword = _staffModel.ConfirmPassword,
             ZoneIds = _staffModel.ZoneIds,
-            RolesString = _staffModel.RolesString
+            Roles = _staffModel.Roles
         };
         MudDialog.Close(DialogResult.Ok(createdStaffModel));
     }
