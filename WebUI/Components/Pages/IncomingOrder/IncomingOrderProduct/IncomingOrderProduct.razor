@@ -36,25 +36,26 @@
     </MudItem>
 </MudGrid>
 
-<MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
-Filter="new Func<IncomingOrderProductModel,bool>(FilterFunc)"
-CanCancelEdit="true"
-Items="@IncomingOrderProductModels"
-GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-GroupFooterClass="mb-4"
-Dense="true"
-Loading="@_loading" LoadingProgressColor="Color.Info"
-MultiSelection="true"
-@bind-SelectedItems="_selectedIncomingOrderProducts"
-SelectOnRowClick="false"
-CommitEditTooltip="Commit Edit"
-CancelEditTooltip="Cancel Edit"
-IsEditRowSwitchingBlocked="false"
-RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-RowEditCommit="ItemHasBeenCommitted"
-ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-@ref="_tableRef">
+<MudTable 
+    Hover="true" FixedHeader="true"
+    Filter="new Func<IncomingOrderProductModel,bool>(FilterFunc)"
+    CanCancelEdit="true"
+    Items="@IncomingOrderProductModels"
+    GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+    GroupFooterClass="mb-4"
+    Dense="true"
+    Loading="@_loading" LoadingProgressColor="Color.Info"
+    MultiSelection="true"
+    @bind-SelectedItems="_selectedIncomingOrderProducts"
+    SelectOnRowClick="false"
+    CommitEditTooltip="Commit Edit"
+    CancelEditTooltip="Cancel Edit"
+    IsEditRowSwitchingBlocked="false"
+    RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+    RowEditCommit="ItemHasBeenCommitted"
+    ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+    EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+    @ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Incoming Order Products @_incomingOrder.PONumber</MudText>
