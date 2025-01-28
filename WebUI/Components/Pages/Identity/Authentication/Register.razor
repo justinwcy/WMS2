@@ -51,23 +51,25 @@
                   Label="Confirm Password" InputType="InputType.Password"
                   Validation="@(new Func<string, string>(PasswordMatch))"/>
 
-    <MudSelect @bind-Value="_inputModel.RolesString"
+    <MudSelect T="string"
                Variant="@_defaultVariant"
                Label="Role"
                Margin="Margin.Normal"
                Dense="false"
                Disabled="false"
                ReadOnly="false"
-               Placeholder=@("User Role")
+               Placeholder=@("Role")
                MultiSelection="true"
-               HelperText=@("Please select a role for the user")
+               HelperText=@("Please select a role")
                HelperTextOnFocus="true"
                Clearable="false"
                Required="true"
-               RequiredError="Please select a role for the user">
-        @foreach (var staffRoles in _allStaffRoles)
+               RequiredError="Please select a role"
+               SelectedValues="@(_inputModel.Roles)"
+               SelectedValuesChanged="@(x => _inputModel.Roles = x.ToList())">
+        @foreach (var staffRole in _allStaffRoles)
         {
-            <MudSelectItem Value="staffRoles">@staffRoles</MudSelectItem>
+            <MudSelectItem T="string" Value="@staffRole"/>
         }
     </MudSelect>
 
@@ -135,7 +137,7 @@
             FirstName = _inputModel.FirstName,
             LastName = _inputModel.LastName,
             Email = _inputModel.Email,
-            Roles = _inputModel.GetRoleList(),
+            Roles = _inputModel.Roles,
             Password = _inputModel.Password,
             ConfirmPassword = _inputModel.ConfirmPassword,
         };

@@ -148,7 +148,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                        Required="false"
                        RequiredError="Please select a staff"
                        SelectedValues="@(context.StaffIds)"
-                       SelectedValuesChanged="@(x=> HandleSelectedStaffChanged(x,context))"
+                       SelectedValuesChanged="@(x=> context.StaffIds = x.ToList())"
             >
                 @foreach (var staffModel in _allStaffModels)
                 {
@@ -174,7 +174,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                        Required="false"
                        RequiredError="Please select a rack"
                        SelectedValues="@(context.RackIds)"
-                       SelectedValuesChanged="@(x=> HandleSelectedRackChanged(x,context))">
+                       SelectedValuesChanged="@(x=> context.RackIds = x.ToList())">
                 @foreach (var rackModel in _allRackModels)
                 {
                     <MudSelectItem T="Guid" Value="@rackModel.Id" />
@@ -320,16 +320,6 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         var response = await Mediator.Send(updateZoneCommand);
         SnackBar.Add(response.Message);
         StateHasChanged();
-    }
-
-    private void HandleSelectedStaffChanged(IEnumerable<Guid> changedValues, ZoneModel zoneModel)
-    {
-        zoneModel.StaffIds = changedValues.ToList();
-    }
-
-    private void HandleSelectedRackChanged(IEnumerable<Guid> changedValues, ZoneModel zoneModel)
-    {
-        zoneModel.RackIds = changedValues.ToList();
     }
 
     private async Task OpenCreateZoneDialogAsync()
