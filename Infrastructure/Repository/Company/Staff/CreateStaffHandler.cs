@@ -20,10 +20,18 @@ namespace Infrastructure.Repository
     {
         public async Task<CreateStaffResponseDTO> Handle(CreateStaffCommand request, CancellationToken cancellationToken)
         {
-            var accountHandler = new AccountService(userManager, signInManager, roleManager, contextFactory);
-            var createStaffRequestDTO = request.Model.Adapt<CreateStaffRequestDTO>();
-            var staffId = await accountHandler.CreateStaffAsync(createStaffRequestDTO);
-            return new CreateStaffResponseDTO(){ Id = staffId };
+            try
+            {
+                var accountHandler = new AccountService(userManager, signInManager, roleManager, contextFactory);
+                var createStaffRequestDTO = request.Model.Adapt<CreateStaffRequestDTO>();
+                var staffId = await accountHandler.CreateStaffAsync(createStaffRequestDTO);
+                return new CreateStaffResponseDTO() { Id = staffId };
+            }
+            catch (Exception exception)
+            {
+                return new CreateStaffResponseDTO() { Id = Guid.Empty };
+            }
+            
         }
     }
 }
