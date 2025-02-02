@@ -28,9 +28,34 @@ namespace Infrastructure.Repository
                     return GeneralDbResponses.ItemNotFound("Rack");
                 }
 
-                wmsDbContext.Entry(rackFound).State = EntityState.Detached;
-                var adaptData = request.Model.Adapt<Rack>();
-                wmsDbContext.Racks.Update(adaptData);
+                rackFound.Name = request.Model.Name;
+                rackFound.Depth = request.Model.Depth;
+                rackFound.Height = request.Model.Height;
+                rackFound.MaxWeight = request.Model.MaxWeight;
+                rackFound.Width = request.Model.Width;
+
+                var productsToAdd = await wmsDbContext.Products
+                    .Where(product => request.Model.ProductIds.Contains(product.Id))
+                    .ToListAsync(cancellationToken);
+                rackFound.Products.RemoveAll(product => !request.Model.ProductIds.Contains(product.Id));
+                foreach (var productToAdd in productsToAdd)
+                {
+                    if (rackFound.Products.All(product => product.Id != productToAdd.Id))
+                    {
+                        rackFound.Products.Add(productToAdd);
+                    }
+                }
+
+                var zoneFound = await wmsDbContext.Zones.FirstOrDefaultAsync(
+                    zone => zone.Id == request.Model.ZoneId,
+                    cancellationToken);
+                if (zoneFound == null)
+                {
+                    return GeneralDbResponses.ItemNotFound("Zone");
+                }
+                rackFound.Zone = zoneFound;
+                rackFound.ZoneId = request.Model.ZoneId;
+
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
                 return GeneralDbResponses.ItemUpdated("Rack");
             }

@@ -1,11 +1,7 @@
 ﻿using Application.DTO.Response;
 using Application.Service.Commands;
 
-using Domain.Entities;
-
 using Infrastructure.Data;
-
-using Mapster;
 
 using MediatR;
 
@@ -28,9 +24,20 @@ namespace Infrastructure.Repository
                     return GeneralDbResponses.ItemNotFound(request.Model.Subject);
                 }
 
-                wmsDbContext.Entry(staffNotificationFound).State = EntityState.Detached;
-                var adaptData = request.Model.Adapt<StaffNotification>();
-                wmsDbContext.StaffNotifications.Update(adaptData);
+                staffNotificationFound.Body = request.Model.Body;
+                staffNotificationFound.IsRead = request.Model.IsRead;
+                staffNotificationFound.NotificationDate = request.Model.NotificationDate;
+                staffNotificationFound.Subject = request.Model.Subject;
+
+                staffNotificationFound.StaffId = request.Model.StaffId;
+                var staffFound = await wmsDbContext.Staffs
+                    .FirstOrDefaultAsync(staff => staff.Id == request.Model.StaffId, cancellationToken);
+                if (staffFound == null)
+                {
+                    return GeneralDbResponses.ItemNotFound("Staff");
+                }
+                staffNotificationFound.Staff = staffFound;
+
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
                 return GeneralDbResponses.ItemUpdated(request.Model.Subject);
             }

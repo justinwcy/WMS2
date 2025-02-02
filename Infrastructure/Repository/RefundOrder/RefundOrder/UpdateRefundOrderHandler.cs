@@ -1,11 +1,7 @@
 using Application.DTO.Response;
 using Application.Service.Commands;
 
-using Domain.Entities;
-
 using Infrastructure.Data;
-
-using Mapster;
 
 using MediatR;
 
@@ -20,7 +16,9 @@ namespace Infrastructure.Repository
             try
             {
                 await using var wmsDbContext = contextFactory.CreateDbContext();
-                var refundOrderFound = await wmsDbContext.RefundOrders.FirstOrDefaultAsync(
+                var refundOrderFound = await wmsDbContext.RefundOrders
+                    .Include(refundOrder => refundOrder.RefundOrderProducts)
+                    .FirstOrDefaultAsync(
                     refundOrder => refundOrder.Id.Equals(request.Model.Id),
                     cancellationToken);
                 if (refundOrderFound == null)
@@ -28,9 +26,22 @@ namespace Infrastructure.Repository
                     return GeneralDbResponses.ItemNotFound("RefundOrder");
                 }
 
-                wmsDbContext.Entry(refundOrderFound).State = EntityState.Detached;
-                var adaptData = request.Model.Adapt<RefundOrder>();
-                wmsDbContext.RefundOrders.Update(adaptData);
+                refundOrderFound.Status = request.Model.Status;
+                refundOrderFound.RefundDate = request.Model.RefundDate;
+                refundOrderFound.RefundReason = request.Model.RefundReason;
+
+                var refundOrderProductsToAdd = await wmsDbContext.RefundOrderProducts
+                    .Where(refundOrderProduct => request.Model.RefundOrderProductIds.Contains(refundOrderProduct.Id))
+                    .ToListAsync(cancellationToken);
+                refundOrderFound.RefundOrderProducts.RemoveAll(refundOrderProduct => !request.Model.RefundOrderProductIds.Contains(refundOrderProduct.Id));
+                foreach (var refundOrderProductToAdd in refundOrderProductsToAdd)
+                {
+                    if (refundOrderFound.RefundOrderProducts.All(refundOrderProduct => refundOrderProduct.Id != refundOrderProductToAdd.Id))
+                    {
+                        refundOrderFound.RefundOrderProducts.Add(refundOrderProductToAdd);
+                    }
+                }
+
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
                 return GeneralDbResponses.ItemUpdated("RefundOrder");
             }

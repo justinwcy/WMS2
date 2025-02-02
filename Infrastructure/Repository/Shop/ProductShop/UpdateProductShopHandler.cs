@@ -1,11 +1,7 @@
 using Application.DTO.Response;
 using Application.Service.Commands;
 
-using Domain.Entities;
-
 using Infrastructure.Data;
-
-using Mapster;
 
 using MediatR;
 
@@ -28,9 +24,26 @@ namespace Infrastructure.Repository
                     return GeneralDbResponses.ItemNotFound("ProductShop");
                 }
 
-                wmsDbContext.Entry(productShopFound).State = EntityState.Detached;
-                var adaptData = request.Model.Adapt<ProductShop>();
-                wmsDbContext.ProductShops.Update(adaptData);
+                var productFound = await wmsDbContext.Products.FirstOrDefaultAsync(
+                    product => product.Id == request.Model.ProductId,
+                    cancellationToken);
+                if (productFound == null)
+                {
+                    return GeneralDbResponses.ItemNotFound("Product");
+                }
+                productShopFound.Product = productFound;
+                productShopFound.ProductId = request.Model.ProductId;
+
+                var shopFound = await wmsDbContext.Shops.FirstOrDefaultAsync(
+                    shop => shop.Id == request.Model.ShopId,
+                    cancellationToken);
+                if (shopFound == null)
+                {
+                    return GeneralDbResponses.ItemNotFound("Shop");
+                }
+                productShopFound.Shop = shopFound;
+                productShopFound.ShopId = request.Model.ShopId;
+
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
                 return GeneralDbResponses.ItemUpdated("ProductShop");
             }

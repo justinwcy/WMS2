@@ -1,11 +1,7 @@
 using Application.DTO.Response;
 using Application.Service.Commands;
 
-using Domain.Entities;
-
 using Infrastructure.Data;
-
-using Mapster;
 
 using MediatR;
 
@@ -28,9 +24,20 @@ namespace Infrastructure.Repository
                     return GeneralDbResponses.ItemNotFound("Bin");
                 }
 
-                wmsDbContext.Entry(binFound).State = EntityState.Detached;
-                var adaptData = request.Model.Adapt<Bin>();
-                wmsDbContext.Bins.Update(adaptData);
+                binFound.Name = request.Model.Name;
+
+                var customerOrdersToAdd = await wmsDbContext.CustomerOrders
+                    .Where(customerOrder => request.Model.CustomerOrderIds.Contains(customerOrder.Id))
+                    .ToListAsync(cancellationToken);
+                binFound.CustomerOrders.RemoveAll(customerOrder => !request.Model.CustomerOrderIds.Contains(customerOrder.Id));
+                foreach (var customerOrderToAdd in customerOrdersToAdd)
+                {
+                    if (binFound.CustomerOrders.All(customerOrder => customerOrder.Id != customerOrderToAdd.Id))
+                    {
+                        binFound.CustomerOrders.Add(customerOrderToAdd);
+                    }
+                }
+
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
                 return GeneralDbResponses.ItemUpdated("Bin");
             }

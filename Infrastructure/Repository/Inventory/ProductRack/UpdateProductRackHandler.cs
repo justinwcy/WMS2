@@ -20,17 +20,34 @@ namespace Infrastructure.Repository
             try
             {
                 await using var wmsDbContext = contextFactory.CreateDbContext();
-                var ProductRackFound = await wmsDbContext.ProductRacks.FirstOrDefaultAsync(
-                    ProductRack => ProductRack.Id.Equals(request.Model.Id),
+                var productRackFound = await wmsDbContext.ProductRacks.FirstOrDefaultAsync(
+                    productRack => productRack.Id.Equals(request.Model.Id),
                     cancellationToken);
-                if (ProductRackFound == null)
+                if (productRackFound == null)
                 {
                     return GeneralDbResponses.ItemNotFound("ProductRack");
                 }
 
-                wmsDbContext.Entry(ProductRackFound).State = EntityState.Detached;
-                var adaptData = request.Model.Adapt<ProductRack>();
-                wmsDbContext.ProductRacks.Update(adaptData);
+                var productFound = await wmsDbContext.Products.FirstOrDefaultAsync(
+                    product => product.Id == request.Model.ProductId, cancellationToken);
+                if (productFound == null)
+                {
+                    return GeneralDbResponses.ItemNotFound("Product");
+                }
+
+                productRackFound.Product = productFound;
+                productRackFound.ProductId = request.Model.ProductId;
+
+                var rackFound = await wmsDbContext.Racks.FirstOrDefaultAsync(
+                    rack => rack.Id == request.Model.RackId, cancellationToken);
+                if (rackFound == null)
+                {
+                    return GeneralDbResponses.ItemNotFound("Rack");
+                }
+
+                productRackFound.Rack = rackFound;
+                productRackFound.RackId = request.Model.RackId;
+
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
                 return GeneralDbResponses.ItemUpdated("ProductRack");
             }

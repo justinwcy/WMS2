@@ -1,11 +1,7 @@
 using Application.DTO.Response;
 using Application.Service.Commands;
 
-using Domain.Entities;
-
 using Infrastructure.Data;
-
-using Mapster;
 
 using MediatR;
 
@@ -28,9 +24,52 @@ namespace Infrastructure.Repository
                     return GeneralDbResponses.ItemNotFound("CustomerOrder");
                 }
 
-                wmsDbContext.Entry(customerOrderFound).State = EntityState.Detached;
-                var adaptData = request.Model.Adapt<CustomerOrder>();
-                wmsDbContext.CustomerOrders.Update(adaptData);
+                customerOrderFound.ExpectedArrivalDate = request.Model.ExpectedArrivalDate;
+                customerOrderFound.OrderAddress = request.Model.OrderAddress;
+                customerOrderFound.OrderCreationDate = request.Model.OrderCreationDate;
+
+                var binFound = await wmsDbContext.Bins.FirstOrDefaultAsync(
+                    bin => bin.Id == request.Model.BinId,
+                    cancellationToken);
+                if (binFound == null)
+                {
+                    return GeneralDbResponses.ItemNotFound("Bin");
+                }
+                customerOrderFound.Bin = binFound;
+                customerOrderFound.BinId = request.Model.BinId;
+
+                var courierFound = await wmsDbContext.Couriers.FirstOrDefaultAsync(
+                    courier => courier.Id == request.Model.CourierId,
+                    cancellationToken);
+                if (courierFound == null)
+                {
+                    return GeneralDbResponses.ItemNotFound("Courier");
+                }
+                customerOrderFound.Courier = courierFound;
+                customerOrderFound.CourierId = request.Model.CourierId;
+
+                var customerFound = await wmsDbContext.Customers.FirstOrDefaultAsync(
+                    customer => customer.Id == request.Model.CustomerId,
+                    cancellationToken);
+                if (customerFound == null)
+                {
+                    return GeneralDbResponses.ItemNotFound("Customer");
+                }
+                customerOrderFound.Customer = customerFound;
+                customerOrderFound.CustomerId = request.Model.CustomerId;
+
+                var customerOrderDetailsToAdd = await wmsDbContext.CustomerOrderDetails
+                    .Where(customerOrderDetail => request.Model.CustomerOrderDetailIds.Contains(customerOrderDetail.Id))
+                    .ToListAsync(cancellationToken);
+                customerOrderFound.CustomerOrderDetails.RemoveAll(customerOrderDetail => !request.Model.CustomerOrderDetailIds.Contains(customerOrderDetail.Id));
+                foreach (var customerOrderDetailToAdd in customerOrderDetailsToAdd)
+                {
+                    if (customerOrderFound.CustomerOrderDetails.All(customerOrderDetail => customerOrderDetail.Id != customerOrderDetailToAdd.Id))
+                    {
+                        customerOrderFound.CustomerOrderDetails.Add(customerOrderDetailToAdd);
+                    }
+                }
+
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
                 return GeneralDbResponses.ItemUpdated("CustomerOrder");
             }

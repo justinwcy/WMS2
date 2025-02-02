@@ -1,11 +1,7 @@
 using Application.DTO.Response;
 using Application.Service.Commands;
 
-using Domain.Entities;
-
 using Infrastructure.Data;
-
-using Mapster;
 
 using MediatR;
 
@@ -28,9 +24,29 @@ namespace Infrastructure.Repository
                     return GeneralDbResponses.ItemNotFound("IncomingOrderProduct");
                 }
 
-                wmsDbContext.Entry(incomingOrderProductFound).State = EntityState.Detached;
-                var adaptData = request.Model.Adapt<IncomingOrderProduct>();
-                wmsDbContext.IncomingOrderProducts.Update(adaptData);
+                incomingOrderProductFound.Status = request.Model.Status;
+                incomingOrderProductFound.Quantity = request.Model.Quantity;
+
+                var productFound = await wmsDbContext.Products.FirstOrDefaultAsync(
+                    product => product.Id == request.Model.ProductId, cancellationToken);
+                if (productFound == null)
+                {
+                    return GeneralDbResponses.ItemNotFound("Product");
+                }
+
+                incomingOrderProductFound.Product = productFound;
+                incomingOrderProductFound.ProductId = request.Model.ProductId;
+
+                var incomingOrderFound = await wmsDbContext.IncomingOrders.FirstOrDefaultAsync(
+                    incomingOrder => incomingOrder.Id == request.Model.IncomingOrderId, cancellationToken);
+                if (incomingOrderFound == null)
+                {
+                    return GeneralDbResponses.ItemNotFound("IncomingOrder");
+                }
+
+                incomingOrderProductFound.IncomingOrder = incomingOrderFound;
+                incomingOrderProductFound.IncomingOrderId = request.Model.IncomingOrderId;
+
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
                 return GeneralDbResponses.ItemUpdated("IncomingOrderProduct");
             }

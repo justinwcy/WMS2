@@ -1,11 +1,7 @@
 using Application.DTO.Response;
 using Application.Service.Commands;
 
-using Domain.Entities;
-
 using Infrastructure.Data;
-
-using Mapster;
 
 using MediatR;
 
@@ -28,9 +24,30 @@ namespace Infrastructure.Repository
                     return GeneralDbResponses.ItemNotFound("Warehouse");
                 }
 
-                wmsDbContext.Entry(warehouseFound).State = EntityState.Detached;
-                var adaptData = request.Model.Adapt<Warehouse>();
-                wmsDbContext.Warehouses.Update(adaptData);
+                warehouseFound.Address = request.Model.Address;
+                warehouseFound.Name = request.Model.Name;
+
+                var companyFound = await wmsDbContext.Companies
+                    .FirstOrDefaultAsync(company => company.Id == request.Model.CompanyId, cancellationToken);
+                if (companyFound == null)
+                {
+                    return GeneralDbResponses.ItemNotFound("Company");
+                }
+                warehouseFound.Company = companyFound;
+                warehouseFound.CompanyId = request.Model.CompanyId;
+                
+                var zonesToAdd = await wmsDbContext.Zones
+                    .Where(zone => request.Model.ZoneIds.Contains(zone.Id))
+                    .ToListAsync(cancellationToken);
+                warehouseFound.Zones.RemoveAll(zone => !request.Model.ZoneIds.Contains(zone.Id));
+                foreach (var zoneToAdd in zonesToAdd)
+                {
+                    if (warehouseFound.Zones.All(zone => zone.Id != zoneToAdd.Id))
+                    {
+                        warehouseFound.Zones.Add(zoneToAdd);
+                    }
+                }
+
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
                 return GeneralDbResponses.ItemUpdated("Warehouse");
             }

@@ -1,11 +1,7 @@
 using Application.DTO.Response;
 using Application.Service.Commands;
 
-using Domain.Entities;
-
 using Infrastructure.Data;
-
-using Mapster;
 
 using MediatR;
 
@@ -28,9 +24,29 @@ namespace Infrastructure.Repository
                     return GeneralDbResponses.ItemNotFound("RefundOrderProduct");
                 }
 
-                wmsDbContext.Entry(refundOrderProductFound).State = EntityState.Detached;
-                var adaptData = request.Model.Adapt<RefundOrderProduct>();
-                wmsDbContext.RefundOrderProducts.Update(adaptData);
+                refundOrderProductFound.Status = request.Model.Status;
+                refundOrderProductFound.Quantity = request.Model.Quantity;
+
+                var refundOrderFound = await wmsDbContext.RefundOrders.FirstOrDefaultAsync(
+                    refundOrder => refundOrder.Id == request.Model.RefundOrderId,
+                    cancellationToken);
+                if (refundOrderFound == null)
+                {
+                    return GeneralDbResponses.ItemNotFound("RefundOrder");
+                }
+                refundOrderProductFound.RefundOrder = refundOrderFound;
+                refundOrderProductFound.RefundOrderId = request.Model.RefundOrderId;
+
+                var productFound = await wmsDbContext.Products.FirstOrDefaultAsync(
+                    product => product.Id == request.Model.ProductId,
+                    cancellationToken);
+                if (productFound == null)
+                {
+                    return GeneralDbResponses.ItemNotFound("Product");
+                }
+                refundOrderProductFound.Product = productFound;
+                refundOrderProductFound.ProductId = request.Model.ProductId;
+
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
                 return GeneralDbResponses.ItemUpdated("RefundOrderProduct");
             }

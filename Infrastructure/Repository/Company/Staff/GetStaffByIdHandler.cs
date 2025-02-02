@@ -38,7 +38,7 @@ namespace Infrastructure.Repository
             getStaffResponseDTO.CompanyId = staffFound.CompanyId;
             getStaffResponseDTO.CreatedBy = staffFound.CreatedBy;
             getStaffResponseDTO.ZoneIds = staffFound.Zones.Select(zone => zone.Id).ToList();
-            getStaffResponseDTO.StaffNotifications = staffFound
+            getStaffResponseDTO.StaffNotificationIds = staffFound
                 .StaffNotifications
                 .Select(staffNotification => staffNotification.Id)
                 .ToList();

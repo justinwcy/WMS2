@@ -28,9 +28,24 @@ namespace Infrastructure.Repository
                     return GeneralDbResponses.ItemNotFound("Vendor");
                 }
 
-                wmsDbContext.Entry(vendorFound).State = EntityState.Detached;
-                var adaptData = request.Model.Adapt<Vendor>();
-                wmsDbContext.Vendors.Update(adaptData);
+                vendorFound.Address = request.Model.Address;
+                vendorFound.Email = request.Model.Email;
+                vendorFound.FirstName = request.Model.FirstName;
+                vendorFound.LastName = request.Model.LastName;
+                vendorFound.PhoneNumber = request.Model.PhoneNumber;
+
+                var incomingOrdersToAdd = await wmsDbContext.IncomingOrders
+                    .Where(incomingOrder =>
+                        request.Model.IncomingOrderIds.Contains(incomingOrder.Id))
+                    .ToListAsync(cancellationToken);
+                vendorFound.IncomingOrders.RemoveAll(incomingOrder => !request.Model.IncomingOrderIds.Contains(incomingOrder.Id));
+                foreach (var incomingOrderToAdd in incomingOrdersToAdd)
+                {
+                    if (vendorFound.IncomingOrders.All(incomingOrder => incomingOrder.Id != incomingOrderToAdd.Id))
+                    {
+                        vendorFound.IncomingOrders.Add(incomingOrderToAdd);
+                    }
+                }
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
                 return GeneralDbResponses.ItemUpdated("Vendor");
             }

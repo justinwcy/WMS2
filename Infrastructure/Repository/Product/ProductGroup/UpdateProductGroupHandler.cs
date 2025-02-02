@@ -28,9 +28,21 @@ namespace Infrastructure.Repository
                     return GeneralDbResponses.ItemNotFound("ProductGroup");
                 }
 
-                wmsDbContext.Entry(productGroupFound).State = EntityState.Detached;
-                var adaptData = request.Model.Adapt<ProductGroup>();
-                wmsDbContext.ProductGroups.Update(adaptData);
+                productGroupFound.Name = request.Model.Name;
+                productGroupFound.Description = request.Model.Description;
+
+                var productsToAdd = await wmsDbContext.Products
+                    .Where(product => request.Model.ProductIds.Contains(product.Id))
+                    .ToListAsync(cancellationToken);
+                productGroupFound.Products.RemoveAll(product => !request.Model.ProductIds.Contains(product.Id));
+                foreach (var productToAdd in productsToAdd)
+                {
+                    if (productGroupFound.Products.All(product => product.Id != productToAdd.Id))
+                    {
+                        productGroupFound.Products.Add(productToAdd);
+                    }
+                }
+
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
                 return GeneralDbResponses.ItemUpdated("ProductGroup");
             }

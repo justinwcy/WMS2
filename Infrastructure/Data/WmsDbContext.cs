@@ -41,41 +41,10 @@ namespace Infrastructure.Data
             base.OnModelCreating(modelBuilder);
 
             #region ManyToManyRelationships
-            modelBuilder
-                .Entity<IncomingOrder>()
-                .HasMany(incomingOrder => incomingOrder.Products)
-                .WithMany(product => product.IncomingOrders)
-                .UsingEntity<IncomingOrderProduct>(
-                    r =>
-                        r.HasOne<Product>(incomingOrderProduct=> incomingOrderProduct.Product)
-                            .WithMany()
-                            .HasForeignKey(incomingOrderProduct => incomingOrderProduct.ProductId)
-                            .OnDelete(DeleteBehavior.Cascade),
-                    l =>
-                        l.HasOne<IncomingOrder>(incomingOrderProduct => incomingOrderProduct.IncomingOrder)
-                            .WithMany()
-                            .HasForeignKey(incomingOrderProduct =>
-                                incomingOrderProduct.IncomingOrderId
-                            )
-                            .OnDelete(DeleteBehavior.Cascade)
-                );
 
-            modelBuilder
-                .Entity<RefundOrder>()
-                .HasMany(refundOrder => refundOrder.Products)
-                .WithMany(product => product.RefundOrders)
-                .UsingEntity<RefundOrderProduct>(
-                    r =>
-                        r.HasOne<Product>(refundOrderProduct=>refundOrderProduct.Product)
-                            .WithMany()
-                            .HasForeignKey(refundOrderProduct => refundOrderProduct.ProductId)
-                            .OnDelete(DeleteBehavior.Cascade),
-                    l =>
-                        l.HasOne<RefundOrder>(refundOrderProduct => refundOrderProduct.RefundOrder)
-                            .WithMany()
-                            .HasForeignKey(refundOrderProduct => refundOrderProduct.RefundOrderId)
-                            .OnDelete(DeleteBehavior.Cascade)
-                );
+            
+
+            
 
             modelBuilder
                 .Entity<Shop>()
@@ -148,6 +117,20 @@ namespace Infrastructure.Data
             #endregion
 
             #region OneToManyRelationships
+            modelBuilder
+                .Entity<RefundOrder>()
+                .HasMany(refundOrder => refundOrder.RefundOrderProducts)
+                .WithOne(refundOrderProduct => refundOrderProduct.RefundOrder)
+                .HasForeignKey(refundOrderProduct => refundOrderProduct.RefundOrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder
+                .Entity<IncomingOrder>()
+                .HasMany(incomingOrder => incomingOrder.IncomingOrderProducts)
+                .WithOne(incomingOrderProduct => incomingOrderProduct.IncomingOrder)
+                .HasForeignKey(incomingOrderProduct => incomingOrderProduct.IncomingOrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder
                 .Entity<Vendor>()
                 .HasMany(vendor => vendor.IncomingOrders)

@@ -28,9 +28,26 @@ namespace Infrastructure.Repository
                     return GeneralDbResponses.ItemNotFound("ZoneStaff");
                 }
 
-                wmsDbContext.Entry(zoneStaffFound).State = EntityState.Detached;
-                var adaptData = request.Model.Adapt<ZoneStaff>();
-                wmsDbContext.ZoneStaffs.Update(adaptData);
+                var zoneFound = await wmsDbContext.Zones.FirstOrDefaultAsync(
+                    zone => zone.Id == request.Model.ZoneId,
+                    cancellationToken);
+                if (zoneFound == null)
+                {
+                    return GeneralDbResponses.ItemNotFound("Zone");
+                }
+                zoneStaffFound.Zone = zoneFound;
+                zoneStaffFound.ZoneId = request.Model.ZoneId;
+
+                var staffFound = await wmsDbContext.Staffs.FirstOrDefaultAsync(
+                    staff => staff.Id == request.Model.StaffId,
+                    cancellationToken);
+                if (staffFound == null)
+                {
+                    return GeneralDbResponses.ItemNotFound("Staff");
+                }
+                zoneStaffFound.Staff = staffFound;
+                zoneStaffFound.StaffId = request.Model.StaffId;
+
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
                 return GeneralDbResponses.ItemUpdated("ZoneStaff");
             }

@@ -1,11 +1,7 @@
 using Application.DTO.Response;
 using Application.Service.Commands;
 
-using Domain.Entities;
-
 using Infrastructure.Data;
-
-using Mapster;
 
 using MediatR;
 
@@ -28,9 +24,22 @@ namespace Infrastructure.Repository
                     return GeneralDbResponses.ItemNotFound("Courier");
                 }
 
-                wmsDbContext.Entry(courierFound).State = EntityState.Detached;
-                var adaptData = request.Model.Adapt<Courier>();
-                wmsDbContext.Couriers.Update(adaptData);
+                courierFound.Name = request.Model.Name;
+                courierFound.Price = request.Model.Price;
+                courierFound.Remark = request.Model.Remark;
+
+                var customerOrdersToAdd = await wmsDbContext.CustomerOrders
+                    .Where(customerOrder => request.Model.CustomerOrderIds.Contains(customerOrder.Id))
+                    .ToListAsync(cancellationToken);
+                courierFound.CustomerOrders.RemoveAll(customerOrder => !request.Model.CustomerOrderIds.Contains(customerOrder.Id));
+                foreach (var customerOrderToAdd in customerOrdersToAdd)
+                {
+                    if (courierFound.CustomerOrders.All(customerOrder => customerOrder.Id != customerOrderToAdd.Id))
+                    {
+                        courierFound.CustomerOrders.Add(customerOrderToAdd);
+                    }
+                }
+
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
                 return GeneralDbResponses.ItemUpdated("Courier");
             }

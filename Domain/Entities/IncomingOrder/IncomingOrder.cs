@@ -10,11 +10,10 @@
 
         public string Status { get; set; } = string.Empty;
 
-        // many to many relationship
-        public List<Product> Products { get; set; }
-
         // one to many relationship
         public Guid VendorId { get; set; }
         public Vendor Vendor { get; set; }
+
+        public List<IncomingOrderProduct> IncomingOrderProducts { get; set; }
     }
 }

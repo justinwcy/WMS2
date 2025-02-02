@@ -1,11 +1,7 @@
 using Application.DTO.Response;
 using Application.Service.Commands;
 
-using Domain.Entities;
-
 using Infrastructure.Data;
-
-using Mapster;
 
 using MediatR;
 
@@ -20,28 +16,52 @@ namespace Infrastructure.Repository
             try
             {
                 await using var wmsDbContext = contextFactory.CreateDbContext();
-                var zoneFound = await wmsDbContext.Zones.FirstOrDefaultAsync(
-                    zone => zone.Id.Equals(request.Model.Id),
+                var zoneFound = await wmsDbContext.Zones
+                    .Include(zone=>zone.Warehouse)
+                    .Include(zone=>zone.Racks)
+                    .Include(zone=>zone.Staffs)
+                    .FirstOrDefaultAsync(zone => zone.Id.Equals(request.Model.Id),
                     cancellationToken);
                 if (zoneFound == null)
                 {
                     return GeneralDbResponses.ItemNotFound("Zone");
                 }
 
-                wmsDbContext.Entry(zoneFound).State = EntityState.Detached;
-                var adaptData = request.Model.Adapt<Zone>();
+                // update plain data
+                zoneFound.Name = request.Model.Name;
 
-                var staffsFound = await wmsDbContext.Staffs.Where(
-                    staff => request.Model.StaffIds.Contains(staff.Id))
+                // update relationships
+                var warehouseFound = wmsDbContext.Warehouses.FirstOrDefault(warehouse => warehouse.Id == request.Model.Id);
+                if (warehouseFound == null)
+                {
+                    return GeneralDbResponses.ItemNotFound("Warehouse");
+                }
+                zoneFound.Warehouse = warehouseFound;
+
+                var racksToAdd = await wmsDbContext.Racks
+                    .Where(rack => request.Model.RackIds.Contains(rack.Id))
                     .ToListAsync(cancellationToken);
-                adaptData.Staffs = staffsFound;
+                zoneFound.Racks.RemoveAll(r => !request.Model.RackIds.Contains(r.Id));
+                foreach (var rackToAdd in racksToAdd)
+                {
+                    if (zoneFound.Racks.All(rack => rack.Id != rackToAdd.Id))
+                    {
+                        zoneFound.Racks.Add(rackToAdd);
+                    }
+                }
 
-                var racksFound = await wmsDbContext.Racks.Where(
-                    rack => request.Model.RackIds.Contains(rack.Id))
+                var staffsToAdd = await wmsDbContext.Staffs
+                    .Where(staff => request.Model.StaffIds.Contains(staff.Id))
                     .ToListAsync(cancellationToken);
-                adaptData.Racks = racksFound;
+                zoneFound.Staffs.RemoveAll(s => !request.Model.StaffIds.Contains(s.Id));
+                foreach (var staffToAdd in staffsToAdd)
+                {
+                    if (zoneFound.Staffs.All(staff => staff.Id != staffToAdd.Id))
+                    {
+                        zoneFound.Staffs.Add(staffToAdd);
+                    }
+                }
 
-                wmsDbContext.Zones.Update(adaptData);
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
                 return GeneralDbResponses.ItemUpdated("Zone");
             }
