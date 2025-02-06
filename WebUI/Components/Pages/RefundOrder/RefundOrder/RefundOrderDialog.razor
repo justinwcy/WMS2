@@ -1,16 +1,14 @@
-@using Application.DTO.Response
-
 <MudDialog>
     <TitleContent>
         RefundOrders
     </TitleContent>
     <DialogContent>
         <RefundOrder RefundOrderIds="RefundOrderIds" 
-            CurrentStaff="CurrentStaff" 
-            MainPage="MainPage" 
-            PageComponents="PageComponents"
-            ShowCreateButton=@ShowCreateButton
-            ShowDeleteButton=@ShowDeleteButton/>
+                     CurrentStaff="CurrentStaff" 
+                     MainPage="MainPage" 
+                     PageComponents="PageComponents"
+                     ShowCreateButton=@ShowCreateButton
+                     ShowDeleteButton=@ShowDeleteButton/>
     </DialogContent>
 </MudDialog>
 
@@ -38,5 +36,3 @@
         ShowDeleteButton = !PageComponents.Select(pageComponent => pageComponent.Name).Contains("RefundOrder");
     }
 }
-
-    

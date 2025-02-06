@@ -1,9 +1,3 @@
-@using System.Reflection
-@using Application.Constants
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
 <MudDialog>
     <TitleContent>
         Create Refund Order
@@ -41,7 +35,7 @@
                           T="string"
                           Label="Refund Reason"
                           Required="true" RequiredError="Reason is required!"
-                          Margin="Margin.Dense"/>
+                          Margin="Margin.Dense" />
 
         </MudForm>
     </DialogContent>
@@ -75,24 +69,24 @@
     private async Task Submit()
     {
         var createRefundOrderDTO = new CreateRefundOrderRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Status = _refundOrderModel.Status,
-            RefundReason = _refundOrderModel.RefundReason,
-            RefundDate = _refundOrderModel.RefundDate.Value,
-            RefundOrderProductIds = _refundOrderModel.RefundOrderProductIds,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Status = _refundOrderModel.Status,
+                RefundReason = _refundOrderModel.RefundReason,
+                RefundDate = _refundOrderModel.RefundDate.Value,
+                RefundOrderProductIds = _refundOrderModel.RefundOrderProductIds,
+            };
         var createRefundOrderCommand = new CreateRefundOrderCommand(createRefundOrderDTO);
         var createdRefundOrderResponseDTO = await Mediator.Send(createRefundOrderCommand);
 
         var createdRefundOrderModel = new RefundOrderModel()
-        {
-            Id = createdRefundOrderResponseDTO.Id,
-            Status = _refundOrderModel.Status,
-            RefundReason = _refundOrderModel.RefundReason,
-            RefundDate = _refundOrderModel.RefundDate,
-            RefundOrderProductIds = _refundOrderModel.RefundOrderProductIds,
-        };
+            {
+                Id = createdRefundOrderResponseDTO.Id,
+                Status = _refundOrderModel.Status,
+                RefundReason = _refundOrderModel.RefundReason,
+                RefundDate = _refundOrderModel.RefundDate,
+                RefundOrderProductIds = _refundOrderModel.RefundOrderProductIds,
+            };
         MudDialog.Close(DialogResult.Ok(createdRefundOrderModel));
     }
 
@@ -101,4 +95,3 @@
         MudDialog.Cancel();
     }
 }
-    

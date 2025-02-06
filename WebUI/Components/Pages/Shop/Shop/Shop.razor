@@ -28,25 +28,25 @@
     </MudItem>
 </MudGrid>
 
-<MudTable Hover="true"  FixedHeader="true"
-Filter="new Func<ShopModel,bool>(FilterFunc)"
-CanCancelEdit="true"
-Items="@ShopModels"
-GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-GroupFooterClass="mb-4"
-Dense="true"
-Loading="@_loading" LoadingProgressColor="Color.Info"
-MultiSelection="true"
-@bind-SelectedItems="_selectedShops"
-SelectOnRowClick="false"
-CommitEditTooltip="Commit Edit"
-CancelEditTooltip="Cancel Edit"
-IsEditRowSwitchingBlocked="false"
-RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-RowEditCommit="ItemHasBeenCommitted"
-ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-@ref="_tableRef">
+<MudTable Hover="true" FixedHeader="true"
+          Filter="new Func<ShopModel,bool>(FilterFunc)"
+          CanCancelEdit="true"
+          Items="@ShopModels"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4"
+          Dense="true"
+          Loading="@_loading" LoadingProgressColor="Color.Info"
+          MultiSelection="true"
+          @bind-SelectedItems="_selectedShops"
+          SelectOnRowClick="false"
+          CommitEditTooltip="Commit Edit"
+          CancelEditTooltip="Cancel Edit"
+          IsEditRowSwitchingBlocked="false"
+          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted"
+          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+          @ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Shops</MudText>
@@ -76,10 +76,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Platform">@context.Platform</MudTd>
         <MudTd DataLabel="Products">
             <MudButton OnClick="@(() => OpenProductDialogAsync(@context.ProductIds))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
                 View (@context.ProductIds.Count)
             </MudButton>
         </MudTd>
@@ -107,10 +107,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-        RowsPerPageString="Rows per page:"
-        InfoFormat="{first_item}-{last_item} of {all_items}"
-        AllItemsText="All"
-        HorizontalAlignment="HorizontalAlignment.Right" />
+                       RowsPerPageString="Rows per page:"
+                       InfoFormat="{first_item}-{last_item} of {all_items}"
+                       AllItemsText="All"
+                       HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -120,13 +120,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     [Parameter]
     public bool ShowCreateButton { get; set; }
-    
+
     [Parameter]
     public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }
-    
+
     [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
 
@@ -204,14 +204,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
 
         _shopModelBeforeEdit = new ShopModel()
-        {
-            Id = ((ShopModel)shopModel).Id,
-            Name = ((ShopModel)shopModel).Name,
-            Address = ((ShopModel)shopModel).Address,
-            Platform = ((ShopModel)shopModel).Platform,
-            Website = ((ShopModel)shopModel).Website,
-            ProductIds = ((ShopModel)shopModel).ProductIds,
-        };
+            {
+                Id = ((ShopModel)shopModel).Id,
+                Name = ((ShopModel)shopModel).Name,
+                Address = ((ShopModel)shopModel).Address,
+                Platform = ((ShopModel)shopModel).Platform,
+                Website = ((ShopModel)shopModel).Website,
+                ProductIds = ((ShopModel)shopModel).ProductIds,
+            };
         StateHasChanged();
     }
 
@@ -231,15 +231,15 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
         var shopModelConverted = (ShopModel)shopModel;
         var updateShopDTO = new UpdateShopRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Id = shopModelConverted.Id,
-            Name = shopModelConverted.Name,
-            Address = shopModelConverted.Address,
-            Platform = shopModelConverted.Platform,
-            Website = shopModelConverted.Website,
-            ProductIds = shopModelConverted.ProductIds,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Id = shopModelConverted.Id,
+                Name = shopModelConverted.Name,
+                Address = shopModelConverted.Address,
+                Platform = shopModelConverted.Platform,
+                Website = shopModelConverted.Website,
+                ProductIds = shopModelConverted.ProductIds,
+            };
         var updateShopCommand = new UpdateShopCommand(updateShopDTO);
         var response = await Mediator.Send(updateShopCommand);
         SnackBar.Add(response.Message);

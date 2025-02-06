@@ -1,15 +1,10 @@
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
-@using Application.Service.Queries
 <MudDialog>
     <TitleContent>
         Create Zone
     </TitleContent>
     <DialogContent>
         <MudForm @bind-IsValid="@_isFormValid">
-            
+
             <MudSelect @bind-Value="_zoneModel.WarehouseId"
                        T="Guid?"
                        ToStringFunc="@(id=> _allWarehouseModels.FirstOrDefault(warehouseModel=>warehouseModel.Id == id)?.Name)"
@@ -37,7 +32,7 @@
                           T="string"
                           Label="Zone Name"
                           Required="true" RequiredError="Zone is required!"
-                          Margin="Margin.Dense"/>
+                          Margin="Margin.Dense" />
 
         </MudForm>
     </DialogContent>
@@ -71,13 +66,13 @@
             var warehouseDTO = await Mediator.Send(getWarehouseByIdQuery);
 
             var warehouseModel = new WarehouseModel()
-            {
-                Id = warehouseDTO.Id,
-                Name = warehouseDTO.Name,
-                Address = warehouseDTO.Address,
-                ZoneIds = warehouseDTO.ZoneIds,
-                CompanyId = warehouseDTO.CompanyId,
-            };
+                {
+                    Id = warehouseDTO.Id,
+                    Name = warehouseDTO.Name,
+                    Address = warehouseDTO.Address,
+                    ZoneIds = warehouseDTO.ZoneIds,
+                    CompanyId = warehouseDTO.CompanyId,
+                };
             _allWarehouseModels.Add(warehouseModel);
         }
     }
@@ -85,24 +80,24 @@
     private async Task Submit()
     {
         var createZoneDTO = new CreateZoneRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Name = _zoneModel.Name,
-            WarehouseId = _zoneModel.WarehouseId,
-            StaffIds = _zoneModel.StaffIds,
-            RackIds = _zoneModel.RackIds,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Name = _zoneModel.Name,
+                WarehouseId = _zoneModel.WarehouseId,
+                StaffIds = _zoneModel.StaffIds,
+                RackIds = _zoneModel.RackIds,
+            };
         var createZoneCommand = new CreateZoneCommand(createZoneDTO);
         var createdZoneResponseDTO = await Mediator.Send(createZoneCommand);
 
         var createdZoneModel = new ZoneModel()
-        {
-            Id = createdZoneResponseDTO.Id,
-            Name = _zoneModel.Name,
-            StaffIds = _zoneModel.StaffIds,
-            WarehouseId = _zoneModel.WarehouseId,
-            RackIds = _zoneModel.RackIds,
-        };
+            {
+                Id = createdZoneResponseDTO.Id,
+                Name = _zoneModel.Name,
+                StaffIds = _zoneModel.StaffIds,
+                WarehouseId = _zoneModel.WarehouseId,
+                RackIds = _zoneModel.RackIds,
+            };
         MudDialog.Close(DialogResult.Ok(createdZoneModel));
     }
 
@@ -111,4 +106,3 @@
         MudDialog.Cancel();
     }
 }
-    

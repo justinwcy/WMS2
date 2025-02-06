@@ -6,11 +6,11 @@
     </TitleContent>
     <DialogContent>
         <Warehouse WarehouseIds="WarehouseIds" 
-            CurrentStaff="CurrentStaff" 
-            MainPage="MainPage" 
-            PageComponents="PageComponents"
-            ShowCreateButton=@ShowCreateButton
-            ShowDeleteButton=@ShowDeleteButton/>
+                   CurrentStaff="CurrentStaff" 
+                   MainPage="MainPage" 
+                   PageComponents="PageComponents"
+                   ShowCreateButton=@ShowCreateButton
+                   ShowDeleteButton=@ShowDeleteButton/>
     </DialogContent>
 </MudDialog>
 
@@ -38,5 +38,3 @@
         ShowDeleteButton = !PageComponents.Select(pageComponent => pageComponent.Name).Contains("Warehouse");
     }
 }
-
-    

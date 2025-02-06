@@ -25,14 +25,14 @@
                     <MudSelectItem T="Guid?" Value="@productModel.Id"></MudSelectItem>
                 }
             </MudSelect>
-            
+
             <MudTextField @bind-value="_inventoryModel.Quantity"
                           Variant="@_defaultVariant"
                           T="int"
                           Label="Quantity"
                           Required="true" RequiredError="Quantity is required!"
                           Margin="Margin.Dense" />
-            
+
             <MudTextField @bind-value="_inventoryModel.DaysLeadTime"
                           Variant="@_defaultVariant"
                           T="int"
@@ -72,20 +72,20 @@
             var productDTO = await Mediator.Send(getProductByIdQuery);
 
             var productModel = new ProductModel()
-            {
-                Id = productDTO.Id,
-                Name = productDTO.Name,
-                Description = productDTO.Description,
-                Height = productDTO.Height,
-                Length = productDTO.Length,
-                Price = productDTO.Price,
-                ProductGroupIds = productDTO.ProductGroupIds,
-                ShopIds = productDTO.ShopIds,
-                Sku = productDTO.Sku,
-                Tag = productDTO.Tag,
-                Weight = productDTO.Weight,
-                Width = productDTO.Width,
-            };
+                {
+                    Id = productDTO.Id,
+                    Name = productDTO.Name,
+                    Description = productDTO.Description,
+                    Height = productDTO.Height,
+                    Length = productDTO.Length,
+                    Price = productDTO.Price,
+                    ProductGroupIds = productDTO.ProductGroupIds,
+                    ShopIds = productDTO.ShopIds,
+                    Sku = productDTO.Sku,
+                    Tag = productDTO.Tag,
+                    Weight = productDTO.Weight,
+                    Width = productDTO.Width,
+                };
             _allProductModels.Add(productModel);
         }
     }
@@ -93,24 +93,24 @@
     private async Task Submit()
     {
         var createInventoryDTO = new CreateInventoryRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Quantity = _inventoryModel.Quantity,
-            ProductId = _inventoryModel.ProductId,
-            DaysLeadTime = _inventoryModel.DaysLeadTime,
+            {
+                CreatedBy = CurrentStaff.Id,
+                Quantity = _inventoryModel.Quantity,
+                ProductId = _inventoryModel.ProductId,
+                DaysLeadTime = _inventoryModel.DaysLeadTime,
 
 
-        };
+            };
         var createInventoryCommand = new CreateInventoryCommand(createInventoryDTO);
         var createdInventoryResponseDTO = await Mediator.Send(createInventoryCommand);
 
         var createdInventoryModel = new InventoryModel()
-        {
-            Id = createdInventoryResponseDTO.Id,
-            Quantity = _inventoryModel.Quantity,
-            ProductId = _inventoryModel.ProductId,
-            DaysLeadTime = _inventoryModel.DaysLeadTime,
-        };
+            {
+                Id = createdInventoryResponseDTO.Id,
+                Quantity = _inventoryModel.Quantity,
+                ProductId = _inventoryModel.ProductId,
+                DaysLeadTime = _inventoryModel.DaysLeadTime,
+            };
         MudDialog.Close(DialogResult.Ok(createdInventoryModel));
     }
 
@@ -119,4 +119,3 @@
         MudDialog.Cancel();
     }
 }
-    

@@ -29,24 +29,24 @@
 </MudGrid>
 
 <MudTable Hover="true" FixedHeader="true"
-Filter="new Func<VendorModel,bool>(FilterFunc)"
-CanCancelEdit="true"
-Items="@VendorModels"
-GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-GroupFooterClass="mb-4"
-Dense="true"
-Loading="@_loading" LoadingProgressColor="Color.Info"
-MultiSelection="true"
-@bind-SelectedItems="_selectedVendors"
-SelectOnRowClick="false"
-CommitEditTooltip="Commit Edit"
-CancelEditTooltip="Cancel Edit"
-IsEditRowSwitchingBlocked="false"
-RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-RowEditCommit="ItemHasBeenCommitted"
-ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-@ref="_tableRef">
+          Filter="new Func<VendorModel,bool>(FilterFunc)"
+          CanCancelEdit="true"
+          Items="@VendorModels"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4"
+          Dense="true"
+          Loading="@_loading" LoadingProgressColor="Color.Info"
+          MultiSelection="true"
+          @bind-SelectedItems="_selectedVendors"
+          SelectOnRowClick="false"
+          CommitEditTooltip="Commit Edit"
+          CancelEditTooltip="Cancel Edit"
+          IsEditRowSwitchingBlocked="false"
+          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted"
+          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+          @ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Vendors</MudText>
@@ -54,14 +54,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col/>
-        <col/>
-        <col/>
-        <col/>
-        <col/>
-        <col/>
-        <col/>
-        <col/>
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<VendorModel, object>(x=>x.FirstName)">First Name</MudTableSortLabel></MudTh>
@@ -79,10 +79,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Phone Number">@context.PhoneNumber</MudTd>
         <MudTd DataLabel="Incoming Orders">
             <MudButton OnClick="@(() => OpenIncomingOrderDialogAsync(@context.IncomingOrderIds))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
                 View (@context.IncomingOrderIds.Count)
             </MudButton>
         </MudTd>
@@ -92,7 +92,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="First Name">
             <MudTextField @bind-Value="context.FirstName" Required />
         </MudTd>
-        
+
         <MudTd DataLabel="Last Name">
             <MudTextField @bind-Value="context.LastName" Required />
         </MudTd>
@@ -106,8 +106,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         </MudTd>
 
         <MudTd DataLabel="PhoneNumber">
-            <MudTextField @bind-Value="context.PhoneNumber" 
-                          Required 
+            <MudTextField @bind-Value="context.PhoneNumber"
+                          Required
                           Validation="@(new PhoneAttribute() { ErrorMessage = "The phone number is invalid" })" />
         </MudTd>
 
@@ -116,10 +116,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-        RowsPerPageString="Rows per page:"
-        InfoFormat="{first_item}-{last_item} of {all_items}"
-        AllItemsText="All"
-        HorizontalAlignment="HorizontalAlignment.Right" />
+                       RowsPerPageString="Rows per page:"
+                       InfoFormat="{first_item}-{last_item} of {all_items}"
+                       AllItemsText="All"
+                       HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -129,13 +129,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     [Parameter]
     public bool ShowCreateButton { get; set; }
-    
+
     [Parameter]
     public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }
-    
+
     [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
 
@@ -199,8 +199,8 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             var result = await Mediator.Send(deleteVendorCommand);
 
             if (result.Success)
-            { 
-                VendorIds.Remove(vendorModel.Id); 
+            {
+                VendorIds.Remove(vendorModel.Id);
                 VendorModels.Remove(vendorModel);
             }
 
@@ -214,15 +214,15 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
 
         _vendorModelBeforeEdit = new VendorModel()
-        {
-            Id = ((VendorModel)vendorModel).Id,
-            Address = ((VendorModel)vendorModel).Address,
-            FirstName = ((VendorModel)vendorModel).FirstName,
-            LastName = ((VendorModel)vendorModel).LastName,
-            Email = ((VendorModel)vendorModel).Email,
-            IncomingOrderIds = ((VendorModel)vendorModel).IncomingOrderIds,
-            PhoneNumber = ((VendorModel)vendorModel).PhoneNumber,
-        };
+            {
+                Id = ((VendorModel)vendorModel).Id,
+                Address = ((VendorModel)vendorModel).Address,
+                FirstName = ((VendorModel)vendorModel).FirstName,
+                LastName = ((VendorModel)vendorModel).LastName,
+                Email = ((VendorModel)vendorModel).Email,
+                IncomingOrderIds = ((VendorModel)vendorModel).IncomingOrderIds,
+                PhoneNumber = ((VendorModel)vendorModel).PhoneNumber,
+            };
         StateHasChanged();
     }
 
@@ -242,16 +242,16 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private async void ItemHasBeenCommitted(object vendorModel)
     {
         var updateVendorDTO = new UpdateVendorRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Id = ((VendorModel)vendorModel).Id,
-            Address = ((VendorModel)vendorModel).Address,
-            FirstName = ((VendorModel)vendorModel).FirstName,
-            LastName = ((VendorModel)vendorModel).LastName,
-            Email = ((VendorModel)vendorModel).Email,
-            IncomingOrderIds = ((VendorModel)vendorModel).IncomingOrderIds,
-            PhoneNumber = ((VendorModel)vendorModel).PhoneNumber,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Id = ((VendorModel)vendorModel).Id,
+                Address = ((VendorModel)vendorModel).Address,
+                FirstName = ((VendorModel)vendorModel).FirstName,
+                LastName = ((VendorModel)vendorModel).LastName,
+                Email = ((VendorModel)vendorModel).Email,
+                IncomingOrderIds = ((VendorModel)vendorModel).IncomingOrderIds,
+                PhoneNumber = ((VendorModel)vendorModel).PhoneNumber,
+            };
         var updateVendorCommand = new UpdateVendorCommand(updateVendorDTO);
         var response = await Mediator.Send(updateVendorCommand);
         SnackBar.Add(response.Message);
@@ -321,5 +321,3 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         }
     }
 }
-
-    

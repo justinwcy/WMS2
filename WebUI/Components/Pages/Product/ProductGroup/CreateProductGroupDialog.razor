@@ -1,8 +1,3 @@
-
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
 <MudDialog>
     <TitleContent>
         Create ProductGroup
@@ -14,8 +9,8 @@
                           T="string"
                           Label="Product Group Name"
                           Required="true" RequiredError="Name is required!"
-                          Margin="Margin.Dense"/>
-            
+                          Margin="Margin.Dense" />
+
             <MudTextField @bind-value="_productGroupModel.Description"
                           Variant="@_defaultVariant"
                           T="string"
@@ -43,22 +38,22 @@
     private async Task Submit()
     {
         var createProductGroupDTO = new CreateProductGroupRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Name = _productGroupModel.Name,
-            Description = _productGroupModel.Description,
-            ProductIds = _productGroupModel.ProductIds,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Name = _productGroupModel.Name,
+                Description = _productGroupModel.Description,
+                ProductIds = _productGroupModel.ProductIds,
+            };
         var createProductGroupCommand = new CreateProductGroupCommand(createProductGroupDTO);
         var createdProductGroupResponseDTO = await Mediator.Send(createProductGroupCommand);
 
         var createdProductGroupModel = new ProductGroupModel()
-        {
-            Id = createdProductGroupResponseDTO.Id,
-            Name = _productGroupModel.Name,
-            Description = _productGroupModel.Description,
-            ProductIds = _productGroupModel.ProductIds,
-        };
+            {
+                Id = createdProductGroupResponseDTO.Id,
+                Name = _productGroupModel.Name,
+                Description = _productGroupModel.Description,
+                ProductIds = _productGroupModel.ProductIds,
+            };
         MudDialog.Close(DialogResult.Ok(createdProductGroupModel));
     }
 
@@ -67,4 +62,3 @@
         MudDialog.Cancel();
     }
 }
-    

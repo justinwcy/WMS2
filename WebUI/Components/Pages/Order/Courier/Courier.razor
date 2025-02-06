@@ -28,25 +28,25 @@
     </MudItem>
 </MudGrid>
 
-<MudTable Hover="true"  FixedHeader="true"
-Filter="new Func<CourierModel,bool>(FilterFunc)"
-CanCancelEdit="true"
-Items="@CourierModels"
-GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-GroupFooterClass="mb-4"
-Dense="true"
-Loading="@_loading" LoadingProgressColor="Color.Info"
-MultiSelection="true"
-@bind-SelectedItems="_selectedCouriers"
-SelectOnRowClick="false"
-CommitEditTooltip="Commit Edit"
-CancelEditTooltip="Cancel Edit"
-IsEditRowSwitchingBlocked="false"
-RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-RowEditCommit="ItemHasBeenCommitted"
-ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-@ref="_tableRef">
+<MudTable Hover="true" FixedHeader="true"
+          Filter="new Func<CourierModel,bool>(FilterFunc)"
+          CanCancelEdit="true"
+          Items="@CourierModels"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4"
+          Dense="true"
+          Loading="@_loading" LoadingProgressColor="Color.Info"
+          MultiSelection="true"
+          @bind-SelectedItems="_selectedCouriers"
+          SelectOnRowClick="false"
+          CommitEditTooltip="Commit Edit"
+          CancelEditTooltip="Cancel Edit"
+          IsEditRowSwitchingBlocked="false"
+          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted"
+          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+          @ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Couriers</MudText>
@@ -100,10 +100,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-        RowsPerPageString="Rows per page:"
-        InfoFormat="{first_item}-{last_item} of {all_items}"
-        AllItemsText="All"
-        HorizontalAlignment="HorizontalAlignment.Right" />
+                       RowsPerPageString="Rows per page:"
+                       InfoFormat="{first_item}-{last_item} of {all_items}"
+                       AllItemsText="All"
+                       HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -113,13 +113,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     [Parameter]
     public bool ShowCreateButton { get; set; }
-    
+
     [Parameter]
     public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }
-    
+
     [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
 
@@ -193,13 +193,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
 
         _courierModelBeforeEdit = new CourierModel()
-        {
-            Id = ((CourierModel)courierModel).Id,
-            Name = ((CourierModel)courierModel).Name,
-            Price = ((CourierModel)courierModel).Price,
-            CustomerOrderIds = ((CourierModel)courierModel).CustomerOrderIds,
-            Remark = ((CourierModel)courierModel).Remark,
-        };
+            {
+                Id = ((CourierModel)courierModel).Id,
+                Name = ((CourierModel)courierModel).Name,
+                Price = ((CourierModel)courierModel).Price,
+                CustomerOrderIds = ((CourierModel)courierModel).CustomerOrderIds,
+                Remark = ((CourierModel)courierModel).Remark,
+            };
         StateHasChanged();
     }
 
@@ -217,14 +217,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private async void ItemHasBeenCommitted(object courierModel)
     {
         var updateCourierDTO = new UpdateCourierRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Id = ((CourierModel)courierModel).Id,
-            Name = ((CourierModel)courierModel).Name,
-            Price = ((CourierModel)courierModel).Price,
-            CustomerOrderIds = ((CourierModel)courierModel).CustomerOrderIds,
-            Remark = ((CourierModel)courierModel).Remark,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Id = ((CourierModel)courierModel).Id,
+                Name = ((CourierModel)courierModel).Name,
+                Price = ((CourierModel)courierModel).Price,
+                CustomerOrderIds = ((CourierModel)courierModel).CustomerOrderIds,
+                Remark = ((CourierModel)courierModel).Remark,
+            };
         var updateCourierCommand = new UpdateCourierCommand(updateCourierDTO);
         var response = await Mediator.Send(updateCourierCommand);
         SnackBar.Add(response.Message);
@@ -291,5 +291,3 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         }
     }
 }
-
-    

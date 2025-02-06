@@ -4,7 +4,7 @@
     </TitleContent>
     <DialogContent>
         <MudForm @bind-IsValid="@_isFormValid">
-            
+
             <MudSelect @bind-Value="_refundOrderProductModel.ProductId"
                        T="Guid?"
                        ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
@@ -26,7 +26,7 @@
                     <MudSelectItem T="Guid?" Value="@productModel.Id"></MudSelectItem>
                 }
             </MudSelect>
-            
+
             <MudSelect @bind-Value="_refundOrderProductModel.Status"
                        Variant="@_defaultVariant"
                        Label="Status"
@@ -92,20 +92,20 @@
             var productDTO = await Mediator.Send(getProductByIdQuery);
 
             var productModel = new ProductModel()
-            {
-                Id = productDTO.Id,
-                Name = productDTO.Name,
-                Description = productDTO.Description,
-                Height = productDTO.Height,
-                Length = productDTO.Length,
-                Price = productDTO.Price,
-                ProductGroupIds = productDTO.ProductGroupIds,
-                ShopIds = productDTO.ShopIds,
-                Sku = productDTO.Sku,
-                Tag = productDTO.Tag,
-                Weight = productDTO.Weight,
-                Width = productDTO.Width,
-            };
+                {
+                    Id = productDTO.Id,
+                    Name = productDTO.Name,
+                    Description = productDTO.Description,
+                    Height = productDTO.Height,
+                    Length = productDTO.Length,
+                    Price = productDTO.Price,
+                    ProductGroupIds = productDTO.ProductGroupIds,
+                    ShopIds = productDTO.ShopIds,
+                    Sku = productDTO.Sku,
+                    Tag = productDTO.Tag,
+                    Weight = productDTO.Weight,
+                    Width = productDTO.Width,
+                };
             _allProductModels.Add(productModel);
         }
 
@@ -119,24 +119,24 @@
     private async Task Submit()
     {
         var createRefundOrderProductDTO = new CreateRefundOrderProductRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Status = _refundOrderProductModel.Status,
-            ProductId = _refundOrderProductModel.ProductId,
-            Quantity = _refundOrderProductModel.Quantity,
-            RefundOrderId = _refundOrderProductModel.RefundOrderId,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Status = _refundOrderProductModel.Status,
+                ProductId = _refundOrderProductModel.ProductId,
+                Quantity = _refundOrderProductModel.Quantity,
+                RefundOrderId = _refundOrderProductModel.RefundOrderId,
+            };
         var createRefundOrderProductCommand = new CreateRefundOrderProductCommand(createRefundOrderProductDTO);
         var createdRefundOrderProductResponseDTO = await Mediator.Send(createRefundOrderProductCommand);
 
         var createdRefundOrderProductModel = new RefundOrderProductModel()
-        {
-            Id = createdRefundOrderProductResponseDTO.Id,
-            Status = _refundOrderProductModel.Status,
-            ProductId = _refundOrderProductModel.ProductId,
-            Quantity = _refundOrderProductModel.Quantity,
-            RefundOrderId = _refundOrderProductModel.RefundOrderId,
-        };
+            {
+                Id = createdRefundOrderProductResponseDTO.Id,
+                Status = _refundOrderProductModel.Status,
+                ProductId = _refundOrderProductModel.ProductId,
+                Quantity = _refundOrderProductModel.Quantity,
+                RefundOrderId = _refundOrderProductModel.RefundOrderId,
+            };
         MudDialog.Close(DialogResult.Ok(createdRefundOrderProductModel));
     }
 
@@ -145,4 +145,3 @@
         MudDialog.Cancel();
     }
 }
-    

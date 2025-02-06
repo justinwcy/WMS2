@@ -28,35 +28,33 @@
     </MudItem>
 </MudGrid>
 
-<MudTable Hover="true"  FixedHeader="true"
-Filter="new Func<ProductModel,bool>(FilterFunc)"
-Items="@ProductModels"
-Dense="true"
-Bordered="true"
-Loading="@_loading" LoadingProgressColor="Color.Info"
-MultiSelection="true"
-@bind-SelectedItems="_selectedProducts" 
-SelectOnRowClick="false"
-
-CanCancelEdit="true"
-CommitEditTooltip="Commit Edit"
-CancelEditTooltip="Cancel Edit"
-IsEditRowSwitchingBlocked="false"
-RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-RowEditCommit="ItemHasBeenCommitted"
-ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd" 
-EditButtonPosition="TableEditButtonPosition.StartAndEnd" 
-EditTrigger="TableEditTrigger.RowClick"
->
+<MudTable Hover="true" FixedHeader="true"
+          Filter="new Func<ProductModel,bool>(FilterFunc)"
+          Items="@ProductModels"
+          Dense="true"
+          Bordered="true"
+          Loading="@_loading" LoadingProgressColor="Color.Info"
+          MultiSelection="true"
+          @bind-SelectedItems="_selectedProducts"
+          SelectOnRowClick="false"
+          CanCancelEdit="true"
+          CommitEditTooltip="Commit Edit"
+          CancelEditTooltip="Cancel Edit"
+          IsEditRowSwitchingBlocked="false"
+          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted"
+          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+          EditButtonPosition="TableEditButtonPosition.StartAndEnd"
+          EditTrigger="TableEditTrigger.RowClick">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Products</MudText>
-        <MudSpacer/>
+        <MudSpacer />
         <MudTextField @bind-Value="searchString"
-        Placeholder="Search"
-        Adornment="Adornment.Start"
-        AdornmentIcon="@Icons.Material.Filled.Search"
-        IconSize="Size.Medium" Class="mt-0"/>
+                      Placeholder="Search"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      IconSize="Size.Medium" Class="mt-0" />
     </ToolBarContent>
     <ColGroup>
         <col />
@@ -99,10 +97,10 @@ EditTrigger="TableEditTrigger.RowClick"
         <MudTd DataLabel="Width (cm)">@context.Width</MudTd>
         <MudTd DataLabel="Shop">
             <MudButton OnClick="@(() => OpenShopDialogAsync(context.ShopIds))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Large"
-            FullWidth="false">
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Large"
+                       FullWidth="false">
                 View (@context.ShopIds.Count)
             </MudButton>
         </MudTd>
@@ -119,7 +117,7 @@ EditTrigger="TableEditTrigger.RowClick"
 
     <RowEditingTemplate>
         <MudTd DataLabel="SKU">
-            <MudTextField @bind-Value="context.Sku" Required/>
+            <MudTextField @bind-Value="context.Sku" Required />
         </MudTd>
         <MudTd DataLabel="Name">
             <MudTextField @bind-Value="context.Name" Required />
@@ -151,11 +149,10 @@ EditTrigger="TableEditTrigger.RowClick"
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-        RowsPerPageString="Rows per page:"
-        InfoFormat="{first_item}-{last_item} of {all_items}"
-        AllItemsText="All"
-        HorizontalAlignment="HorizontalAlignment.Right"
-        />
+                       RowsPerPageString="Rows per page:"
+                       InfoFormat="{first_item}-{last_item} of {all_items}"
+                       AllItemsText="All"
+                       HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -165,13 +162,13 @@ EditTrigger="TableEditTrigger.RowClick"
 
     [Parameter]
     public bool ShowCreateButton { get; set; }
-    
+
     [Parameter]
     public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }
-    
+
     [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
 
@@ -249,19 +246,19 @@ EditTrigger="TableEditTrigger.RowClick"
     {
 
         _productModelBeforeEdit = new ProductModel()
-        {
-            Id = ((ProductModel)productModel).Id,
-            ProductGroupIds = ((ProductModel)productModel).ProductGroupIds,
-            Description = ((ProductModel)productModel).Description,
-            Name = ((ProductModel)productModel).Name,
-            Height = ((ProductModel)productModel).Height,
-            Length = ((ProductModel)productModel).Length,
-            Width = ((ProductModel)productModel).Width,
-            Price = ((ProductModel)productModel).Price,
-            Sku = ((ProductModel)productModel).Sku,
-            Tag = ((ProductModel)productModel).Tag,
-            Weight = ((ProductModel)productModel).Weight,
-        };
+            {
+                Id = ((ProductModel)productModel).Id,
+                ProductGroupIds = ((ProductModel)productModel).ProductGroupIds,
+                Description = ((ProductModel)productModel).Description,
+                Name = ((ProductModel)productModel).Name,
+                Height = ((ProductModel)productModel).Height,
+                Length = ((ProductModel)productModel).Length,
+                Width = ((ProductModel)productModel).Width,
+                Price = ((ProductModel)productModel).Price,
+                Sku = ((ProductModel)productModel).Sku,
+                Tag = ((ProductModel)productModel).Tag,
+                Weight = ((ProductModel)productModel).Weight,
+            };
         StateHasChanged();
     }
 
@@ -286,19 +283,19 @@ EditTrigger="TableEditTrigger.RowClick"
     {
         var productModelConverted = (ProductModel)productModel;
         var updateProductDTO = new UpdateProductRequestDTO()
-        {
+            {
                 CreatedBy = CurrentStaff.Id,
-            Description = productModelConverted.Description,
-            Id = productModelConverted.Id,
-            Name = productModelConverted.Name,
-            Height = productModelConverted.Height,
-            Length = productModelConverted.Length,
-            Width = productModelConverted.Width,
-            Price = productModelConverted.Price,
-            Sku = productModelConverted.Sku,
-            Tag = productModelConverted.Tag,
-            Weight = productModelConverted.Weight,
-        };
+                Description = productModelConverted.Description,
+                Id = productModelConverted.Id,
+                Name = productModelConverted.Name,
+                Height = productModelConverted.Height,
+                Length = productModelConverted.Length,
+                Width = productModelConverted.Width,
+                Price = productModelConverted.Price,
+                Sku = productModelConverted.Sku,
+                Tag = productModelConverted.Tag,
+                Weight = productModelConverted.Weight,
+            };
         var updateProductCommand = new UpdateProductCommand(updateProductDTO);
         var response = await Mediator.Send(updateProductCommand);
         SnackBar.Add(response.Message);

@@ -1,9 +1,4 @@
-﻿@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
-@using Application.Service.Queries
-<MudDialog>
+﻿<MudDialog>
     <TitleContent>
         Create Warehouse
     </TitleContent>
@@ -14,15 +9,15 @@
                           T="string"
                           Label="Warehouse Name"
                           Required="true" RequiredError="Name is required!"
-                          Margin="Margin.Dense"/>
+                          Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_warehouseModel.Address"
                           Variant="@_defaultVariant"
                           T="string"
                           Label="Warehouse Address"
                           Required="true" RequiredError="Address is required!"
-                          Margin="Margin.Dense"/>
-            
+                          Margin="Margin.Dense" />
+
             <MudSelect @bind-Value="_warehouseModel.CompanyId"
                        T="Guid?"
                        ToStringFunc="@(id=> _allCompanyModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.Name)"
@@ -77,12 +72,12 @@
             var companyDTO = await Mediator.Send(getCompanyByIdQuery);
 
             var companyModel = new CompanyModel()
-            {
-                Id = companyDTO.Id,
-                Name = companyDTO.Name,
-                StaffIds = companyDTO.StaffIds,
-                WarehouseIds = companyDTO.WarehouseIds,
-            };
+                {
+                    Id = companyDTO.Id,
+                    Name = companyDTO.Name,
+                    StaffIds = companyDTO.StaffIds,
+                    WarehouseIds = companyDTO.WarehouseIds,
+                };
             _allCompanyModels.Add(companyModel);
         }
     }
@@ -90,24 +85,24 @@
     private async Task Submit()
     {
         var createWarehouseDTO = new CreateWarehouseRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Name = _warehouseModel.Name,
-            Address = _warehouseModel.Address,
-            CompanyId = _warehouseModel.CompanyId,
-            ZoneIds = _warehouseModel.ZoneIds,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Name = _warehouseModel.Name,
+                Address = _warehouseModel.Address,
+                CompanyId = _warehouseModel.CompanyId,
+                ZoneIds = _warehouseModel.ZoneIds,
+            };
         var createWarehouseCommand = new CreateWarehouseCommand(createWarehouseDTO);
         var createdWarehouseResponseDTO = await Mediator.Send(createWarehouseCommand);
 
         var createdWarehouseModel = new WarehouseModel()
-        {
-            Id = createdWarehouseResponseDTO.Id,
-            Name = _warehouseModel.Name,
-            Address = _warehouseModel.Address,
-            CompanyId = _warehouseModel.CompanyId,
-            ZoneIds = _warehouseModel.ZoneIds,
-        };
+            {
+                Id = createdWarehouseResponseDTO.Id,
+                Name = _warehouseModel.Name,
+                Address = _warehouseModel.Address,
+                CompanyId = _warehouseModel.CompanyId,
+                ZoneIds = _warehouseModel.ZoneIds,
+            };
         MudDialog.Close(DialogResult.Ok(createdWarehouseModel));
     }
 

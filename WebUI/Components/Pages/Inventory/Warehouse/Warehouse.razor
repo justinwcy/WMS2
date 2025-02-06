@@ -28,7 +28,7 @@
     </MudItem>
 </MudGrid>
 
-<MudTable Hover="true"  FixedHeader="true"
+<MudTable Hover="true" FixedHeader="true"
           Filter="new Func<WarehouseModel,bool>(FilterFunc)"
           CanCancelEdit="true"
           Items="@WarehouseModels"
@@ -75,10 +75,10 @@
         </MudTd>
         <MudTd DataLabel="Zone">
             <MudButton OnClick="@(() => OpenZoneDialogAsync(@context.ZoneIds))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
                 View (@context.ZoneIds.Count)
             </MudButton>
         </MudTd>
@@ -88,11 +88,11 @@
         <MudTd DataLabel="Name">
             <MudTextField @bind-Value="context.Name" Required />
         </MudTd>
-        
+
         <MudTd DataLabel="Address">
             <MudTextField @bind-Value="context.Address" Required />
         </MudTd>
-        
+
         <MudTd DataLabel="Company">
             <MudSelect @bind-Value="context.CompanyId"
                        T="Guid?"
@@ -115,17 +115,17 @@
                     <MudSelectItem T="Guid?" Value="companyModel.Id"></MudSelectItem>
                 }
             </MudSelect>
-            
+
             <MudTd DataLabel="Zone"></MudTd>
         </MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-        RowsPerPageString="Rows per page:"
-        InfoFormat="{first_item}-{last_item} of {all_items}"
-        AllItemsText="All"
-        HorizontalAlignment="HorizontalAlignment.Right" />
+                       RowsPerPageString="Rows per page:"
+                       InfoFormat="{first_item}-{last_item} of {all_items}"
+                       AllItemsText="All"
+                       HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -135,13 +135,13 @@
 
     [Parameter]
     public bool ShowCreateButton { get; set; }
-    
+
     [Parameter]
     public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }
-    
+
     [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
 
@@ -218,13 +218,13 @@
     {
 
         _warehouseModelBeforeEdit = new WarehouseModel()
-        {
-            Id = ((WarehouseModel)warehouseModel).Id,
-            Name = ((WarehouseModel)warehouseModel).Name,
-            Address = ((WarehouseModel)warehouseModel).Address,
-            CompanyId = ((WarehouseModel)warehouseModel).CompanyId,
-            ZoneIds = ((WarehouseModel)warehouseModel).ZoneIds,
-        };
+            {
+                Id = ((WarehouseModel)warehouseModel).Id,
+                Name = ((WarehouseModel)warehouseModel).Name,
+                Address = ((WarehouseModel)warehouseModel).Address,
+                CompanyId = ((WarehouseModel)warehouseModel).CompanyId,
+                ZoneIds = ((WarehouseModel)warehouseModel).ZoneIds,
+            };
         StateHasChanged();
     }
 
@@ -243,14 +243,14 @@
     {
         var warehouseModelConverted = (WarehouseModel)warehouseModel;
         var updateWarehouseDTO = new UpdateWarehouseRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Id = warehouseModelConverted.Id,
-            Name = warehouseModelConverted.Name,
-            Address = warehouseModelConverted.Address,
-            CompanyId = warehouseModelConverted.CompanyId,
-            ZoneIds = warehouseModelConverted.ZoneIds,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Id = warehouseModelConverted.Id,
+                Name = warehouseModelConverted.Name,
+                Address = warehouseModelConverted.Address,
+                CompanyId = warehouseModelConverted.CompanyId,
+                ZoneIds = warehouseModelConverted.ZoneIds,
+            };
         var updateWarehouseCommand = new UpdateWarehouseCommand(updateWarehouseDTO);
         var response = await Mediator.Send(updateWarehouseCommand);
         SnackBar.Add(response.Message);

@@ -5,11 +5,11 @@
         @if (ShowDeleteButton)
         {
             <MudButton OnClick="@DeleteRacks"
-            Color="Color.Error"
-            Variant="Variant.Filled"
-            Size="Size.Large"
-            FullWidth="false"
-            Disabled="_disableDelete">
+                       Color="Color.Error"
+                       Variant="Variant.Filled"
+                       Size="Size.Large"
+                       FullWidth="false"
+                       Disabled="_disableDelete">
                 Delete Rack
             </MudButton>
         }
@@ -18,35 +18,35 @@
         @if (ShowCreateButton)
         {
             <MudButton OnClick="@(OpenCreateRackDialogAsync)"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Large"
-            FullWidth="false">
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Large"
+                       FullWidth="false">
                 Create Rack
             </MudButton>
         }
     </MudItem>
 </MudGrid>
 
-<MudTable Hover="true"  FixedHeader="true"
-Filter="new Func<RackModel,bool>(FilterFunc)"
-CanCancelEdit="true"
-Items="@RackModels"
-GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-GroupFooterClass="mb-4"
-Dense="true"
-Loading="@_loading" LoadingProgressColor="Color.Info"
-MultiSelection="true"
-@bind-SelectedItems="_selectedRacks"
-SelectOnRowClick="false"
-CommitEditTooltip="Commit Edit"
-CancelEditTooltip="Cancel Edit"
-IsEditRowSwitchingBlocked="false"
-RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-RowEditCommit="ItemHasBeenCommitted"
-ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-@ref="_tableRef">
+<MudTable Hover="true" FixedHeader="true"
+          Filter="new Func<RackModel,bool>(FilterFunc)"
+          CanCancelEdit="true"
+          Items="@RackModels"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4"
+          Dense="true"
+          Loading="@_loading" LoadingProgressColor="Color.Info"
+          MultiSelection="true"
+          @bind-SelectedItems="_selectedRacks"
+          SelectOnRowClick="false"
+          CommitEditTooltip="Commit Edit"
+          CancelEditTooltip="Cancel Edit"
+          IsEditRowSwitchingBlocked="false"
+          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted"
+          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+          @ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Racks</MudText>
@@ -81,15 +81,15 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Depth">@context.Depth</MudTd>
 
         <MudTd DataLabel="Zones">
-            @_allZoneModels.FirstOrDefault(zoneModel=>zoneModel.Id == context.ZoneId)?.Name
+            @_allZoneModels.FirstOrDefault(zoneModel => zoneModel.Id == context.ZoneId)?.Name
         </MudTd>
 
         <MudTd DataLabel="Products">
             <MudButton OnClick="@(() => OpenProductDialogAsync(@context.ProductIds))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
                 View (@context.ProductIds.Count)
             </MudButton>
         </MudTd>
@@ -144,10 +144,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-        RowsPerPageString="Rows per page:"
-        InfoFormat="{first_item}-{last_item} of {all_items}"
-        AllItemsText="All"
-        HorizontalAlignment="HorizontalAlignment.Right" />
+                       RowsPerPageString="Rows per page:"
+                       InfoFormat="{first_item}-{last_item} of {all_items}"
+                       AllItemsText="All"
+                       HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -238,16 +238,16 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
 
         _rackModelBeforeEdit = new RackModel()
-        {
-            Id = ((RackModel)rackModel).Id,
-            ProductIds = ((RackModel)rackModel).ProductIds, 
-            Name = ((RackModel)rackModel).Name, 
-            MaxWeight = ((RackModel)rackModel).MaxWeight,
-            Width = ((RackModel)rackModel).Width,
-            Depth = ((RackModel)rackModel).Depth,
-            Height = ((RackModel)rackModel).Height,
-            ZoneId = ((RackModel)rackModel).ZoneId,
-        };
+            {
+                Id = ((RackModel)rackModel).Id,
+                ProductIds = ((RackModel)rackModel).ProductIds,
+                Name = ((RackModel)rackModel).Name,
+                MaxWeight = ((RackModel)rackModel).MaxWeight,
+                Width = ((RackModel)rackModel).Width,
+                Depth = ((RackModel)rackModel).Depth,
+                Height = ((RackModel)rackModel).Height,
+                ZoneId = ((RackModel)rackModel).ZoneId,
+            };
         StateHasChanged();
     }
 
@@ -268,17 +268,17 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private async void ItemHasBeenCommitted(object rackModel)
     {
         var updateRackDTO = new UpdateRackRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Id = ((RackModel)rackModel).Id,
-            ProductIds = ((RackModel)rackModel).ProductIds,
-            Name = ((RackModel)rackModel).Name,
-            MaxWeight = ((RackModel)rackModel).MaxWeight,
-            Width = ((RackModel)rackModel).Width,
-            Depth = ((RackModel)rackModel).Depth,
-            Height = ((RackModel)rackModel).Height,
-            ZoneId = ((RackModel)rackModel).ZoneId,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Id = ((RackModel)rackModel).Id,
+                ProductIds = ((RackModel)rackModel).ProductIds,
+                Name = ((RackModel)rackModel).Name,
+                MaxWeight = ((RackModel)rackModel).MaxWeight,
+                Width = ((RackModel)rackModel).Width,
+                Depth = ((RackModel)rackModel).Depth,
+                Height = ((RackModel)rackModel).Height,
+                ZoneId = ((RackModel)rackModel).ZoneId,
+            };
         var updateRackCommand = new UpdateRackCommand(updateRackDTO);
         var response = await Mediator.Send(updateRackCommand);
         SnackBar.Add(response.Message);
@@ -341,13 +341,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             var getZoneByIdQuery = new GetZoneByIdQuery(zoneId);
             var getZoneResponseDTO = await Mediator.Send(getZoneByIdQuery);
             var zoneModel = new ZoneModel()
-            {
-                Id = zoneId,
-                StaffIds = getZoneResponseDTO.StaffIds,
-                Name = getZoneResponseDTO.Name,
-                RackIds = getZoneResponseDTO.RackIds,
-                WarehouseId = getZoneResponseDTO.WarehouseId,
-            };
+                {
+                    Id = zoneId,
+                    StaffIds = getZoneResponseDTO.StaffIds,
+                    Name = getZoneResponseDTO.Name,
+                    RackIds = getZoneResponseDTO.RackIds,
+                    WarehouseId = getZoneResponseDTO.WarehouseId,
+                };
 
             _allZoneModels.Add(zoneModel);
         }
@@ -380,5 +380,3 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         }
     }
 }
-
-    

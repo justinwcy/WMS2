@@ -1,38 +1,34 @@
-﻿@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
-<MudDialog>
+﻿<MudDialog>
     <TitleContent>
         Create Shop
     </TitleContent>
     <DialogContent>
         <MudForm @bind-IsValid="@_isFormValid">
             <MudTextField @bind-value="_shopModel.Name"
-            Variant="@_defaultVariant"
-            T="string"
-            Label="Shop Name"
-            Required="true" RequiredError="Name is required!"
-            Margin="Margin.Dense"/>
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Shop Name"
+                          Required="true" RequiredError="Name is required!"
+                          Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_shopModel.Platform"
-            Variant="@_defaultVariant"
-            T="string"
-            Label="Platform Name"
-            Required="true" RequiredError="Platform is required!"
-            Margin="Margin.Dense" />
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Platform Name"
+                          Required="true" RequiredError="Platform is required!"
+                          Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_shopModel.Address"
-            Variant="@_defaultVariant"
-            T="string"
-            Label="Address"
-            Margin="Margin.Dense" />
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Address"
+                          Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_shopModel.Website"
-            Variant="@_defaultVariant"
-            T="string"
-            Label="Website"
-            Margin="Margin.Dense" />
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Website"
+                          Margin="Margin.Dense" />
 
         </MudForm>
     </DialogContent>
@@ -56,26 +52,26 @@
     private async Task Submit()
     {
         var createShopDTO = new CreateShopRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Name = _shopModel.Name,
-            Platform = _shopModel.Platform,
-            Address = _shopModel.Address,
-            Website = _shopModel.Website,
-            ProductIds = _shopModel.ProductIds,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Name = _shopModel.Name,
+                Platform = _shopModel.Platform,
+                Address = _shopModel.Address,
+                Website = _shopModel.Website,
+                ProductIds = _shopModel.ProductIds,
+            };
         var createShopCommand = new CreateShopCommand(createShopDTO);
         var createdShopResponseDTO = await Mediator.Send(createShopCommand);
 
         var createdShopModel = new ShopModel()
-        {
-            Id = createdShopResponseDTO.Id,
-            Name = _shopModel.Name,
-            Platform = _shopModel.Platform,
-            Address = _shopModel.Address,
-            Website = _shopModel.Website,
-            ProductIds = _shopModel.ProductIds,
-        };
+            {
+                Id = createdShopResponseDTO.Id,
+                Name = _shopModel.Name,
+                Platform = _shopModel.Platform,
+                Address = _shopModel.Address,
+                Website = _shopModel.Website,
+                ProductIds = _shopModel.ProductIds,
+            };
         MudDialog.Close(DialogResult.Ok(createdShopModel));
     }
 

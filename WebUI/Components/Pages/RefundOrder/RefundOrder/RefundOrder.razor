@@ -28,25 +28,25 @@
     </MudItem>
 </MudGrid>
 
-<MudTable Hover="true"  FixedHeader="true"
-Filter="new Func<RefundOrderModel,bool>(FilterFunc)"
-CanCancelEdit="true"
-Items="@RefundOrderModels"
-GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-GroupFooterClass="mb-4"
-Dense="true"
-Loading="@_loading" LoadingProgressColor="Color.Info"
-MultiSelection="true"
-@bind-SelectedItems="_selectedRefundOrders"
-SelectOnRowClick="false"
-CommitEditTooltip="Commit Edit"
-CancelEditTooltip="Cancel Edit"
-IsEditRowSwitchingBlocked="false"
-RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-RowEditCommit="ItemHasBeenCommitted"
-ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-@ref="_tableRef">
+<MudTable Hover="true" FixedHeader="true"
+          Filter="new Func<RefundOrderModel,bool>(FilterFunc)"
+          CanCancelEdit="true"
+          Items="@RefundOrderModels"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4"
+          Dense="true"
+          Loading="@_loading" LoadingProgressColor="Color.Info"
+          MultiSelection="true"
+          @bind-SelectedItems="_selectedRefundOrders"
+          SelectOnRowClick="false"
+          CommitEditTooltip="Commit Edit"
+          CancelEditTooltip="Cancel Edit"
+          IsEditRowSwitchingBlocked="false"
+          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted"
+          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+          @ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">RefundOrders</MudText>
@@ -73,10 +73,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Reason">@context.RefundReason</MudTd>
         <MudTd DataLabel="Details">
             <MudButton OnClick="@(() => OpenRefundOrderProductDialogAsync(@context.RefundOrderProductIds))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
                 View (@context.RefundOrderProductIds.Count)
             </MudButton>
         </MudTd>
@@ -120,10 +120,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-        RowsPerPageString="Rows per page:"
-        InfoFormat="{first_item}-{last_item} of {all_items}"
-        AllItemsText="All"
-        HorizontalAlignment="HorizontalAlignment.Right" />
+                       RowsPerPageString="Rows per page:"
+                       InfoFormat="{first_item}-{last_item} of {all_items}"
+                       AllItemsText="All"
+                       HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -133,13 +133,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     [Parameter]
     public bool ShowCreateButton { get; set; }
-    
+
     [Parameter]
     public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }
-    
+
     [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
 
@@ -223,13 +223,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
 
         _refundOrderModelBeforeEdit = new RefundOrderModel()
-        {
-            Id = ((RefundOrderModel)refundOrderModel).Id,
-            Status = ((RefundOrderModel)refundOrderModel).Status,
-            RefundReason = ((RefundOrderModel)refundOrderModel).RefundReason,
-            RefundDate = ((RefundOrderModel)refundOrderModel).RefundDate,
-            RefundOrderProductIds = ((RefundOrderModel)refundOrderModel).RefundOrderProductIds,
-        };
+            {
+                Id = ((RefundOrderModel)refundOrderModel).Id,
+                Status = ((RefundOrderModel)refundOrderModel).Status,
+                RefundReason = ((RefundOrderModel)refundOrderModel).RefundReason,
+                RefundDate = ((RefundOrderModel)refundOrderModel).RefundDate,
+                RefundOrderProductIds = ((RefundOrderModel)refundOrderModel).RefundOrderProductIds,
+            };
         StateHasChanged();
     }
 
@@ -247,14 +247,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private async void ItemHasBeenCommitted(object refundOrderModel)
     {
         var updateRefundOrderDTO = new UpdateRefundOrderRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Id = ((RefundOrderModel)refundOrderModel).Id,
-            Status = ((RefundOrderModel)refundOrderModel).Status,
-            RefundReason = ((RefundOrderModel)refundOrderModel).RefundReason,
-            RefundDate = ((RefundOrderModel)refundOrderModel).RefundDate.Value,
-            RefundOrderProductIds = ((RefundOrderModel)refundOrderModel).RefundOrderProductIds,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Id = ((RefundOrderModel)refundOrderModel).Id,
+                Status = ((RefundOrderModel)refundOrderModel).Status,
+                RefundReason = ((RefundOrderModel)refundOrderModel).RefundReason,
+                RefundDate = ((RefundOrderModel)refundOrderModel).RefundDate.Value,
+                RefundOrderProductIds = ((RefundOrderModel)refundOrderModel).RefundOrderProductIds,
+            };
         var updateRefundOrderCommand = new UpdateRefundOrderCommand(updateRefundOrderDTO);
         var response = await Mediator.Send(updateRefundOrderCommand);
         SnackBar.Add(response.Message);
@@ -323,4 +323,3 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     }
 }
 
-    

@@ -28,25 +28,25 @@
     </MudItem>
 </MudGrid>
 
-<MudTable Hover="true"  FixedHeader="true"
-Filter="new Func<CustomerOrderDetailModel,bool>(FilterFunc)"
-CanCancelEdit="true"
-Items="@CustomerOrderDetailModels"
-GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-GroupFooterClass="mb-4"
-Dense="true"
-Loading="@_loading" LoadingProgressColor="Color.Info"
-MultiSelection="true"
-@bind-SelectedItems="_selectedCustomerOrderDetails"
-SelectOnRowClick="false"
-CommitEditTooltip="Commit Edit"
-CancelEditTooltip="Cancel Edit"
-IsEditRowSwitchingBlocked="false"
-RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-RowEditCommit="ItemHasBeenCommitted"
-ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-@ref="_tableRef">
+<MudTable Hover="true" FixedHeader="true"
+          Filter="new Func<CustomerOrderDetailModel,bool>(FilterFunc)"
+          CanCancelEdit="true"
+          Items="@CustomerOrderDetailModels"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4"
+          Dense="true"
+          Loading="@_loading" LoadingProgressColor="Color.Info"
+          MultiSelection="true"
+          @bind-SelectedItems="_selectedCustomerOrderDetails"
+          SelectOnRowClick="false"
+          CommitEditTooltip="Commit Edit"
+          CancelEditTooltip="Cancel Edit"
+          IsEditRowSwitchingBlocked="false"
+          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted"
+          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+          @ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Customer Order Details</MudText>
@@ -80,19 +80,19 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     <RowEditingTemplate>
         <MudTd DataLabel="Product">
             <MudSelect @bind-Value="context.ProductId"
-            Variant="@_defaultVariant"
-            Label="Status"
-            Margin="Margin.Normal"
-            Dense="false"
-            Disabled="false"
-            ReadOnly="false"
-            Placeholder=@("Product")
-            MultiSelection="false"
-            HelperText=@("Please select a product")
-            HelperTextOnFocus="true"
-            Clearable="false"
-            Required="true"
-            RequiredError="Please select a product">
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Product")
+                       MultiSelection="false"
+                       HelperText=@("Please select a product")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a product">
                 @foreach (var productModel in _allProductModels)
                 {
                     <MudSelectItem Value="@productModel.Id" />
@@ -106,22 +106,22 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
         <MudTd DataLabel="Status">
             <MudSelect @bind-Value="context.Status"
-            Variant="@_defaultVariant"
-            Label="Status"
-            Margin="Margin.Normal"
-            Dense="false"
-            Disabled="false"
-            ReadOnly="false"
-            Placeholder=@("Status")
-            MultiSelection="false"
-            HelperText=@("Please select a status")
-            HelperTextOnFocus="true"
-            Clearable="false"
-            Required="true"
-            RequiredError="Please select a status">
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Status")
+                       MultiSelection="false"
+                       HelperText=@("Please select a status")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a status">
                 @foreach (var orderState in _orderStates)
                 {
-                    <MudSelectItem Value="@orderState"/>
+                    <MudSelectItem Value="@orderState" />
                 }
             </MudSelect>
         </MudTd>
@@ -130,10 +130,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-        RowsPerPageString="Rows per page:"
-        InfoFormat="{first_item}-{last_item} of {all_items}"
-        AllItemsText="All"
-        HorizontalAlignment="HorizontalAlignment.Right" />
+                       RowsPerPageString="Rows per page:"
+                       InfoFormat="{first_item}-{last_item} of {all_items}"
+                       AllItemsText="All"
+                       HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -143,13 +143,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     [Parameter]
     public bool ShowCreateButton { get; set; }
-    
+
     [Parameter]
     public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }
-    
+
     [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
 
@@ -235,13 +235,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
 
         _customerOrderDetailModelBeforeEdit = new CustomerOrderDetailModel()
-        {
-            Id = ((CustomerOrderDetailModel)customerOrderDetailModel).Id,
-            Status = ((CustomerOrderDetailModel)customerOrderDetailModel).Status,
-            Quantity = ((CustomerOrderDetailModel)customerOrderDetailModel).Quantity,
-            ProductId = ((CustomerOrderDetailModel)customerOrderDetailModel).ProductId,
-            CustomerOrderId = ((CustomerOrderDetailModel)customerOrderDetailModel).CustomerOrderId,
-        };
+            {
+                Id = ((CustomerOrderDetailModel)customerOrderDetailModel).Id,
+                Status = ((CustomerOrderDetailModel)customerOrderDetailModel).Status,
+                Quantity = ((CustomerOrderDetailModel)customerOrderDetailModel).Quantity,
+                ProductId = ((CustomerOrderDetailModel)customerOrderDetailModel).ProductId,
+                CustomerOrderId = ((CustomerOrderDetailModel)customerOrderDetailModel).CustomerOrderId,
+            };
         StateHasChanged();
     }
 
@@ -259,14 +259,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private async void ItemHasBeenCommitted(object customerOrderDetailModel)
     {
         var updateCustomerOrderDetailDTO = new UpdateCustomerOrderDetailRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Id = ((CustomerOrderDetailModel)customerOrderDetailModel).Id,
-            Status = ((CustomerOrderDetailModel)customerOrderDetailModel).Status,
-            Quantity = ((CustomerOrderDetailModel)customerOrderDetailModel).Quantity,
-            ProductId = ((CustomerOrderDetailModel)customerOrderDetailModel).ProductId,
-            CustomerOrderId = ((CustomerOrderDetailModel)customerOrderDetailModel).CustomerOrderId,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Id = ((CustomerOrderDetailModel)customerOrderDetailModel).Id,
+                Status = ((CustomerOrderDetailModel)customerOrderDetailModel).Status,
+                Quantity = ((CustomerOrderDetailModel)customerOrderDetailModel).Quantity,
+                ProductId = ((CustomerOrderDetailModel)customerOrderDetailModel).ProductId,
+                CustomerOrderId = ((CustomerOrderDetailModel)customerOrderDetailModel).CustomerOrderId,
+            };
         var updateCustomerOrderDetailCommand = new UpdateCustomerOrderDetailCommand(updateCustomerOrderDetailDTO);
         var response = await Mediator.Send(updateCustomerOrderDetailCommand);
         SnackBar.Add(response.Message);
@@ -307,13 +307,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             var customerOrderDetailDTO = await Mediator.Send(getCustomerOrderDetailByIdQuery);
 
             var customerOrderDetailModel = new CustomerOrderDetailModel()
-            {
-                Id = customerOrderDetailDTO.Id,
-                Status = customerOrderDetailDTO.Status,
-                CustomerOrderId = customerOrderDetailDTO.CustomerOrderId,
-                ProductId = customerOrderDetailDTO.ProductId,
-                Quantity = customerOrderDetailDTO.Quantity
-            };
+                {
+                    Id = customerOrderDetailDTO.Id,
+                    Status = customerOrderDetailDTO.Status,
+                    CustomerOrderId = customerOrderDetailDTO.CustomerOrderId,
+                    ProductId = customerOrderDetailDTO.ProductId,
+                    Quantity = customerOrderDetailDTO.Quantity
+                };
 
             CustomerOrderDetailModels.Add(customerOrderDetailModel);
         }
@@ -328,24 +328,22 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             var productDTO = await Mediator.Send(getProductByIdQuery);
 
             var productModel = new ProductModel()
-            {
-                Id = productDTO.Id,
-                Name = productDTO.Name,
-                Description = productDTO.Description,
-                Height = productDTO.Height,
-                Length = productDTO.Length,
-                Price = productDTO.Price,
-                ProductGroupIds = productDTO.ProductGroupIds,
-                ShopIds = productDTO.ShopIds,
-                Sku = productDTO.Sku,
-                Tag = productDTO.Tag,
-                Weight = productDTO.Weight,
-                Width = productDTO.Width,
-            };
+                {
+                    Id = productDTO.Id,
+                    Name = productDTO.Name,
+                    Description = productDTO.Description,
+                    Height = productDTO.Height,
+                    Length = productDTO.Length,
+                    Price = productDTO.Price,
+                    ProductGroupIds = productDTO.ProductGroupIds,
+                    ShopIds = productDTO.ShopIds,
+                    Sku = productDTO.Sku,
+                    Tag = productDTO.Tag,
+                    Weight = productDTO.Weight,
+                    Width = productDTO.Width,
+                };
             _allProductModels.Add(productModel);
         }
         return true;
     }
 }
-
-    

@@ -4,7 +4,7 @@
     </TitleContent>
     <DialogContent>
         <MudForm @bind-IsValid="@_isFormValid">
-            
+
             <MudSelect @bind-Value="_incomingOrderProductModel.ProductId"
                        T="Guid?"
                        ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
@@ -52,7 +52,7 @@
                           T="int"
                           Label="Quantity"
                           Required="true" RequiredError="Quantity is required!"
-                          Margin="Margin.Dense"/>
+                          Margin="Margin.Dense" />
 
         </MudForm>
     </DialogContent>
@@ -91,23 +91,23 @@
             var productDTO = await Mediator.Send(getProductByIdQuery);
 
             var productModel = new ProductModel()
-            {
-                Id = productDTO.Id,
-                Name = productDTO.Name,
-                Description = productDTO.Description,
-                Height = productDTO.Height,
-                Length = productDTO.Length,
-                Price = productDTO.Price,
-                ProductGroupIds = productDTO.ProductGroupIds,
-                ShopIds = productDTO.ShopIds,
-                Sku = productDTO.Sku,
-                Tag = productDTO.Tag,
-                Weight = productDTO.Weight,
-                Width = productDTO.Width,
-            };
+                {
+                    Id = productDTO.Id,
+                    Name = productDTO.Name,
+                    Description = productDTO.Description,
+                    Height = productDTO.Height,
+                    Length = productDTO.Length,
+                    Price = productDTO.Price,
+                    ProductGroupIds = productDTO.ProductGroupIds,
+                    ShopIds = productDTO.ShopIds,
+                    Sku = productDTO.Sku,
+                    Tag = productDTO.Tag,
+                    Weight = productDTO.Weight,
+                    Width = productDTO.Width,
+                };
             _allProductModels.Add(productModel);
 
-            
+
         }
     }
 
@@ -122,24 +122,24 @@
     private async Task Submit()
     {
         var createIncomingOrderProductDTO = new CreateIncomingOrderProductRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Status = _incomingOrderProductModel.Status,
-            IncomingOrderId = _incomingOrderProductModel.IncomingOrderId,
-            ProductId = _incomingOrderProductModel.ProductId,
-            Quantity = _incomingOrderProductModel.Quantity,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Status = _incomingOrderProductModel.Status,
+                IncomingOrderId = _incomingOrderProductModel.IncomingOrderId,
+                ProductId = _incomingOrderProductModel.ProductId,
+                Quantity = _incomingOrderProductModel.Quantity,
+            };
         var createIncomingOrderProductCommand = new CreateIncomingOrderProductCommand(createIncomingOrderProductDTO);
         var createdIncomingOrderProductResponseDTO = await Mediator.Send(createIncomingOrderProductCommand);
 
         var createdIncomingOrderProductModel = new IncomingOrderProductModel()
-        {
-            Id = createdIncomingOrderProductResponseDTO.Id,
-            Status = _incomingOrderProductModel.Status,
-            IncomingOrderId = _incomingOrderProductModel.IncomingOrderId,
-            ProductId = _incomingOrderProductModel.ProductId,
-            Quantity = _incomingOrderProductModel.Quantity,
-        };
+            {
+                Id = createdIncomingOrderProductResponseDTO.Id,
+                Status = _incomingOrderProductModel.Status,
+                IncomingOrderId = _incomingOrderProductModel.IncomingOrderId,
+                ProductId = _incomingOrderProductModel.ProductId,
+                Quantity = _incomingOrderProductModel.Quantity,
+            };
         MudDialog.Close(DialogResult.Ok(createdIncomingOrderProductModel));
     }
 
@@ -148,4 +148,3 @@
         MudDialog.Cancel();
     }
 }
-    

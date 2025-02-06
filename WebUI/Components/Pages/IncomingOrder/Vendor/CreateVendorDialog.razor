@@ -1,8 +1,3 @@
-@using System.ComponentModel.DataAnnotations
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
 <MudDialog>
     <TitleContent>
         Create Vendor
@@ -14,29 +9,29 @@
                           T="string"
                           Label="First Name"
                           Required="true" RequiredError="First Name is required!"
-                          Margin="Margin.Dense"/>
-            
+                          Margin="Margin.Dense" />
+
             <MudTextField @bind-value="_vendorModel.LastName"
                           Variant="@_defaultVariant"
                           T="string"
                           Label="Last Name"
                           Required="true" RequiredError="Last Name is required!"
                           Margin="Margin.Dense" />
-            
+
             <MudTextField @bind-value="_vendorModel.Address"
                           Variant="@_defaultVariant"
                           T="string"
                           Label="Address"
                           Required="true" RequiredError="Address is required!"
                           Margin="Margin.Dense" />
-            
+
             <MudTextField @bind-value="_vendorModel.Email"
                           Variant="@_defaultVariant"
                           T="string"
                           Label="Email"
                           Required="true" RequiredError="Email is required!"
                           Validation="@(new EmailAddressAttribute() { ErrorMessage = "The email address is invalid" })" />
-            
+
             <MudTextField @bind-value="_vendorModel.PhoneNumber"
                           Variant="@_defaultVariant"
                           T="string"
@@ -66,28 +61,28 @@
     private async Task Submit()
     {
         var createVendorDTO = new CreateVendorRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            FirstName = _vendorModel.FirstName,
-            LastName = _vendorModel.LastName,
-            Address = _vendorModel.Address,
-            Email = _vendorModel.Email,
-            IncomingOrderIds = _vendorModel.IncomingOrderIds,
-            PhoneNumber = _vendorModel.PhoneNumber,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                FirstName = _vendorModel.FirstName,
+                LastName = _vendorModel.LastName,
+                Address = _vendorModel.Address,
+                Email = _vendorModel.Email,
+                IncomingOrderIds = _vendorModel.IncomingOrderIds,
+                PhoneNumber = _vendorModel.PhoneNumber,
+            };
         var createVendorCommand = new CreateVendorCommand(createVendorDTO);
         var createdVendorResponseDTO = await Mediator.Send(createVendorCommand);
 
         var createdVendorModel = new VendorModel()
-        {
-            Id = createdVendorResponseDTO.Id,
-            FirstName = _vendorModel.FirstName,
-            LastName = _vendorModel.LastName,
-            Address = _vendorModel.Address,
-            Email = _vendorModel.Email,
-            IncomingOrderIds = _vendorModel.IncomingOrderIds,
-            PhoneNumber = _vendorModel.PhoneNumber,
-        };
+            {
+                Id = createdVendorResponseDTO.Id,
+                FirstName = _vendorModel.FirstName,
+                LastName = _vendorModel.LastName,
+                Address = _vendorModel.Address,
+                Email = _vendorModel.Email,
+                IncomingOrderIds = _vendorModel.IncomingOrderIds,
+                PhoneNumber = _vendorModel.PhoneNumber,
+            };
         MudDialog.Close(DialogResult.Ok(createdVendorModel));
     }
 
@@ -96,4 +91,3 @@
         MudDialog.Cancel();
     }
 }
-    

@@ -5,11 +5,11 @@
         @if (ShowDeleteButton)
         {
             <MudButton OnClick="@DeleteStaffs"
-            Color="Color.Error"
-            Variant="Variant.Filled"
-            Size="Size.Large"
-            FullWidth="false"
-            Disabled="_disableDelete">
+                       Color="Color.Error"
+                       Variant="Variant.Filled"
+                       Size="Size.Large"
+                       FullWidth="false"
+                       Disabled="_disableDelete">
                 Delete Staff
             </MudButton>
         }
@@ -18,18 +18,18 @@
         @if (ShowCreateButton)
         {
             <MudButton OnClick="@(OpenCreateStaffDialogAsync)"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Large"
-            FullWidth="false">
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Large"
+                       FullWidth="false">
                 Create Staff
             </MudButton>
         }
     </MudItem>
 </MudGrid>
 
-<MudTable Hover="true" 
-          FixedHeader="true" 
+<MudTable Hover="true"
+          FixedHeader="true"
           HorizontalScrollbar="true"
           Filter="new Func<StaffModel,bool>(FilterFunc)"
           CanCancelEdit="true"
@@ -84,10 +84,10 @@
 
         <MudTd DataLabel="Zone">
             <MudButton OnClick="@(() => OpenZoneDialogAsync(@context.ZoneIds))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
                 View (@context.ZoneIds.Count)
             </MudButton>
         </MudTd>
@@ -158,10 +158,10 @@
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new [] { 10, 25, 50, 100, int.MaxValue }"
-        RowsPerPageString="Rows per page:"
-        InfoFormat="{first_item}-{last_item} of {all_items}"
-        AllItemsText="All"
-        HorizontalAlignment="HorizontalAlignment.Right" />
+                       RowsPerPageString="Rows per page:"
+                       InfoFormat="{first_item}-{last_item} of {all_items}"
+                       AllItemsText="All"
+                       HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -209,7 +209,7 @@
         }
 
         _loading = true;
-        await base.OnParametersSetAsync(); 
+        await base.OnParametersSetAsync();
         var success = await FetchData();
         if (!PageComponents.Contains(this))
         {
@@ -259,15 +259,15 @@
     {
 
         _staffModelBeforeEdit = new StaffModel()
-        {
-            Id = ((StaffModel)staffModel).Id,
-            CompanyId = ((StaffModel)staffModel).CompanyId,
-            FirstName = ((StaffModel)staffModel).FirstName,
-            LastName = ((StaffModel)staffModel).LastName,
-            Email = ((StaffModel)staffModel).Email,
-            ZoneIds = ((StaffModel)staffModel).ZoneIds,
-            Roles = ((StaffModel)staffModel).Roles,
-        };
+            {
+                Id = ((StaffModel)staffModel).Id,
+                CompanyId = ((StaffModel)staffModel).CompanyId,
+                FirstName = ((StaffModel)staffModel).FirstName,
+                LastName = ((StaffModel)staffModel).LastName,
+                Email = ((StaffModel)staffModel).Email,
+                ZoneIds = ((StaffModel)staffModel).ZoneIds,
+                Roles = ((StaffModel)staffModel).Roles,
+            };
         StateHasChanged();
     }
 
@@ -277,7 +277,7 @@
         ((StaffModel)staffModel).CompanyId = _staffModelBeforeEdit.CompanyId;
         ((StaffModel)staffModel).FirstName = _staffModelBeforeEdit.FirstName;
         ((StaffModel)staffModel).LastName = _staffModelBeforeEdit.LastName;
-        ((StaffModel)staffModel).Email  = _staffModelBeforeEdit.Email;
+        ((StaffModel)staffModel).Email = _staffModelBeforeEdit.Email;
         ((StaffModel)staffModel).Roles = _staffModelBeforeEdit.Roles;
         ((StaffModel)staffModel).ZoneIds = _staffModelBeforeEdit.ZoneIds;
 
@@ -288,16 +288,16 @@
     {
         var staffModelConverted = (StaffModel)staffModel;
         var updateStaffDTO = new UpdateStaffRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Id = staffModelConverted.Id,
-            CompanyId = staffModelConverted.CompanyId,
-            FirstName = staffModelConverted.FirstName,
-            LastName = staffModelConverted.LastName,
-            Email = staffModelConverted.Email,
-            ZoneIds = staffModelConverted.ZoneIds,
-            Roles = staffModelConverted.Roles,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Id = staffModelConverted.Id,
+                CompanyId = staffModelConverted.CompanyId,
+                FirstName = staffModelConverted.FirstName,
+                LastName = staffModelConverted.LastName,
+                Email = staffModelConverted.Email,
+                ZoneIds = staffModelConverted.ZoneIds,
+                Roles = staffModelConverted.Roles,
+            };
         var updateStaffCommand = new UpdateStaffCommand(updateStaffDTO);
         var response = await Mediator.Send(updateStaffCommand);
         SnackBar.Add(response.Message);
@@ -339,15 +339,15 @@
             var staffDTO = await Mediator.Send(getStaffByIdQuery);
 
             var staffModel = new StaffModel()
-            {
-                Id = staffDTO.Id,
-                CompanyId = staffDTO.CompanyId.GetValueOrDefault(),
-                FirstName = staffDTO.FirstName,
-                LastName = staffDTO.LastName,
-                Email = staffDTO.Email,
-                Roles = staffDTO.Roles,
-                ZoneIds = staffDTO.ZoneIds
-            };
+                {
+                    Id = staffDTO.Id,
+                    CompanyId = staffDTO.CompanyId.GetValueOrDefault(),
+                    FirstName = staffDTO.FirstName,
+                    LastName = staffDTO.LastName,
+                    Email = staffDTO.Email,
+                    Roles = staffDTO.Roles,
+                    ZoneIds = staffDTO.ZoneIds
+                };
 
             StaffModels.Add(staffModel);
         }
@@ -359,12 +359,12 @@
             var getCompanyByIdQuery = new GetCompanyByIdQuery(companyId);
             var getCompanyResponseDTO = await Mediator.Send(getCompanyByIdQuery);
             var companyModel = new CompanyModel()
-            {
-                Id = companyId,
-                StaffIds = getCompanyResponseDTO.StaffIds,
-                WarehouseIds = getCompanyResponseDTO.WarehouseIds,
-                Name = getCompanyResponseDTO.Name,
-            };
+                {
+                    Id = companyId,
+                    StaffIds = getCompanyResponseDTO.StaffIds,
+                    WarehouseIds = getCompanyResponseDTO.WarehouseIds,
+                    Name = getCompanyResponseDTO.Name,
+                };
 
             _allCompanyModels.Add(companyModel);
         }
@@ -402,4 +402,3 @@
         }
     }
 }
-

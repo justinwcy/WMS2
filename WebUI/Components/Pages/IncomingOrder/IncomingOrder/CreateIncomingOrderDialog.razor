@@ -9,10 +9,10 @@
                           T="string"
                           Label="PO Number"
                           Required="true" RequiredError="PO Number is required!"
-                          Margin="Margin.Dense"/>
+                          Margin="Margin.Dense" />
 
-            <MudDatePicker Label="Incoming Order Date" 
-                           Editable="true" 
+            <MudDatePicker Label="Incoming Order Date"
+                           Editable="true"
                            @bind-Date="_incomingOrderModel.IncomingDate"
                            Placeholder="Incoming Order Date" />
 
@@ -21,7 +21,7 @@
                            @bind-Date="_incomingOrderModel.ReceivingDate"
                            Placeholder="Receiving Date" />
 
-            <MudSelect @bind-Value="_incomingOrderModel.Status" 
+            <MudSelect @bind-Value="_incomingOrderModel.Status"
                        Variant="@_defaultVariant"
                        Label="Status"
                        Margin="Margin.Normal"
@@ -121,28 +121,28 @@
     private async Task Submit()
     {
         var createIncomingOrderDTO = new CreateIncomingOrderRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            VendorId = _incomingOrderModel.VendorId,
-            IncomingDate = _incomingOrderModel.IncomingDate.Value,
-            PONumber = _incomingOrderModel.PONumber,
-            ReceivingDate = _incomingOrderModel.ReceivingDate.Value,
-            IncomingOrderProductIds = _incomingOrderModel.IncomingOrderProductIds,
-            Status = _incomingOrderModel.Status
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                VendorId = _incomingOrderModel.VendorId,
+                IncomingDate = _incomingOrderModel.IncomingDate.Value,
+                PONumber = _incomingOrderModel.PONumber,
+                ReceivingDate = _incomingOrderModel.ReceivingDate.Value,
+                IncomingOrderProductIds = _incomingOrderModel.IncomingOrderProductIds,
+                Status = _incomingOrderModel.Status
+            };
         var createIncomingOrderCommand = new CreateIncomingOrderCommand(createIncomingOrderDTO);
         var createdIncomingOrderResponseDTO = await Mediator.Send(createIncomingOrderCommand);
 
         var createdIncomingOrderModel = new IncomingOrderModel()
-        {
-            Id = createdIncomingOrderResponseDTO.Id,
-            VendorId = _incomingOrderModel.VendorId,
-            IncomingDate = _incomingOrderModel.IncomingDate.Value,
-            PONumber = _incomingOrderModel.PONumber,
-            ReceivingDate = _incomingOrderModel.ReceivingDate.Value,
-            IncomingOrderProductIds = _incomingOrderModel.IncomingOrderProductIds,
-            Status = _incomingOrderModel.Status
-        };
+            {
+                Id = createdIncomingOrderResponseDTO.Id,
+                VendorId = _incomingOrderModel.VendorId,
+                IncomingDate = _incomingOrderModel.IncomingDate.Value,
+                PONumber = _incomingOrderModel.PONumber,
+                ReceivingDate = _incomingOrderModel.ReceivingDate.Value,
+                IncomingOrderProductIds = _incomingOrderModel.IncomingOrderProductIds,
+                Status = _incomingOrderModel.Status
+            };
         MudDialog.Close(DialogResult.Ok(createdIncomingOrderModel));
     }
 
@@ -151,4 +151,3 @@
         MudDialog.Cancel();
     }
 }
-    

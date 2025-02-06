@@ -1,15 +1,11 @@
 @page "/zone"
 @implements IMainPage
-@using Application.DTO.Response
-@using WebUI.Utilities
-@using Application.Service.Queries
-
 <Zone ZoneIds="ZoneIds" 
-    CurrentStaff="CurrentStaff" 
-    MainPage="MainPage" 
-    PageComponents="PageComponents"
-    ShowCreateButton="true"
-    ShowDeleteButton="true"/>
+      CurrentStaff="CurrentStaff" 
+      MainPage="MainPage" 
+      PageComponents="PageComponents"
+      ShowCreateButton="true"
+      ShowDeleteButton="true"/>
 
 @code {
     private IMainPage MainPage => this;

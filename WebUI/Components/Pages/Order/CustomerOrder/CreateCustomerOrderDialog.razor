@@ -26,9 +26,9 @@
                     <MudSelectItem T="Guid?" Value="@customerModel.Id" />
                 }
             </MudSelect>
-            
-            <MudDatePicker Label="Expected Arrival Date" 
-                           Editable="true" 
+
+            <MudDatePicker Label="Expected Arrival Date"
+                           Editable="true"
                            @bind-Date="_customerOrderModel.ExpectedArrivalDate"
                            Placeholder="Expected Arrival Date" />
 
@@ -59,7 +59,7 @@
                           T="string"
                           Label="Customer Order Address"
                           Required="true" RequiredError="Order Address is required!"
-                          Margin="Margin.Dense"/>
+                          Margin="Margin.Dense" />
 
             <MudSelect @bind-Value="_customerOrderModel.BinId"
                        T="Guid?"
@@ -115,14 +115,14 @@
             var getCustomerByIdQuery = new GetCustomerByIdQuery(customerId);
             var customerDTO = await Mediator.Send(getCustomerByIdQuery);
             var customerModel = new CustomerModel()
-            {
-                Id = customerDTO.Id,
-                Address = customerDTO.Address,
-                CustomerOrderIds = customerDTO.CustomerOrderIds,
-                Email = customerDTO.Email,
-                FirstName = customerDTO.FirstName,
-                LastName = customerDTO.LastName,
-            };
+                {
+                    Id = customerDTO.Id,
+                    Address = customerDTO.Address,
+                    CustomerOrderIds = customerDTO.CustomerOrderIds,
+                    Email = customerDTO.Email,
+                    FirstName = customerDTO.FirstName,
+                    LastName = customerDTO.LastName,
+                };
             _allCustomerModels.Add(customerModel);
         }
 
@@ -133,11 +133,11 @@
             var getBinByIdQuery = new GetBinByIdQuery(binId);
             var binDTO = await Mediator.Send(getBinByIdQuery);
             var binModel = new BinModel()
-            {
-                Id = binDTO.Id,
-                CustomerOrderIds = binDTO.CustomerOrderIds,
-                Name = binDTO.Name,
-            };
+                {
+                    Id = binDTO.Id,
+                    CustomerOrderIds = binDTO.CustomerOrderIds,
+                    Name = binDTO.Name,
+                };
             _allBinModels.Add(binModel);
         }
 
@@ -148,13 +148,13 @@
             var getCourierByIdQuery = new GetCourierByIdQuery(courierId);
             var courierDTO = await Mediator.Send(getCourierByIdQuery);
             var courierModel = new CourierModel()
-            {
-                Id = courierDTO.Id,
-                CustomerOrderIds = courierDTO.CustomerOrderIds,
-                Name = courierDTO.Name,
-                Remark = courierDTO.Remark,
-                Price = courierDTO.Price,
-            };
+                {
+                    Id = courierDTO.Id,
+                    CustomerOrderIds = courierDTO.CustomerOrderIds,
+                    Name = courierDTO.Name,
+                    Remark = courierDTO.Remark,
+                    Price = courierDTO.Price,
+                };
             _allCourierModels.Add(courierModel);
         }
     }
@@ -162,28 +162,28 @@
     private async Task Submit()
     {
         var createCustomerOrderDTO = new CreateCustomerOrderRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            OrderAddress = _customerOrderModel.OrderAddress,
-            BinId = _customerOrderModel.BinId,
-            CourierId = _customerOrderModel.CourierId,
-            ExpectedArrivalDate = _customerOrderModel.ExpectedArrivalDate.Value,
-            CustomerId = _customerOrderModel.CustomerId,
-            OrderCreationDate = _customerOrderModel.OrderCreationDate.Value,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                OrderAddress = _customerOrderModel.OrderAddress,
+                BinId = _customerOrderModel.BinId,
+                CourierId = _customerOrderModel.CourierId,
+                ExpectedArrivalDate = _customerOrderModel.ExpectedArrivalDate.Value,
+                CustomerId = _customerOrderModel.CustomerId,
+                OrderCreationDate = _customerOrderModel.OrderCreationDate.Value,
+            };
         var createCustomerOrderCommand = new CreateCustomerOrderCommand(createCustomerOrderDTO);
         var createdCustomerOrderResponseDTO = await Mediator.Send(createCustomerOrderCommand);
 
         var createdCustomerOrderModel = new CustomerOrderModel()
-        {
-            Id = createdCustomerOrderResponseDTO.Id,
-            OrderAddress = _customerOrderModel.OrderAddress,
-            BinId = _customerOrderModel.BinId,
-            CourierId = _customerOrderModel.CourierId,
-            ExpectedArrivalDate = _customerOrderModel.ExpectedArrivalDate,
-            CustomerId = _customerOrderModel.CustomerId,
-            OrderCreationDate = _customerOrderModel.OrderCreationDate,
-        };
+            {
+                Id = createdCustomerOrderResponseDTO.Id,
+                OrderAddress = _customerOrderModel.OrderAddress,
+                BinId = _customerOrderModel.BinId,
+                CourierId = _customerOrderModel.CourierId,
+                ExpectedArrivalDate = _customerOrderModel.ExpectedArrivalDate,
+                CustomerId = _customerOrderModel.CustomerId,
+                OrderCreationDate = _customerOrderModel.OrderCreationDate,
+            };
         MudDialog.Close(DialogResult.Ok(createdCustomerOrderModel));
     }
 
@@ -192,4 +192,3 @@
         MudDialog.Cancel();
     }
 }
-    

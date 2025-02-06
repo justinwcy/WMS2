@@ -9,7 +9,7 @@
                           T="string"
                           Label="SKU"
                           Required="true" RequiredError="SKU is required!"
-                          Margin="Margin.Dense"/>
+                          Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_productModel.Name"
                           Variant="@_defaultVariant"
@@ -67,7 +67,7 @@
                           Required="true" RequiredError="Width is required!"
                           Margin="Margin.Dense" />
         </MudForm>
-        </DialogContent>
+    </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
         <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!_isFormValid)">Ok</MudButton>
@@ -87,37 +87,37 @@
     private async Task Submit()
     {
         var createProductDTO = new CreateProductRequestDTO()
-        {
-            CreatedBy = StaffResponseDTO.Id,
-            Description = _productModel.Description,
-            Sku = _productModel.Sku,
-            Height = _productModel.Height,
-            Length = _productModel.Length,
-            Name = _productModel.Name,
-            Price = _productModel.Price,
-            Tag = _productModel.Tag,
-            Weight = _productModel.Weight,
-            Width = _productModel.Width,
-            ProductGroupIds = _productModel.ProductGroupIds,
-        };
+            {
+                CreatedBy = StaffResponseDTO.Id,
+                Description = _productModel.Description,
+                Sku = _productModel.Sku,
+                Height = _productModel.Height,
+                Length = _productModel.Length,
+                Name = _productModel.Name,
+                Price = _productModel.Price,
+                Tag = _productModel.Tag,
+                Weight = _productModel.Weight,
+                Width = _productModel.Width,
+                ProductGroupIds = _productModel.ProductGroupIds,
+            };
         var createProductCommand = new CreateProductCommand(createProductDTO);
         var createdProductResponseDTO = await Mediator.Send(createProductCommand);
         SnackBar.Add($"{_productModel.Name} created");
 
         var createdProductModel = new ProductModel()
-        {
-            Id = createdProductResponseDTO.Id,
-            ProductGroupIds = _productModel.ProductGroupIds,
-            Description = _productModel.Description,
-            Sku = _productModel.Sku,
-            Height = _productModel.Height,
-            Length = _productModel.Length,
-            Name = _productModel.Name,
-            Price = _productModel.Price,
-            Tag = _productModel.Tag,
-            Weight = _productModel.Weight,
-            Width = _productModel.Width,
-        };
+            {
+                Id = createdProductResponseDTO.Id,
+                ProductGroupIds = _productModel.ProductGroupIds,
+                Description = _productModel.Description,
+                Sku = _productModel.Sku,
+                Height = _productModel.Height,
+                Length = _productModel.Length,
+                Name = _productModel.Name,
+                Price = _productModel.Price,
+                Tag = _productModel.Tag,
+                Weight = _productModel.Weight,
+                Width = _productModel.Width,
+            };
         MudDialog.Close(DialogResult.Ok(createdProductModel));
     }
 

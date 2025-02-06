@@ -4,7 +4,7 @@
     </TitleContent>
     <DialogContent>
         <MudForm @bind-IsValid="@_isFormValid">
-            
+
             <MudSelect @bind-Value="_rackModel.ZoneId"
                        T="Guid?"
                        ToStringFunc="@(id=> _allZoneModels.FirstOrDefault(zoneModel=>zoneModel.Id == id)?.Name)"
@@ -32,31 +32,31 @@
                           T="string"
                           Label="Rack Name"
                           Required="true" RequiredError="Name is required!"
-                          Margin="Margin.Dense"/>
+                          Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_rackModel.MaxWeight"
                           Variant="@_defaultVariant"
                           T="double"
                           Label="Max Weight"
-                          Margin="Margin.Dense"/>
+                          Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_rackModel.Height"
                           Variant="@_defaultVariant"
                           T="double"
                           Label="Height"
-                          Margin="Margin.Dense"/>
+                          Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_rackModel.Width"
                           Variant="@_defaultVariant"
                           T="double"
                           Label="Width"
-                          Margin="Margin.Dense"/>
+                          Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_rackModel.Depth"
                           Variant="@_defaultVariant"
                           T="double"
                           Label="Depth"
-                          Margin="Margin.Dense"/>
+                          Margin="Margin.Dense" />
 
         </MudForm>
     </DialogContent>
@@ -89,13 +89,13 @@
             var zoneDTO = await Mediator.Send(getZoneByIdQuery);
 
             var zoneModel = new ZoneModel()
-            {
-                Id = zoneDTO.Id,
-                Name = zoneDTO.Name,
-                StaffIds = zoneDTO.StaffIds,
-                RackIds = zoneDTO.RackIds,
-                WarehouseId = zoneDTO.WarehouseId,
-            };
+                {
+                    Id = zoneDTO.Id,
+                    Name = zoneDTO.Name,
+                    StaffIds = zoneDTO.StaffIds,
+                    RackIds = zoneDTO.RackIds,
+                    WarehouseId = zoneDTO.WarehouseId,
+                };
             _allZoneModels.Add(zoneModel);
         }
     }
@@ -103,16 +103,16 @@
     private async Task Submit()
     {
         var createRackDTO = new CreateRackRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Name = _rackModel.Name,
-            ProductIds = _rackModel.ProductIds,
-            Height = _rackModel.Height,
-            Width = _rackModel.Width,
-            Depth = _rackModel.Depth,
-            MaxWeight = _rackModel.MaxWeight,
-            ZoneId = _rackModel.ZoneId,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Name = _rackModel.Name,
+                ProductIds = _rackModel.ProductIds,
+                Height = _rackModel.Height,
+                Width = _rackModel.Width,
+                Depth = _rackModel.Depth,
+                MaxWeight = _rackModel.MaxWeight,
+                ZoneId = _rackModel.ZoneId,
+            };
         var createRackCommand = new CreateRackCommand(createRackDTO);
         var createdRackResponseDTO = await Mediator.Send(createRackCommand);
 
@@ -135,4 +135,3 @@
         MudDialog.Cancel();
     }
 }
-    

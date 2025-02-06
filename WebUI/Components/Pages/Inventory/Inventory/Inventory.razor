@@ -28,25 +28,25 @@
     </MudItem>
 </MudGrid>
 
-<MudTable Hover="true"  FixedHeader="true"
-Filter="new Func<InventoryModel,bool>(FilterFunc)"
-CanCancelEdit="true"
-Items="@InventoryModels"
-GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-GroupFooterClass="mb-4"
-Dense="true"
-Loading="@_loading" LoadingProgressColor="Color.Info"
-MultiSelection="true"
-@bind-SelectedItems="_selectedInventory"
-SelectOnRowClick="false"
-CommitEditTooltip="Commit Edit"
-CancelEditTooltip="Cancel Edit"
-IsEditRowSwitchingBlocked="false"
-RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-RowEditCommit="ItemHasBeenCommitted"
-ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-@ref="_tableRef">
+<MudTable Hover="true" FixedHeader="true"
+          Filter="new Func<InventoryModel,bool>(FilterFunc)"
+          CanCancelEdit="true"
+          Items="@InventoryModels"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4"
+          Dense="true"
+          Loading="@_loading" LoadingProgressColor="Color.Info"
+          MultiSelection="true"
+          @bind-SelectedItems="_selectedInventory"
+          SelectOnRowClick="false"
+          CommitEditTooltip="Commit Edit"
+          CancelEditTooltip="Cancel Edit"
+          IsEditRowSwitchingBlocked="false"
+          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted"
+          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+          @ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Inventory</MudText>
@@ -108,10 +108,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-        RowsPerPageString="Rows per page:"
-        InfoFormat="{first_item}-{last_item} of {all_items}"
-        AllItemsText="All"
-        HorizontalAlignment="HorizontalAlignment.Right" />
+                       RowsPerPageString="Rows per page:"
+                       InfoFormat="{first_item}-{last_item} of {all_items}"
+                       AllItemsText="All"
+                       HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -121,13 +121,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     [Parameter]
     public bool ShowCreateButton { get; set; }
-    
+
     [Parameter]
     public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }
-    
+
     [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
 
@@ -148,7 +148,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     private List<ProductModel> _allProductModels { get; set; } = [];
     private readonly Variant _defaultVariant = Theme.DefaultInputVariant();
-    
+
     protected override async Task OnParametersSetAsync()
     {
         // check to make sure all parameters are set before running
@@ -204,12 +204,12 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
 
         _inventoryModelBeforeEdit = new InventoryModel()
-        {
-            Id = ((InventoryModel)inventoryModel).Id,
-            DaysLeadTime = ((InventoryModel)inventoryModel).DaysLeadTime,
-            ProductId = ((InventoryModel)inventoryModel).ProductId,
-            Quantity = ((InventoryModel)inventoryModel).Quantity,
-        };
+            {
+                Id = ((InventoryModel)inventoryModel).Id,
+                DaysLeadTime = ((InventoryModel)inventoryModel).DaysLeadTime,
+                ProductId = ((InventoryModel)inventoryModel).ProductId,
+                Quantity = ((InventoryModel)inventoryModel).Quantity,
+            };
         StateHasChanged();
     }
 
@@ -226,13 +226,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private async void ItemHasBeenCommitted(object inventoryModel)
     {
         var updateInventoryDTO = new UpdateInventoryRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Id = ((InventoryModel)inventoryModel).Id,
-            DaysLeadTime = ((InventoryModel)inventoryModel).DaysLeadTime,
-            ProductId = ((InventoryModel)inventoryModel).ProductId,
-            Quantity = ((InventoryModel)inventoryModel).Quantity,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Id = ((InventoryModel)inventoryModel).Id,
+                DaysLeadTime = ((InventoryModel)inventoryModel).DaysLeadTime,
+                ProductId = ((InventoryModel)inventoryModel).ProductId,
+                Quantity = ((InventoryModel)inventoryModel).Quantity,
+            };
         var updateInventoryCommand = new UpdateInventoryCommand(updateInventoryDTO);
         var response = await Mediator.Send(updateInventoryCommand);
         SnackBar.Add(response.Message);
@@ -274,12 +274,12 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             var inventoryDTO = await Mediator.Send(getInventoryByIdQuery);
 
             var inventoryModel = new InventoryModel()
-            {
-                Id = inventoryDTO.Id,
-                Quantity = inventoryDTO.Quantity,
-                DaysLeadTime = inventoryDTO.DaysLeadTime,
-                ProductId = inventoryDTO.ProductId,
-            };
+                {
+                    Id = inventoryDTO.Id,
+                    Quantity = inventoryDTO.Quantity,
+                    DaysLeadTime = inventoryDTO.DaysLeadTime,
+                    ProductId = inventoryDTO.ProductId,
+                };
 
             InventoryModels.Add(inventoryModel);
         }
@@ -293,24 +293,22 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             var productDTO = await Mediator.Send(getProductByIdQuery);
 
             var productModel = new ProductModel()
-            {
-                Id = productDTO.Id,
-                Name = productDTO.Name,
-                Description = productDTO.Description,
-                Height = productDTO.Height,
-                Length = productDTO.Length,
-                Price = productDTO.Price,
-                ProductGroupIds = productDTO.ProductGroupIds,
-                ShopIds = productDTO.ShopIds,
-                Sku = productDTO.Sku,
-                Tag = productDTO.Tag,
-                Weight = productDTO.Weight,
-                Width = productDTO.Width,
-            };
+                {
+                    Id = productDTO.Id,
+                    Name = productDTO.Name,
+                    Description = productDTO.Description,
+                    Height = productDTO.Height,
+                    Length = productDTO.Length,
+                    Price = productDTO.Price,
+                    ProductGroupIds = productDTO.ProductGroupIds,
+                    ShopIds = productDTO.ShopIds,
+                    Sku = productDTO.Sku,
+                    Tag = productDTO.Tag,
+                    Weight = productDTO.Weight,
+                    Width = productDTO.Width,
+                };
             _allProductModels.Add(productModel);
         }
         return true;
     }
 }
-
-    

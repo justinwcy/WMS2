@@ -10,7 +10,7 @@
                        Size="Size.Large"
                        FullWidth="false"
                        Disabled="_disableDelete">
-                <IncomingOrderProduct/>
+                <IncomingOrderProduct />
                 Delete IncomingOrderProduct
             </MudButton>
         }
@@ -29,26 +29,25 @@
     </MudItem>
 </MudGrid>
 
-<MudTable 
-    Hover="true" FixedHeader="true"
-    Filter="new Func<IncomingOrderProductModel,bool>(FilterFunc)"
-    CanCancelEdit="true"
-    Items="@IncomingOrderProductModels"
-    GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-    GroupFooterClass="mb-4"
-    Dense="true"
-    Loading="@_loading" LoadingProgressColor="Color.Info"
-    MultiSelection="true"
-    @bind-SelectedItems="_selectedIncomingOrderProducts"
-    SelectOnRowClick="false"
-    CommitEditTooltip="Commit Edit"
-    CancelEditTooltip="Cancel Edit"
-    IsEditRowSwitchingBlocked="false"
-    RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-    RowEditCommit="ItemHasBeenCommitted"
-    ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-    EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-    @ref="_tableRef">
+<MudTable Hover="true" FixedHeader="true"
+          Filter="new Func<IncomingOrderProductModel,bool>(FilterFunc)"
+          CanCancelEdit="true"
+          Items="@IncomingOrderProductModels"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4"
+          Dense="true"
+          Loading="@_loading" LoadingProgressColor="Color.Info"
+          MultiSelection="true"
+          @bind-SelectedItems="_selectedIncomingOrderProducts"
+          SelectOnRowClick="false"
+          CommitEditTooltip="Commit Edit"
+          CancelEditTooltip="Cancel Edit"
+          IsEditRowSwitchingBlocked="false"
+          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted"
+          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+          @ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Incoming Order Products @_incomingOrder.PONumber</MudText>
@@ -100,22 +99,22 @@
 
         <MudTd DataLabel="Status">
             <MudSelect @bind-Value="context.Status"
-            Variant="@_defaultVariant"
-            Label="Status"
-            Margin="Margin.Normal"
-            Dense="false"
-            Disabled="false"
-            ReadOnly="false"
-            Placeholder=@("Status")
-            MultiSelection="false"
-            HelperText=@("Please select a status")
-            HelperTextOnFocus="true"
-            Clearable="false"
-            Required="true"
-            RequiredError="Please select a status">
+                       Variant="@_defaultVariant"
+                       Label="Status"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Status")
+                       MultiSelection="false"
+                       HelperText=@("Please select a status")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a status">
                 @foreach (var orderState in _orderStates)
                 {
-                    <MudSelectItem Value="@orderState"/>
+                    <MudSelectItem Value="@orderState" />
                 }
             </MudSelect>
         </MudTd>
@@ -127,10 +126,10 @@
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-        RowsPerPageString="Rows per page:"
-        InfoFormat="{first_item}-{last_item} of {all_items}"
-        AllItemsText="All"
-        HorizontalAlignment="HorizontalAlignment.Right" />
+                       RowsPerPageString="Rows per page:"
+                       InfoFormat="{first_item}-{last_item} of {all_items}"
+                       AllItemsText="All"
+                       HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -140,13 +139,13 @@
 
     [Parameter]
     public bool ShowCreateButton { get; set; }
-    
+
     [Parameter]
     public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }
-    
+
     [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
 
@@ -233,13 +232,13 @@
     {
 
         _incomingOrderProductModelBeforeEdit = new IncomingOrderProductModel()
-        {
-            Id = ((IncomingOrderProductModel)incomingOrderProductModel).Id,
-            ProductId = ((IncomingOrderProductModel)incomingOrderProductModel).ProductId,
-            IncomingOrderId = ((IncomingOrderProductModel)incomingOrderProductModel).IncomingOrderId,
-            Quantity = ((IncomingOrderProductModel)incomingOrderProductModel).Quantity,
-            Status = ((IncomingOrderProductModel)incomingOrderProductModel).Status,
-        };
+            {
+                Id = ((IncomingOrderProductModel)incomingOrderProductModel).Id,
+                ProductId = ((IncomingOrderProductModel)incomingOrderProductModel).ProductId,
+                IncomingOrderId = ((IncomingOrderProductModel)incomingOrderProductModel).IncomingOrderId,
+                Quantity = ((IncomingOrderProductModel)incomingOrderProductModel).Quantity,
+                Status = ((IncomingOrderProductModel)incomingOrderProductModel).Status,
+            };
         StateHasChanged();
     }
 
@@ -258,14 +257,14 @@
     {
         var incomingOrderProductModelConverted = (IncomingOrderProductModel)incomingOrderProductModel;
         var updateIncomingOrderProductDTO = new UpdateIncomingOrderProductRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Id = incomingOrderProductModelConverted.Id,
-            ProductId = incomingOrderProductModelConverted.ProductId,
-            IncomingOrderId = incomingOrderProductModelConverted.IncomingOrderId,
-            Quantity = incomingOrderProductModelConverted.Quantity,
-            Status = incomingOrderProductModelConverted.Status,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Id = incomingOrderProductModelConverted.Id,
+                ProductId = incomingOrderProductModelConverted.ProductId,
+                IncomingOrderId = incomingOrderProductModelConverted.IncomingOrderId,
+                Quantity = incomingOrderProductModelConverted.Quantity,
+                Status = incomingOrderProductModelConverted.Status,
+            };
         var updateIncomingOrderProductCommand = new UpdateIncomingOrderProductCommand(updateIncomingOrderProductDTO);
         var response = await Mediator.Send(updateIncomingOrderProductCommand);
         SnackBar.Add(response.Message);
@@ -365,5 +364,3 @@
         return true;
     }
 }
-
-    

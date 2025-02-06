@@ -1,7 +1,3 @@
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
 <MudDialog>
     <TitleContent>
         Create Courier
@@ -13,20 +9,20 @@
                           T="string"
                           Label="Courier Name"
                           Required="true" RequiredError="Name is required!"
-                          Margin="Margin.Dense"/>
+                          Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_courierModel.Price"
                           Variant="@_defaultVariant"
                           T="decimal"
                           Label="Price"
                           Required="true" RequiredError="Price is required!"
-                          Margin="Margin.Dense"/>
-                          
+                          Margin="Margin.Dense" />
+
             <MudTextField @bind-value="_courierModel.Remark"
                           Variant="@_defaultVariant"
                           T="string"
                           Label="Remarks"
-                          Margin="Margin.Dense"/>
+                          Margin="Margin.Dense" />
 
         </MudForm>
     </DialogContent>
@@ -50,24 +46,24 @@
     private async Task Submit()
     {
         var createCourierDTO = new CreateCourierRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Name = _courierModel.Name,
-            Price = _courierModel.Price,
-            Remark = _courierModel.Remark,
-            CustomerOrderIds = _courierModel.CustomerOrderIds
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Name = _courierModel.Name,
+                Price = _courierModel.Price,
+                Remark = _courierModel.Remark,
+                CustomerOrderIds = _courierModel.CustomerOrderIds
+            };
         var createCourierCommand = new CreateCourierCommand(createCourierDTO);
         var createdCourierResponseDTO = await Mediator.Send(createCourierCommand);
 
         var createdCourierModel = new CourierModel()
-        {
-            Id = createdCourierResponseDTO.Id,
-            Name = _courierModel.Name,
-            Price = _courierModel.Price,
-            Remark = _courierModel.Remark,
-            CustomerOrderIds = _courierModel.CustomerOrderIds
-        };
+            {
+                Id = createdCourierResponseDTO.Id,
+                Name = _courierModel.Name,
+                Price = _courierModel.Price,
+                Remark = _courierModel.Remark,
+                CustomerOrderIds = _courierModel.CustomerOrderIds
+            };
         MudDialog.Close(DialogResult.Ok(createdCourierModel));
     }
 
@@ -76,4 +72,3 @@
         MudDialog.Cancel();
     }
 }
-    

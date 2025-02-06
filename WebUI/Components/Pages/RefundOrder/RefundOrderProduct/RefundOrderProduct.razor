@@ -28,25 +28,25 @@
     </MudItem>
 </MudGrid>
 
-<MudTable Hover="true"  FixedHeader="true"
-Filter="new Func<RefundOrderProductModel,bool>(FilterFunc)"
-CanCancelEdit="true"
-Items="@RefundOrderProductModels"
-GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-GroupFooterClass="mb-4"
-Dense="true"
-Loading="@_loading" LoadingProgressColor="Color.Info"
-MultiSelection="true"
-@bind-SelectedItems="_selectedRefundOrderProducts"
-SelectOnRowClick="false"
-CommitEditTooltip="Commit Edit"
-CancelEditTooltip="Cancel Edit"
-IsEditRowSwitchingBlocked="false"
-RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-RowEditCommit="ItemHasBeenCommitted"
-ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-@ref="_tableRef">
+<MudTable Hover="true" FixedHeader="true"
+          Filter="new Func<RefundOrderProductModel,bool>(FilterFunc)"
+          CanCancelEdit="true"
+          Items="@RefundOrderProductModels"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4"
+          Dense="true"
+          Loading="@_loading" LoadingProgressColor="Color.Info"
+          MultiSelection="true"
+          @bind-SelectedItems="_selectedRefundOrderProducts"
+          SelectOnRowClick="false"
+          CommitEditTooltip="Commit Edit"
+          CancelEditTooltip="Cancel Edit"
+          IsEditRowSwitchingBlocked="false"
+          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted"
+          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+          @ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">RefundOrderProducts</MudText>
@@ -113,7 +113,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                        RequiredError="Please select a status">
                 @foreach (var orderState in _orderStates)
                 {
-                    <MudSelectItem Value="@orderState"/>
+                    <MudSelectItem Value="@orderState" />
                 }
             </MudSelect>
         </MudTd>
@@ -125,10 +125,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-        RowsPerPageString="Rows per page:"
-        InfoFormat="{first_item}-{last_item} of {all_items}"
-        AllItemsText="All"
-        HorizontalAlignment="HorizontalAlignment.Right" />
+                       RowsPerPageString="Rows per page:"
+                       InfoFormat="{first_item}-{last_item} of {all_items}"
+                       AllItemsText="All"
+                       HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -138,13 +138,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     [Parameter]
     public bool ShowCreateButton { get; set; }
-    
+
     [Parameter]
     public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }
-    
+
     [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
 
@@ -192,7 +192,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         {
             PageComponents.Add(this);
         }
-        
+
         _loading = false;
     }
 
@@ -230,14 +230,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
 
         _refundOrderProductModelBeforeEdit = new RefundOrderProductModel()
-        {
-            Id = ((RefundOrderProductModel)refundOrderProductModel).Id,
-            Status = ((RefundOrderProductModel)refundOrderProductModel).Status,
-            Quantity = ((RefundOrderProductModel)refundOrderProductModel).Quantity,
-            ProductId = ((RefundOrderProductModel)refundOrderProductModel).ProductId,
-            RefundOrderId = ((RefundOrderProductModel)refundOrderProductModel).RefundOrderId,
-            
-        };
+            {
+                Id = ((RefundOrderProductModel)refundOrderProductModel).Id,
+                Status = ((RefundOrderProductModel)refundOrderProductModel).Status,
+                Quantity = ((RefundOrderProductModel)refundOrderProductModel).Quantity,
+                ProductId = ((RefundOrderProductModel)refundOrderProductModel).ProductId,
+                RefundOrderId = ((RefundOrderProductModel)refundOrderProductModel).RefundOrderId,
+
+            };
         StateHasChanged();
     }
 
@@ -255,14 +255,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private async void ItemHasBeenCommitted(object refundOrderProductModel)
     {
         var updateRefundOrderProductDTO = new UpdateRefundOrderProductRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Id = ((RefundOrderProductModel)refundOrderProductModel).Id,
-            Status = ((RefundOrderProductModel)refundOrderProductModel).Status,
-            Quantity = ((RefundOrderProductModel)refundOrderProductModel).Quantity,
-            ProductId = ((RefundOrderProductModel)refundOrderProductModel).ProductId,
-            RefundOrderId = ((RefundOrderProductModel)refundOrderProductModel).RefundOrderId,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Id = ((RefundOrderProductModel)refundOrderProductModel).Id,
+                Status = ((RefundOrderProductModel)refundOrderProductModel).Status,
+                Quantity = ((RefundOrderProductModel)refundOrderProductModel).Quantity,
+                ProductId = ((RefundOrderProductModel)refundOrderProductModel).ProductId,
+                RefundOrderId = ((RefundOrderProductModel)refundOrderProductModel).RefundOrderId,
+            };
         var updateRefundOrderProductCommand = new UpdateRefundOrderProductCommand(updateRefundOrderProductDTO);
         var response = await Mediator.Send(updateRefundOrderProductCommand);
         SnackBar.Add(response.Message);
@@ -361,5 +361,3 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         return true;
     }
 }
-
-    

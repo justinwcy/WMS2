@@ -29,24 +29,24 @@
 </MudGrid>
 
 <MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
-Filter="new Func<BinModel,bool>(FilterFunc)"
-CanCancelEdit="true"
-Items="@BinModels"
-GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-GroupFooterClass="mb-4"
-Dense="true"
-Loading="@_loading" LoadingProgressColor="Color.Info"
-MultiSelection="true"
-@bind-SelectedItems="_selectedBins"
-SelectOnRowClick="false"
-CommitEditTooltip="Commit Edit"
-CancelEditTooltip="Cancel Edit"
-IsEditRowSwitchingBlocked="false"
-RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-RowEditCommit="ItemHasBeenCommitted"
-ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-@ref="_tableRef">
+          Filter="new Func<BinModel,bool>(FilterFunc)"
+          CanCancelEdit="true"
+          Items="@BinModels"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4"
+          Dense="true"
+          Loading="@_loading" LoadingProgressColor="Color.Info"
+          MultiSelection="true"
+          @bind-SelectedItems="_selectedBins"
+          SelectOnRowClick="false"
+          CommitEditTooltip="Commit Edit"
+          CancelEditTooltip="Cancel Edit"
+          IsEditRowSwitchingBlocked="false"
+          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted"
+          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+          @ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Bins</MudText>
@@ -80,16 +80,16 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Name">
             <MudTextField @bind-Value="context.Name" Required />
         </MudTd>
-        
+
         <MudTd DataLabel="Customer Orders"></MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-        RowsPerPageString="Rows per page:"
-        InfoFormat="{first_item}-{last_item} of {all_items}"
-        AllItemsText="All"
-        HorizontalAlignment="HorizontalAlignment.Right" />
+                       RowsPerPageString="Rows per page:"
+                       InfoFormat="{first_item}-{last_item} of {all_items}"
+                       AllItemsText="All"
+                       HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -99,13 +99,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     [Parameter]
     public bool ShowCreateButton { get; set; }
-    
+
     [Parameter]
     public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }
-    
+
     [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
 
@@ -177,11 +177,11 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
 
         _binModelBeforeEdit = new BinModel()
-        {
-            Id = ((BinModel)binModel).Id,
-            Name = ((BinModel)binModel).Name,
-            CustomerOrderIds = ((BinModel)binModel).CustomerOrderIds,
-        };
+            {
+                Id = ((BinModel)binModel).Id,
+                Name = ((BinModel)binModel).Name,
+                CustomerOrderIds = ((BinModel)binModel).CustomerOrderIds,
+            };
         StateHasChanged();
     }
 
@@ -198,12 +198,12 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
         var binModelConverted = (BinModel)binModel;
         var updateBinDTO = new UpdateBinRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Id = binModelConverted.Id,
-            Name = binModelConverted.Name,
-            CustomerOrderIds = binModelConverted.CustomerOrderIds,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Id = binModelConverted.Id,
+                Name = binModelConverted.Name,
+                CustomerOrderIds = binModelConverted.CustomerOrderIds,
+            };
         var updateBinCommand = new UpdateBinCommand(updateBinDTO);
         var response = await Mediator.Send(updateBinCommand);
         SnackBar.Add(response.Message);
@@ -268,5 +268,3 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         }
     }
 }
-
-    

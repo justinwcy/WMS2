@@ -1,15 +1,11 @@
 @page "/warehouse"
 @implements IMainPage
-@using Application.DTO.Response
-@using WebUI.Utilities
-@using Application.Service.Queries
-
-<Warehouse WarehouseIds="WarehouseIds" 
-    CurrentStaff="CurrentStaff" 
-    MainPage="MainPage" 
-    PageComponents="PageComponents"
-    ShowCreateButton="true"
-    ShowDeleteButton="true"/>
+<Warehouse WarehouseIds="WarehouseIds"
+           CurrentStaff="CurrentStaff"
+           MainPage="MainPage"
+           PageComponents="PageComponents"
+           ShowCreateButton="true"
+           ShowDeleteButton="true" />
 
 @code {
     private IMainPage MainPage => this;
@@ -23,7 +19,7 @@
         await base.OnInitializedAsync();
         await InitializeData();
     }
-    
+
     public async Task InitializeData()
     {
         CurrentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
