@@ -313,8 +313,8 @@
             };
         var updateZoneCommand = new UpdateZoneCommand(updateZoneDTO);
         var response = await Mediator.Send(updateZoneCommand);
-        SnackBar.Add(response.Message);
         await FetchData();
+        SnackBar.Add(response.Message);
         StateHasChanged();
     }
 

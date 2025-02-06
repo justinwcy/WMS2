@@ -300,6 +300,7 @@
             };
         var updateStaffCommand = new UpdateStaffCommand(updateStaffDTO);
         var response = await Mediator.Send(updateStaffCommand);
+        await FetchData();
         SnackBar.Add(response.Message);
         StateHasChanged();
     }

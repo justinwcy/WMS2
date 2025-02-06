@@ -217,6 +217,7 @@
             };
         var updateProductGroupCommand = new UpdateProductGroupCommand(updateProductGroupDTO);
         var response = await Mediator.Send(updateProductGroupCommand);
+        await FetchData();
         SnackBar.Add(response.Message);
         StateHasChanged();
     }

@@ -267,6 +267,7 @@
             };
         var updateIncomingOrderProductCommand = new UpdateIncomingOrderProductCommand(updateIncomingOrderProductDTO);
         var response = await Mediator.Send(updateIncomingOrderProductCommand);
+        await FetchData();
         SnackBar.Add(response.Message);
         StateHasChanged();
     }

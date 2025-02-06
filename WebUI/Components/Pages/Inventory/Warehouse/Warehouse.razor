@@ -253,6 +253,7 @@
             };
         var updateWarehouseCommand = new UpdateWarehouseCommand(updateWarehouseDTO);
         var response = await Mediator.Send(updateWarehouseCommand);
+        await FetchData();
         SnackBar.Add(response.Message);
         StateHasChanged();
     }

@@ -227,6 +227,7 @@
             };
         var updateCourierCommand = new UpdateCourierCommand(updateCourierDTO);
         var response = await Mediator.Send(updateCourierCommand);
+        await FetchData();
         SnackBar.Add(response.Message);
         StateHasChanged();
     }

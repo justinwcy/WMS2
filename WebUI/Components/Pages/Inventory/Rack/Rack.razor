@@ -281,6 +281,7 @@
             };
         var updateRackCommand = new UpdateRackCommand(updateRackDTO);
         var response = await Mediator.Send(updateRackCommand);
+        await FetchData();
         SnackBar.Add(response.Message);
         StateHasChanged();
     }

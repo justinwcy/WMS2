@@ -350,6 +350,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         };
         var updateCustomerOrderCommand = new UpdateCustomerOrderCommand(updateCustomerOrderDTO);
         var response = await Mediator.Send(updateCustomerOrderCommand);
+        await FetchData();
         SnackBar.Add(response.Message);
         StateHasChanged();
     }

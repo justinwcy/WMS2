@@ -254,6 +254,7 @@
             };
         var updateVendorCommand = new UpdateVendorCommand(updateVendorDTO);
         var response = await Mediator.Send(updateVendorCommand);
+        await FetchData();
         SnackBar.Add(response.Message);
         StateHasChanged();
     }

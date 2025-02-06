@@ -206,6 +206,7 @@
             };
         var updateBinCommand = new UpdateBinCommand(updateBinDTO);
         var response = await Mediator.Send(updateBinCommand);
+        await FetchData();
         SnackBar.Add(response.Message);
         StateHasChanged();
     }

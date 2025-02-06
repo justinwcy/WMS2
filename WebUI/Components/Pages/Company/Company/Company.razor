@@ -272,9 +272,8 @@
             };
         var updateCompanyCommand = new UpdateCompanyCommand(updateCompanyDTO);
         var response = await Mediator.Send(updateCompanyCommand);
-        SnackBar.Add(response.Message);
-
         await FetchData();
+        SnackBar.Add(response.Message);
         StateHasChanged();
     }
 

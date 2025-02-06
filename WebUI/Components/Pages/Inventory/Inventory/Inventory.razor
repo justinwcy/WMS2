@@ -235,6 +235,7 @@
             };
         var updateInventoryCommand = new UpdateInventoryCommand(updateInventoryDTO);
         var response = await Mediator.Send(updateInventoryCommand);
+        await FetchData();
         SnackBar.Add(response.Message);
         StateHasChanged();
     }

@@ -242,6 +242,7 @@
             };
         var updateShopCommand = new UpdateShopCommand(updateShopDTO);
         var response = await Mediator.Send(updateShopCommand);
+        await FetchData();
         SnackBar.Add(response.Message);
         StateHasChanged();
     }

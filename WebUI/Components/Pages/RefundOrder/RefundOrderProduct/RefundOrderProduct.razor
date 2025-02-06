@@ -265,6 +265,7 @@
             };
         var updateRefundOrderProductCommand = new UpdateRefundOrderProductCommand(updateRefundOrderProductDTO);
         var response = await Mediator.Send(updateRefundOrderProductCommand);
+        await FetchData();
         SnackBar.Add(response.Message);
         StateHasChanged();
     }
