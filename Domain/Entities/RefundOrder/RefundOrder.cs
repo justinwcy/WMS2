@@ -9,6 +9,6 @@
         public DateTime RefundDate { get; set; }
 
         // many to many relationship
-        public List<RefundOrderProduct> RefundOrderProducts { get; set; }
+        public List<RefundOrderProduct>? RefundOrderProducts { get; set; } = [];
     }
 }

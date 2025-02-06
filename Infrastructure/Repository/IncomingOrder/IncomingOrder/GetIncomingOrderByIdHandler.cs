@@ -16,13 +16,13 @@ namespace Infrastructure.Repository
         {
             await using var wmsDbContext = contextFactory.CreateDbContext();
             var incomingOrderFound = await wmsDbContext.IncomingOrders.AsNoTracking()
-                .Include(incomingOrder => incomingOrder.Products)
+                .Include(incomingOrder => incomingOrder.IncomingOrderProducts)
                 .FirstAsync(incomingOrder=>incomingOrder.Id == request.Id, cancellationToken);
 
             var result = incomingOrderFound.Adapt<GetIncomingOrderResponseDTO>();
             result.VendorId = incomingOrderFound.VendorId;
-            result.IncomingOrderProductIds = incomingOrderFound.Products
-                .Select(product => product.Id)
+            result.IncomingOrderProductIds = incomingOrderFound.IncomingOrderProducts
+                .Select(incomingOrderProduct => incomingOrderProduct.Id)
                 .ToList();
             return result;
         }

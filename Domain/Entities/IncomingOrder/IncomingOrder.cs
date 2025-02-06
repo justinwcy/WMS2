@@ -11,9 +11,9 @@
         public string Status { get; set; } = string.Empty;
 
         // one to many relationship
-        public Guid VendorId { get; set; }
-        public Vendor Vendor { get; set; }
+        public Guid? VendorId { get; set; }
+        public Vendor? Vendor { get; set; }
 
-        public List<IncomingOrderProduct> IncomingOrderProducts { get; set; }
+        public List<IncomingOrderProduct>? IncomingOrderProducts { get; set; } = [];
     }
 }

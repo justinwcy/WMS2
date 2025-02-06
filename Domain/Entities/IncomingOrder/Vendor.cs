@@ -15,6 +15,6 @@ namespace Domain.Entities
 
         public string Email { get; set; }
 
-        public List<IncomingOrder> IncomingOrders { get; set; }
+        public List<IncomingOrder>? IncomingOrders { get; set; } = [];
     }
 }

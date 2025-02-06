@@ -31,7 +31,7 @@ namespace Infrastructure.Repository
                 zoneFound.Name = request.Model.Name;
 
                 // update relationships
-                var warehouseFound = wmsDbContext.Warehouses.FirstOrDefault(warehouse => warehouse.Id == request.Model.Id);
+                var warehouseFound = wmsDbContext.Warehouses.FirstOrDefault(warehouse => warehouse.Id == request.Model.WarehouseId);
                 if (warehouseFound == null)
                 {
                     return GeneralDbResponses.ItemNotFound("Warehouse");

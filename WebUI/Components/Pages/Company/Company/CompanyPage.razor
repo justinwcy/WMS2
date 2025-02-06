@@ -1,8 +1,5 @@
 @page "/company"
 @implements IMainPage
-@using Application.DTO.Response
-@using WebUI.Utilities
-@using Application.Service.Queries
 
 <Company CompanyIds="CompanyIds" 
          CurrentStaff="CurrentStaff" 
@@ -17,7 +14,7 @@
     private List<IPageComponent> PageComponents = [];
 
     private List<Guid> CompanyIds { get; set; } = new List<Guid>();
-    private GetStaffResponseDTO CurrentStaff { get; set; }
+    private CurrentUserModel CurrentStaff { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

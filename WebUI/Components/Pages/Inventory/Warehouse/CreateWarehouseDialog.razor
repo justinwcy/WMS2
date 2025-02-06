@@ -24,7 +24,7 @@
                           Margin="Margin.Dense"/>
             
             <MudSelect @bind-Value="_warehouseModel.CompanyId"
-                       T="Guid"
+                       T="Guid?"
                        ToStringFunc="@(id=> _allCompanyModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Company"
@@ -34,14 +34,14 @@
                        ReadOnly="false"
                        Placeholder=@("Company")
                        MultiSelection="false"
-                       HelperText=@("Please select a company for the user")
+                       HelperText=@("Please select a company")
                        HelperTextOnFocus="true"
                        Clearable="false"
                        Required="true"
-                       RequiredError="Please select a company for the user">
+                       RequiredError="Please select a company">
                 @foreach (var companyModel in _allCompanyModels)
                 {
-                    <MudSelectItem Value="companyModel.Id"></MudSelectItem>
+                    <MudSelectItem T="Guid?" Value="companyModel.Id"></MudSelectItem>
                 }
             </MudSelect>
 
@@ -63,7 +63,7 @@
     private List<CompanyModel> _allCompanyModels { get; set; } = [];
 
     [Parameter]
-    public required GetStaffResponseDTO CurrentStaff { get; set; }
+    public required CurrentUserModel CurrentStaff { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {

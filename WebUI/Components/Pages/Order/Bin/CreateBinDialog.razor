@@ -1,7 +1,3 @@
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
 <MudDialog>
     <TitleContent>
         Create Bin
@@ -32,7 +28,7 @@
     private BinModel _binModel { get; set; } = new BinModel();
 
     [Parameter]
-    public required GetStaffResponseDTO CurrentStaff { get; set; }
+    public required CurrentUserModel CurrentStaff { get; set; }
 
     private async Task Submit()
     {

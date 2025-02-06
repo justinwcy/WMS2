@@ -10,8 +10,8 @@
         public string ConfirmPassword { get; set; } = "";
         public List<string> Roles { get; set; } = [];
 
-        public Guid CompanyId { get; set; }
-        public List<Guid> ZoneIds { get; set; } = [];
+        public Guid? CompanyId { get; set; }
+        public List<Guid>? ZoneIds { get; set; } = [];
 
         public string FullName => $"{FirstName} {LastName}";
 

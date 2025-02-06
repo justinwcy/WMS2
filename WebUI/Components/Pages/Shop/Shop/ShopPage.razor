@@ -16,7 +16,7 @@
     private List<IPageComponent> PageComponents = [];
 
     private List<Guid> ShopIds { get; set; } = new List<Guid>();
-    private GetStaffResponseDTO CurrentStaff { get; set; }
+    private CurrentUserModel CurrentStaff { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

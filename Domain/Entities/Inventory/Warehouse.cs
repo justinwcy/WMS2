@@ -10,10 +10,10 @@ namespace Domain.Entities
 
         // one to many relationship
         [JsonIgnore]
-        public Company Company { get; set; }
-        public Guid CompanyId { get; set; }
+        public Company? Company { get; set; }
+        public Guid? CompanyId { get; set; }
 
         // one to many relationship
-        public List<Zone> Zones { get; set; }
+        public List<Zone>? Zones { get; set; } = [];
     }
 }

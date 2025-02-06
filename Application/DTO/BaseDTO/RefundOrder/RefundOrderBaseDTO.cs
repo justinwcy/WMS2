@@ -8,6 +8,6 @@
 
         public DateTime RefundDate { get; set; }
 
-        public List<Guid> RefundOrderProductIds { get; set; }
+        public List<Guid>? RefundOrderProductIds { get; set; }
     }
 }

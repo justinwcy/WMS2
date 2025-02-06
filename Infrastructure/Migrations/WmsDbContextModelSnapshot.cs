@@ -197,6 +197,9 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("ReceivingDate")
                         .HasColumnType("datetime2");
 
@@ -208,6 +211,8 @@ namespace Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
 
                     b.HasIndex("VendorId");
 
@@ -435,7 +440,7 @@ namespace Infrastructure.Migrations
                     b.Property<double>("Width")
                         .HasColumnType("float");
 
-                    b.Property<Guid>("ZoneId")
+                    b.Property<Guid?>("ZoneId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -454,6 +459,9 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("RefundDate")
                         .HasColumnType("datetime2");
 
@@ -466,6 +474,8 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("RefundOrders");
                 });
@@ -537,7 +547,7 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CompanyId")
+                    b.Property<Guid?>("CompanyId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CreatedBy")
@@ -627,7 +637,7 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("CompanyId")
+                    b.Property<Guid?>("CompanyId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CreatedBy")
@@ -657,7 +667,7 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("WarehouseId")
+                    b.Property<Guid?>("WarehouseId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -948,6 +958,10 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.IncomingOrder", b =>
                 {
+                    b.HasOne("Domain.Entities.Product", null)
+                        .WithMany("IncomingOrders")
+                        .HasForeignKey("ProductId");
+
                     b.HasOne("Domain.Entities.Vendor", "Vendor")
                         .WithMany("IncomingOrders")
                         .HasForeignKey("VendorId")
@@ -960,7 +974,7 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.IncomingOrderProduct", b =>
                 {
                     b.HasOne("Domain.Entities.IncomingOrder", "IncomingOrder")
-                        .WithMany()
+                        .WithMany("IncomingOrderProducts")
                         .HasForeignKey("IncomingOrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1049,10 +1063,16 @@ namespace Infrastructure.Migrations
                     b.HasOne("Domain.Entities.Zone", "Zone")
                         .WithMany("Racks")
                         .HasForeignKey("ZoneId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Zone");
+                });
+
+            modelBuilder.Entity("Domain.Entities.RefundOrder", b =>
+                {
+                    b.HasOne("Domain.Entities.Product", null)
+                        .WithMany("RefundOrders")
+                        .HasForeignKey("ProductId");
                 });
 
             modelBuilder.Entity("Domain.Entities.RefundOrderProduct", b =>
@@ -1064,7 +1084,7 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.RefundOrder", "RefundOrder")
-                        .WithMany()
+                        .WithMany("RefundOrderProducts")
                         .HasForeignKey("RefundOrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1079,8 +1099,7 @@ namespace Infrastructure.Migrations
                     b.HasOne("Domain.Entities.Company", "Company")
                         .WithMany("Staffs")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Company");
                 });
@@ -1101,8 +1120,7 @@ namespace Infrastructure.Migrations
                     b.HasOne("Domain.Entities.Company", "Company")
                         .WithMany("Warehouses")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Company");
                 });
@@ -1112,8 +1130,7 @@ namespace Infrastructure.Migrations
                     b.HasOne("Domain.Entities.Warehouse", "Warehouse")
                         .WithMany("Zones")
                         .HasForeignKey("WarehouseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Warehouse");
                 });
@@ -1215,12 +1232,26 @@ namespace Infrastructure.Migrations
                     b.Navigation("CustomerOrderDetails");
                 });
 
+            modelBuilder.Entity("Domain.Entities.IncomingOrder", b =>
+                {
+                    b.Navigation("IncomingOrderProducts");
+                });
+
             modelBuilder.Entity("Domain.Entities.Product", b =>
                 {
                     b.Navigation("CurrentInventory")
                         .IsRequired();
 
                     b.Navigation("CustomerOrderDetails");
+
+                    b.Navigation("IncomingOrders");
+
+                    b.Navigation("RefundOrders");
+                });
+
+            modelBuilder.Entity("Domain.Entities.RefundOrder", b =>
+                {
+                    b.Navigation("RefundOrderProducts");
                 });
 
             modelBuilder.Entity("Domain.Entities.Staff", b =>

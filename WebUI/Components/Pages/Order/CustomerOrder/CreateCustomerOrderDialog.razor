@@ -1,8 +1,3 @@
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
-@using Application.Service.Queries
 <MudDialog>
     <TitleContent>
         Create Customer Order
@@ -11,7 +6,7 @@
         <MudForm @bind-IsValid="@_isFormValid">
 
             <MudSelect @bind-Value="_customerOrderModel.CustomerId"
-                       T="Guid"
+                       T="Guid?"
                        ToStringFunc="@(id => $"{_allCustomerModels.FirstOrDefault(customerModel => customerModel.Id == id)?.FirstName} {_allCustomerModels.FirstOrDefault(customerModel => customerModel.Id == id)?.LastName}")"
                        Variant="@_defaultVariant"
                        Label="Status"
@@ -25,10 +20,10 @@
                        HelperTextOnFocus="true"
                        Clearable="false"
                        Required="true"
-                       RequiredError="Please select a courier">
+                       RequiredError="Please select a customer">
                 @foreach (var customerModel in _allCustomerModels)
                 {
-                    <MudSelectItem Value="@customerModel.Id" />
+                    <MudSelectItem T="Guid?" Value="@customerModel.Id" />
                 }
             </MudSelect>
             
@@ -38,7 +33,7 @@
                            Placeholder="Expected Arrival Date" />
 
             <MudSelect @bind-Value="_customerOrderModel.CourierId"
-                       T="Guid"
+                       T="Guid?"
                        ToStringFunc="@(id => _allCourierModels.FirstOrDefault(courierModel => courierModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Status"
@@ -55,7 +50,7 @@
                        RequiredError="Please select a courier">
                 @foreach (var courierModel in _allCourierModels)
                 {
-                    <MudSelectItem Value="@courierModel.Id"/>
+                    <MudSelectItem T="Guid?" Value="@courierModel.Id" />
                 }
             </MudSelect>
 
@@ -67,7 +62,7 @@
                           Margin="Margin.Dense"/>
 
             <MudSelect @bind-Value="_customerOrderModel.BinId"
-                       T="Guid"
+                       T="Guid?"
                        ToStringFunc="@(id => _allBinModels.FirstOrDefault(binModel => binModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Status"
@@ -84,7 +79,7 @@
                        RequiredError="Please select a bin">
                 @foreach (var binModel in _allBinModels)
                 {
-                    <MudSelectItem Value="@binModel.Id"/>
+                    <MudSelectItem T="Guid?" Value="@binModel.Id" />
                 }
             </MudSelect>
 
@@ -105,7 +100,7 @@
     private CustomerOrderModel _customerOrderModel { get; set; } = new CustomerOrderModel();
 
     [Parameter]
-    public required GetStaffResponseDTO CurrentStaff { get; set; }
+    public required CurrentUserModel CurrentStaff { get; set; }
 
     private List<CustomerModel> _allCustomerModels { get; set; } = [];
     private List<BinModel> _allBinModels { get; set; } = [];

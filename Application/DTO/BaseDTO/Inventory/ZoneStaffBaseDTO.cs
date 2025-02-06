@@ -2,7 +2,7 @@
 {
     public class ZoneStaffBaseDTO : BaseDTO
     {
-        public Guid ZoneId { get; set; }
-        public Guid StaffId { get; set; }
+        public Guid? ZoneId { get; set; }
+        public Guid? StaffId { get; set; }
     }
 }

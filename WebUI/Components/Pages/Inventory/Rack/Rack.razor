@@ -1,12 +1,5 @@
-
 @inject IDialogService Dialog
 @implements IPageComponent
-@using Application.Service.Queries
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
-@using WebUI.Utilities
 <MudGrid Class="mb-3">
     <MudItem xs="9">
         @if (ShowDeleteButton)
@@ -61,15 +54,15 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col style="max-width: 50px" />
-        <col style="max-width: 50px" />
-        <col style="min-width: 100px" />
-        <col style="min-width: 100px" />
-        <col style="min-width: 100px" />
-        <col style="min-width: 100px" />
-        <col style="min-width: 100px" />
-        <col style="min-width: 150px" />
-        <col style="min-width: 150px" />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<RackModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
@@ -125,7 +118,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
         <MudTd DataLabel="Zones">
             <MudSelect @bind-Value="context.ZoneId"
-                       T="Guid"
+                       T="Guid?"
                        ToStringFunc="@(id=> _allZoneModels.FirstOrDefault(zoneModel=>zoneModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Zone"
@@ -142,7 +135,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                        RequiredError="Please select a zone">
                 @foreach (var zoneModel in _allZoneModels)
                 {
-                    <MudSelectItem Value="zoneModel.Id"></MudSelectItem>
+                    <MudSelectItem T="Guid?" Value="zoneModel.Id"></MudSelectItem>
                 }
             </MudSelect>
         </MudTd>
@@ -179,7 +172,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public List<RackModel> RackModels { get; set; } = new List<RackModel>();
 
     [Parameter]
-    public GetStaffResponseDTO? CurrentStaff { get; set; }
+    public CurrentUserModel? CurrentStaff { get; set; }
 
     private HashSet<RackModel> _selectedRacks = new HashSet<RackModel>();
     private bool _disableDelete => !_selectedRacks.Any();
@@ -335,7 +328,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                     Width = rackDTO.Width,
                     Depth = rackDTO.Depth,
                     Height = rackDTO.Height,
-                    ZoneId = rackDTO.ZoneId,
+                    ZoneId = rackDTO.ZoneId.GetValueOrDefault(),
                 };
 
             RackModels.Add(rackModel);

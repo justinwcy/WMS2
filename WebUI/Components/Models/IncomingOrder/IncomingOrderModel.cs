@@ -12,8 +12,8 @@
 
         public string Status { get; set; } = string.Empty;
 
-        public List<Guid> IncomingOrderProductIds { get; set; } = [];
+        public List<Guid>? IncomingOrderProductIds { get; set; } = [];
 
-        public Guid VendorId { get; set; }
+        public Guid? VendorId { get; set; }
     }
 }

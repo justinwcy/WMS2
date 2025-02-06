@@ -4,7 +4,7 @@ namespace Application.DTO.BaseDTO
 {
     public class RackBaseDTO : BaseDTO
     {
-        public Guid ZoneId { get; set; }
+        public Guid? ZoneId { get; set; }
 
         public string Name { get; set; }
 
@@ -16,6 +16,6 @@ namespace Application.DTO.BaseDTO
 
         public double Depth { get; set; }
 
-        public List<Guid> ProductIds { get; set; }
+        public List<Guid>? ProductIds { get; set; }
     }
 }

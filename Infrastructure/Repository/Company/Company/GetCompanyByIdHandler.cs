@@ -18,7 +18,12 @@ namespace Infrastructure.Repository
             var companyFound = await wmsDbContext.Companies.AsNoTracking()
                 .Include(company=>company.Staffs)
                 .Include(company=>company.Warehouses)
-                .FirstAsync(company=>company.Id == request.Id, cancellationToken);
+                .FirstOrDefaultAsync(company=>company.Id == request.Id, cancellationToken);
+
+            if (companyFound == null)
+            {
+                return null;
+            }
 
             var result = companyFound.Adapt<GetCompanyResponseDTO>();
             result.StaffIds = companyFound.Staffs.Select(staff => staff.Id).ToList();

@@ -11,19 +11,19 @@ namespace Domain.Entities
         public string OrderAddress { get; set; }
 
         // one to many relationship
-        public Guid CustomerId { get; set; }
+        public Guid? CustomerId { get; set; }
 
         [JsonIgnore]
-        public Customer Customer { get; set; }
+        public Customer? Customer { get; set; }
 
         // one to many relationship
-        public List<CustomerOrderDetail> CustomerOrderDetails { get; set; }
+        public List<CustomerOrderDetail>? CustomerOrderDetails { get; set; } = [];
 
         // one to many relationship
-        public Courier Courier { get; set; }
-        public Guid CourierId { get; set; }
+        public Courier? Courier { get; set; }
+        public Guid? CourierId { get; set; }
 
-        public Bin Bin { get; set; }
-        public Guid BinId { get; set; }
+        public Bin? Bin { get; set; }
+        public Guid? BinId { get; set; }
     }
 }

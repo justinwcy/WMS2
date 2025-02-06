@@ -7,16 +7,16 @@ namespace Domain.Entities
         public string Name { get; set; } = string.Empty;
 
         // one to many relationship
-        public Guid WarehouseId { get; set; }
+        public Guid? WarehouseId { get; set; }
 
         [JsonIgnore]
-        public Warehouse Warehouse { get; set; }
+        public Warehouse? Warehouse { get; set; }
 
         // many to many relationship
         [JsonIgnore]
-        public List<Staff>? Staffs { get; set; }
+        public List<Staff>? Staffs { get; set; } = [];
 
         // one to many relationship
-        public List<Rack> Racks { get; set; }
+        public List<Rack>? Racks { get; set; } = [];
     }
 }

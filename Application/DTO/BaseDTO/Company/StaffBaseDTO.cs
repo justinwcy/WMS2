@@ -8,8 +8,8 @@ namespace Application.DTO.BaseDTO
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; }
         public List<string> Roles { get; set; }
-        public Guid CompanyId { get; set; }
-        public List<Guid> ZoneIds { get; set; }
-        public List<Guid> StaffNotificationIds { get; set; }
+        public Guid? CompanyId { get; set; }
+        public List<Guid>? ZoneIds { get; set; }
+        public List<Guid>? StaffNotificationIds { get; set; }
     }
 }

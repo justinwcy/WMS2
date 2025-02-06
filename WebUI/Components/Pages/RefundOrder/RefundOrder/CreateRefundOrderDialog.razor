@@ -62,7 +62,7 @@
     private List<string> _orderStates { get; set; }
 
     [Parameter]
-    public required GetStaffResponseDTO CurrentStaff { get; set; }
+    public required CurrentUserModel CurrentStaff { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

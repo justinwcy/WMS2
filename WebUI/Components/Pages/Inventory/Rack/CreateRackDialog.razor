@@ -1,8 +1,3 @@
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
-@using Application.Service.Queries
 <MudDialog>
     <TitleContent>
         Create Rack
@@ -11,7 +6,7 @@
         <MudForm @bind-IsValid="@_isFormValid">
             
             <MudSelect @bind-Value="_rackModel.ZoneId"
-                       T="Guid"
+                       T="Guid?"
                        ToStringFunc="@(id=> _allZoneModels.FirstOrDefault(zoneModel=>zoneModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Status"
@@ -28,7 +23,7 @@
                        RequiredError="Please select a Zone">
                 @foreach (var zoneModel in _allZoneModels)
                 {
-                    <MudSelectItem Value="@zoneModel.Id" />
+                    <MudSelectItem T="Guid?" Value="@zoneModel.Id" />
                 }
             </MudSelect>
 
@@ -80,7 +75,7 @@
     private RackModel _rackModel { get; set; } = new RackModel();
 
     [Parameter]
-    public required GetStaffResponseDTO CurrentStaff { get; set; }
+    public required CurrentUserModel CurrentStaff { get; set; }
 
     private List<ZoneModel> _allZoneModels { get; set; } = [];
 

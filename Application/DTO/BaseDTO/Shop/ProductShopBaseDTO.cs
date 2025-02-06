@@ -2,7 +2,7 @@
 {
     public class ProductShopBaseDTO : BaseDTO
     {
-        public Guid ProductId { get; set; }
-        public Guid ShopId { get; set; }
+        public Guid? ProductId { get; set; }
+        public Guid? ShopId { get; set; }
     }
 }

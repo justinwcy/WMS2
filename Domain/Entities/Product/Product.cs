@@ -26,28 +26,28 @@ namespace Domain.Entities
 
         // many to many relationship
         [JsonIgnore]
-        public List<IncomingOrder> IncomingOrders { get; set; }
+        public List<IncomingOrder>? IncomingOrders { get; set; } = [];
 
         // many to many relationship
         [JsonIgnore]
-        public List<RefundOrder> RefundOrders { get; set; }
+        public List<RefundOrder>? RefundOrders { get; set; } = [];
 
         // many to many relationship
         [JsonIgnore]
-        public List<Shop> Shops { get; set; }
+        public List<Shop>? Shops { get; set; } = [];
 
         // many to many relationship
         [JsonIgnore]
-        public List<Rack> Racks { get; set; }
+        public List<Rack>? Racks { get; set; } = [];
 
         // one to one relationship
         [JsonIgnore]
-        public Inventory CurrentInventory { get; set; }
+        public Inventory? CurrentInventory { get; set; }
 
         // one to many relationship
         [JsonIgnore]
-        public List<CustomerOrderDetail> CustomerOrderDetails { get; set; }
-        
-        public List<ProductGroup> ProductGroups { get; set; }
+        public List<CustomerOrderDetail>? CustomerOrderDetails { get; set; } = [];
+
+        public List<ProductGroup>? ProductGroups { get; set; } = [];
     }
 }

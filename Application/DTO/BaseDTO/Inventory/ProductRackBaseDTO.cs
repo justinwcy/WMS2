@@ -2,7 +2,7 @@
 {
     public class ProductRackBaseDTO : BaseDTO
     {
-        public Guid RackId { get; set; }
-        public Guid ProductId { get; set; }
+        public Guid? RackId { get; set; }
+        public Guid? ProductId { get; set; }
     }
 }

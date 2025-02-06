@@ -14,6 +14,6 @@ namespace Domain.Entities
 
         // one to many relationship
         [JsonIgnore]
-        public List<CustomerOrder> CustomerOrders { get; set; }
+        public List<CustomerOrder>? CustomerOrders { get; set; } = [];
     }
 }

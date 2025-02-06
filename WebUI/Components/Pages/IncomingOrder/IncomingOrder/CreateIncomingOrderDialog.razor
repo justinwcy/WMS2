@@ -1,10 +1,3 @@
-@using System.Reflection
-@using Application.Constants
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
-@using Application.Service.Queries
 <MudDialog>
     <TitleContent>
         Create IncomingOrder
@@ -49,7 +42,7 @@
             </MudSelect>
 
             <MudSelect @bind-Value="_incomingOrderModel.VendorId"
-                       T="Guid"
+                       T="Guid?"
                        ToStringFunc="@(id=> $"{_allVendorModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.FirstName} {_allVendorModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.LastName}")"
                        Variant="@_defaultVariant"
                        Label="Vendor"
@@ -66,7 +59,7 @@
                        RequiredError="Please select a vendor">
                 @foreach (var vendorModel in _allVendorModels)
                 {
-                    <MudSelectItem Value="vendorModel.Id"></MudSelectItem>
+                    <MudSelectItem T="Guid?" Value="vendorModel.Id"></MudSelectItem>
                 }
             </MudSelect>
 
@@ -91,7 +84,7 @@
     private List<VendorModel> _allVendorModels { get; set; } = [];
 
     [Parameter]
-    public required GetStaffResponseDTO CurrentStaff { get; set; }
+    public required CurrentUserModel CurrentStaff { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

@@ -1,11 +1,3 @@
-
-@using System.Reflection
-@using Application.Constants
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
-@using Application.Service.Queries
 <MudDialog>
     <TitleContent>
         Create RefundOrderProduct
@@ -14,7 +6,7 @@
         <MudForm @bind-IsValid="@_isFormValid">
             
             <MudSelect @bind-Value="_refundOrderProductModel.ProductId"
-                       T="Guid"
+                       T="Guid?"
                        ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Status"
@@ -31,7 +23,7 @@
                        RequiredError="Please select a product">
                 @foreach (var productModel in _allProductModels)
                 {
-                    <MudSelectItem Value="@productModel.Id"></MudSelectItem>
+                    <MudSelectItem T="Guid?" Value="@productModel.Id"></MudSelectItem>
                 }
             </MudSelect>
             
@@ -82,7 +74,7 @@
     private List<string> _orderStates { get; set; }
 
     [Parameter]
-    public required GetStaffResponseDTO CurrentStaff { get; set; }
+    public required CurrentUserModel CurrentStaff { get; set; }
 
     [Parameter]
     public required Guid RefundOrderId { get; set; }

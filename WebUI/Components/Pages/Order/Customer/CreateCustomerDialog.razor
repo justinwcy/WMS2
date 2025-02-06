@@ -53,7 +53,7 @@
     private CustomerModel _customerModel { get; set; } = new CustomerModel();
 
     [Parameter]
-    public required GetStaffResponseDTO CurrentStaff { get; set; }
+    public required CurrentUserModel CurrentStaff { get; set; }
 
     private async Task Submit()
     {

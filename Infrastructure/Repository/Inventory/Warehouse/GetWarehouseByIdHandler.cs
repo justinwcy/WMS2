@@ -22,7 +22,7 @@ namespace Infrastructure.Repository
 
             var result = warehouseFound.Adapt<GetWarehouseResponseDTO>();
             result.ZoneIds = warehouseFound.Zones.Select(zone=>zone.Id).ToList();
-            result.CompanyId = warehouseFound.Company.Id;
+            result.CompanyId = warehouseFound.Company?.Id;
             
             return result;
         }

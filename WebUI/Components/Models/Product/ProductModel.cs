@@ -4,9 +4,9 @@
     {
         public Guid Id { get; set; }
 
-        public List<Guid> ProductGroupIds { get; set; } = [];
+        public List<Guid>? ProductGroupIds { get; set; } = [];
 
-        public List<Guid> ShopIds { get; set; } = [];
+        public List<Guid>? ShopIds { get; set; } = [];
 
         public string Name { get; set; }
 

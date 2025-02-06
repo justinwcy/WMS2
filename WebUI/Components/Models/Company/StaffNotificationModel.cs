@@ -2,7 +2,7 @@
 {
     public class StaffNotificationModel
     {
-        public Guid StaffId { get; set; }
+        public Guid? StaffId { get; set; }
         public DateTime NotificationDate { get; set; }
         public string Subject { get; set; }
         public string Body { get; set; }

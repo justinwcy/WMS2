@@ -1,11 +1,5 @@
 @inject IDialogService Dialog
 @implements IPageComponent
-@using Application.Service.Queries
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
-@using WebUI.Utilities
 <MudGrid Class="mb-3">
     <MudItem xs="9">
         @if (ShowDeleteButton)
@@ -60,10 +54,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col style="max-width: 50px" />
-        <col style="max-width: 50px" />
-        <col style="min-width: 150px" />
-        <col style="min-width: 200px" />
+        <col />
+        <col />
+        <col />
+        <col />
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<BinModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
@@ -120,7 +114,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public List<BinModel> BinModels { get; set; } = new List<BinModel>();
 
     [Parameter]
-    public GetStaffResponseDTO? CurrentStaff { get; set; }
+    public CurrentUserModel? CurrentStaff { get; set; }
 
     private HashSet<BinModel> _selectedBins = new HashSet<BinModel>();
     private bool _disableDelete => !_selectedBins.Any();

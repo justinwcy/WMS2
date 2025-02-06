@@ -1,15 +1,5 @@
 @inject IDialogService Dialog
 @implements IPageComponent
-@using System.Globalization
-@using System.Reflection
-@using Application.Constants
-@using Application.Service.Queries
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
-@using WebUI.Utilities
-
 <MudGrid Class="mb-3">
     <MudItem xs="9">
         @if (ShowDeleteButton)
@@ -64,14 +54,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col style="max-width: 50px" />
-        <col style="max-width: 50px" />
-        <col style="min-width: 100px" />
-        <col style="min-width: 80px" />
-        <col style="min-width: 80px" />
-        <col style="min-width: 80px" />
-        <col style="min-width: 200px" />
-        <col style="min-width: 150px" />
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderModel, object>(x=>x.PONumber)">PO Number</MudTableSortLabel></MudTh>
@@ -144,7 +134,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
         <MudTd DataLabel="Vendor">
             <MudSelect @bind-Value="context.VendorId"
-                       T="Guid"
+                       T="Guid?"
                        ToStringFunc="@(id=> $"{_allVendorModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.FirstName} {_allVendorModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.LastName}")"
                        Variant="@_defaultVariant"
                        Label="Vendor"
@@ -161,7 +151,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                        RequiredError="Please select a vendor">
                 @foreach (var vendorModel in _allVendorModels)
                 {
-                    <MudSelectItem Value="vendorModel.Id"></MudSelectItem>
+                    <MudSelectItem T="Guid?" Value="vendorModel.Id"></MudSelectItem>
                 }
             </MudSelect>
         </MudTd>
@@ -200,7 +190,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public List<IncomingOrderModel> IncomingOrderModels { get; set; } = new List<IncomingOrderModel>();
 
     [Parameter]
-    public GetStaffResponseDTO? CurrentStaff { get; set; }
+    public CurrentUserModel? CurrentStaff { get; set; }
 
     private Variant _defaultVariant = Theme.DefaultInputVariant();
     private List<string> _orderStates { get; set; }

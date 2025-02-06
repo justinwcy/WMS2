@@ -1,8 +1,4 @@
-﻿@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
-<MudDialog>
+﻿<MudDialog>
     <TitleContent>
         Create Company
     </TitleContent>
@@ -32,7 +28,7 @@
     private CompanyModel _companyModel { get; set; } = new CompanyModel();
 
     [Parameter]
-    public required GetStaffResponseDTO CurrentStaff { get; set; }
+    public required CurrentUserModel CurrentStaff { get; set; }
 
     private async Task Submit()
     {

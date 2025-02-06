@@ -32,7 +32,7 @@
     private CustomerOrderDetailModel _customerOrderDetailModel { get; set; } = new CustomerOrderDetailModel();
 
     [Parameter]
-    public required GetStaffResponseDTO CurrentStaff { get; set; }
+    public required CurrentUserModel CurrentStaff { get; set; }
 
     private async Task Submit()
     {

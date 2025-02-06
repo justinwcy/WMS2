@@ -1,11 +1,5 @@
 @inject IDialogService Dialog
 @implements IPageComponent
-@using Application.Service.Queries
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
-@using WebUI.Utilities
 <MudGrid Class="mb-3">
     <MudItem xs="9">
         @if (ShowDeleteButton)
@@ -60,11 +54,11 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col style="max-width: 50px" />
-        <col style="max-width: 50px" />
-        <col style="min-width: 150px" />
-        <col style="min-width: 200px" />
-        <col style="min-width: 100px" />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<ProductGroupModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
@@ -127,7 +121,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public List<ProductGroupModel> ProductGroupModels { get; set; } = new List<ProductGroupModel>();
 
     [Parameter]
-    public GetStaffResponseDTO? CurrentStaff { get; set; }
+    public CurrentUserModel? CurrentStaff { get; set; }
 
     private HashSet<ProductGroupModel> _selectedProductGroups = new HashSet<ProductGroupModel>();
     private bool _disableDelete => !_selectedProductGroups.Any();

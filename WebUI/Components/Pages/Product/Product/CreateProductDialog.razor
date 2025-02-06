@@ -1,8 +1,4 @@
-﻿@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
-<MudDialog>
+﻿<MudDialog>
     <TitleContent>
         Create Product
     </TitleContent>
@@ -86,7 +82,7 @@
     private ProductModel _productModel { get; set; } = new ProductModel();
 
     [Parameter]
-    public GetStaffResponseDTO StaffResponseDTO { get; set; }
+    public CurrentUserModel StaffResponseDTO { get; set; }
 
     private async Task Submit()
     {

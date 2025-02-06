@@ -1,11 +1,5 @@
 @inject IDialogService Dialog
 @implements IPageComponent
-@using Application.Service.Queries
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
-@using WebUI.Utilities
 <MudGrid Class="mb-3">
     <MudItem xs="9">
         @if (ShowDeleteButton)
@@ -60,11 +54,11 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col style="max-width: 50px" />
-        <col style="max-width: 50px" />
-        <col style="min-width: 200px" />
-        <col style="min-width: 100px" />
-        <col style="min-width: 100px" />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
     </ColGroup>
     <HeaderContent>
         <MudTh>Product</MudTh>
@@ -80,7 +74,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     <RowEditingTemplate>
         <MudTd DataLabel="Products">
             <MudSelect @bind-Value="context.ProductId"
-                       T="Guid"
+                       T="Guid?"
                        ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Status"
@@ -97,7 +91,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                        RequiredError="Please select a product">
                 @foreach (var productModel in _allProductModels)
                 {
-                    <MudSelectItem Value="@productModel"></MudSelectItem>
+                    <MudSelectItem T="Guid?" Value="@productModel.Id"></MudSelectItem>
                 }
             </MudSelect>
         </MudTd>
@@ -142,7 +136,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public List<InventoryModel> InventoryModels { get; set; } = new List<InventoryModel>();
 
     [Parameter]
-    public GetStaffResponseDTO? CurrentStaff { get; set; }
+    public CurrentUserModel? CurrentStaff { get; set; }
 
     private HashSet<InventoryModel> _selectedInventory = new HashSet<InventoryModel>();
     private bool _disableDelete => !_selectedInventory.Any();

@@ -1,10 +1,3 @@
-@using System.ComponentModel.DataAnnotations
-@using System.Text.RegularExpressions
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
-@using Application.Service.Queries
 <MudDialog>
     <TitleContent>
         Create Staff
@@ -14,56 +7,56 @@
             <MudGrid>
                 <MudItem xs="6">
                     <MudTextField @bind-value="_staffModel.FirstName"
-                    Variant="@_defaultVariant"
-                    T="string"
-                    Label="First Name"
-                    Required="true" RequiredError="First name is required!"/>
+                                  Variant="@_defaultVariant"
+                                  T="string"
+                                  Label="First Name"
+                                  Required="true" RequiredError="First name is required!" />
                 </MudItem>
                 <MudItem xs="6">
                     <MudTextField @bind-value="_staffModel.LastName"
-                    Variant="@_defaultVariant"
-                    T="string"
-                    Label="Last Name"
-                    Required="true" RequiredError="Last name is required!"/>
+                                  Variant="@_defaultVariant"
+                                  T="string"
+                                  Label="Last Name"
+                                  Required="true" RequiredError="Last name is required!" />
                 </MudItem>
             </MudGrid>
 
             <MudTextField @bind-value="_staffModel.Email"
-            Variant="@_defaultVariant"
-            T="string"
-            Label="Email"
-            Required="true" RequiredError="Email is required!"
-            Validation="@(new EmailAddressAttribute() { ErrorMessage = "The email address is invalid" })"/>
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Email"
+                          Required="true" RequiredError="Email is required!"
+                          Validation="@(new EmailAddressAttribute() { ErrorMessage = "The email address is invalid" })" />
 
-            <MudTextField @bind-value="_staffModel.Password" 
-            Variant="@_defaultVariant"
-            T="string" Label="Password" @ref="passwordField"
-            InputType="InputType.Password"
-            Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))" 
-            Required="true"
-            RequiredError="Password is required!"/>
+            <MudTextField @bind-value="_staffModel.Password"
+                          Variant="@_defaultVariant"
+                          T="string" Label="Password" @ref="passwordField"
+                          InputType="InputType.Password"
+                          Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))"
+                          Required="true"
+                          RequiredError="Password is required!" />
 
-            <MudTextField @bind-value="_staffModel.ConfirmPassword" 
-            Variant="@_defaultVariant"
-            T="string"
-            Label="Confirm Password" InputType="InputType.Password"
-            Validation="@(new Func<string, string>(PasswordMatch))"/>
+            <MudTextField @bind-value="_staffModel.ConfirmPassword"
+                          Variant="@_defaultVariant"
+                          T="string"
+                          Label="Confirm Password" InputType="InputType.Password"
+                          Validation="@(new Func<string, string>(PasswordMatch))" />
 
             <MudSelect T="string" Variant="@_defaultVariant"
-            Label="Role"
-            Margin="Margin.Normal"
-            Dense="false"
-            Disabled="false"
-            ReadOnly="false"
-            Placeholder=@("Role")
-            MultiSelection="true"
-            HelperText=@("Please select a role")
-            HelperTextOnFocus="true"
-            Clearable="false"
-            Required="true"
-            RequiredError="Please select a role"
-            SelectedValues="@(_staffModel.Roles)"
-            SelectedValuesChanged="@(x=> _staffModel.Roles = x.ToList())">
+                       Label="Role"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Role")
+                       MultiSelection="true"
+                       HelperText=@("Please select a role")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a role"
+                       SelectedValues="@(_staffModel.Roles)"
+                       SelectedValuesChanged="@(x=> _staffModel.Roles = x.ToList())">
                 @foreach (var staffRole in _allStaffRoles)
                 {
                     <MudSelectItem T="string" Value="@staffRole" />
@@ -71,24 +64,24 @@
             </MudSelect>
 
             <MudSelect @bind-Value="_staffModel.CompanyId"
-            T="Guid"
-            ToStringFunc="@(id=> _allCompanyModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.Name)"
-            Variant="@_defaultVariant"
-            Label="Company"
-            Margin="Margin.Normal"
-            Dense="false"
-            Disabled="false"
-            ReadOnly="false"
-            Placeholder=@("Company")
-            MultiSelection="false"
-            HelperText=@("Please select a company for the user")
-            HelperTextOnFocus="true"
-            Clearable="false"
-            Required="true"
-            RequiredError="Please select a company for the user">
+                       T="Guid?"
+                       ToStringFunc="@(id=> _allCompanyModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Company"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Company")
+                       MultiSelection="false"
+                       HelperText=@("Please select a company for the user")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a company for the user">
                 @foreach (var companyModel in _allCompanyModels)
                 {
-                    <MudSelectItem Value="companyModel.Id"></MudSelectItem>
+                    <MudSelectItem T="Guid?" Value="companyModel.Id"></MudSelectItem>
                 }
             </MudSelect>
         </MudForm>
@@ -113,7 +106,7 @@
     private readonly List<CompanyModel> _allCompanyModels = new();
 
     [Parameter]
-    public required GetStaffResponseDTO CurrentStaff { get; set; }
+    public required CurrentUserModel CurrentStaff { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -129,12 +122,12 @@
             var companyDTO = await Mediator.Send(getCompanyByIdQuery);
 
             var companyModel = new CompanyModel()
-            {
-                Id = companyDTO.Id,
-                Name = companyDTO.Name,
-                StaffIds = companyDTO.StaffIds,
-                WarehouseIds = companyDTO.WarehouseIds,
-            };
+                {
+                    Id = companyDTO.Id,
+                    Name = companyDTO.Name,
+                    StaffIds = companyDTO.StaffIds,
+                    WarehouseIds = companyDTO.WarehouseIds,
+                };
 
             _allCompanyModels.Add(companyModel);
         }
@@ -143,17 +136,17 @@
     private async Task Submit()
     {
         var createStaffDTO = new CreateStaffRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            CompanyId = _staffModel.CompanyId,
-            FirstName = _staffModel.FirstName,
-            LastName = _staffModel.LastName,
-            Email = _staffModel.Email,
-            Roles = _staffModel.Roles,
-            Password = _staffModel.Password,
-            ConfirmPassword = _staffModel.ConfirmPassword,
-            ZoneIds = _staffModel.ZoneIds,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                CompanyId = _staffModel.CompanyId,
+                FirstName = _staffModel.FirstName,
+                LastName = _staffModel.LastName,
+                Email = _staffModel.Email,
+                Roles = _staffModel.Roles,
+                Password = _staffModel.Password,
+                ConfirmPassword = _staffModel.ConfirmPassword,
+                ZoneIds = _staffModel.ZoneIds,
+            };
         var createStaffCommand = new CreateStaffCommand(createStaffDTO);
         var createStaffResponseDTO = await Mediator.Send(createStaffCommand);
 
@@ -164,16 +157,16 @@
         }
 
         var createdStaffModel = new StaffModel()
-        {
-            Id = createStaffResponseDTO.Id,
-            FirstName = _staffModel.FirstName,
-            LastName = _staffModel.LastName,
-            Email = _staffModel.Email,
-            Password = _staffModel.Password,
-            ConfirmPassword = _staffModel.ConfirmPassword,
-            ZoneIds = _staffModel.ZoneIds,
-            Roles = _staffModel.Roles
-        };
+            {
+                Id = createStaffResponseDTO.Id,
+                FirstName = _staffModel.FirstName,
+                LastName = _staffModel.LastName,
+                Email = _staffModel.Email,
+                Password = _staffModel.Password,
+                ConfirmPassword = _staffModel.ConfirmPassword,
+                ZoneIds = _staffModel.ZoneIds,
+                Roles = _staffModel.Roles
+            };
         MudDialog.Close(DialogResult.Ok(createdStaffModel));
     }
 
@@ -207,4 +200,3 @@
         MudDialog.Cancel();
     }
 }
-    

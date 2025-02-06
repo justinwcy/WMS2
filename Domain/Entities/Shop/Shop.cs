@@ -11,6 +11,6 @@
         public string Website { get; set; }
 
         // many to many relationship
-        public List<Product> Products { get; set; }
+        public List<Product>? Products { get; set; } = [];
     }
 }

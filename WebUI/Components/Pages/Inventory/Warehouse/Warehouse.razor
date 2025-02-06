@@ -1,12 +1,5 @@
 ﻿@inject IDialogService Dialog
 @implements IPageComponent
-@using Application.Service.Queries
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
-@using WebUI.Components.Pages.Company
-@using WebUI.Utilities
 <MudGrid Class="mb-3">
     <MudItem xs="9">
         @if (ShowDeleteButton)
@@ -61,12 +54,12 @@
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col style="max-width: 50px" />
-        <col style="max-width: 50px" />
-        <col style="min-width: 150px" />
-        <col style="min-width: 200px" />
-        <col style="min-width: 100px" />
-        <col style="min-width: 100px" />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<WarehouseModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
@@ -102,7 +95,7 @@
         
         <MudTd DataLabel="Company">
             <MudSelect @bind-Value="context.CompanyId"
-                       T="Guid"
+                       T="Guid?"
                        ToStringFunc="@(id=> _allCompanyModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Company"
@@ -119,7 +112,7 @@
                        RequiredError="Please select a company">
                 @foreach (var companyModel in _allCompanyModels)
                 {
-                    <MudSelectItem Value="companyModel.Id"></MudSelectItem>
+                    <MudSelectItem T="Guid?" Value="companyModel.Id"></MudSelectItem>
                 }
             </MudSelect>
             
@@ -157,7 +150,7 @@
     public List<WarehouseModel> WarehouseModels { get; set; } = new List<WarehouseModel>();
 
     [Parameter]
-    public GetStaffResponseDTO? CurrentStaff { get; set; }
+    public CurrentUserModel? CurrentStaff { get; set; }
 
     private HashSet<WarehouseModel> _selectedWarehouses = new HashSet<WarehouseModel>();
     private bool _disableDelete => !_selectedWarehouses.Any();

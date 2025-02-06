@@ -38,7 +38,7 @@
     private ProductGroupModel _productGroupModel { get; set; } = new ProductGroupModel();
 
     [Parameter]
-    public required GetStaffResponseDTO CurrentStaff { get; set; }
+    public required CurrentUserModel CurrentStaff { get; set; }
 
     private async Task Submit()
     {

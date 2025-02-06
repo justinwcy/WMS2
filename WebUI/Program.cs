@@ -3,8 +3,11 @@ using System.Reflection;
 using Application.Constants;
 using Application.DependencyInjection;
 using Application.Interface.Identity;
-
+using Application.Service.Commands;
+using Application.Service.Queries;
 using Infrastructure.DependencyInjection;
+
+using MediatR;
 
 using Microsoft.AspNetCore.Identity;
 
@@ -77,6 +80,16 @@ using (var scope = app.Services.CreateScope())
     }
 
     // create default admin account
+    var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+    var getCompanyByIdQuery = new GetCompanyByIdQuery(DebugConstants.CompanyId);
+    var getCompanyResponseDTO = await mediator.Send(getCompanyByIdQuery);
+    if (getCompanyResponseDTO == null)
+    {
+        var createAdminCompanyCommand = new CreateAdminCompanyCommand();
+        var createCompanyResponseDTO = await mediator.Send(createAdminCompanyCommand);
+    }
+
     var accountService = scope.ServiceProvider.GetRequiredService<IAccountService>();
     await accountService.SetUpAsync();
 }

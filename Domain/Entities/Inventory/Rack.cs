@@ -5,13 +5,13 @@ namespace Domain.Entities
     public class Rack : EntityBase
     {
         // one to many relationship
-        public Guid ZoneId { get; set; }
+        public Guid? ZoneId { get; set; }
 
         [JsonIgnore]
-        public Zone Zone { get; set; }
+        public Zone? Zone { get; set; }
 
         // many to many relationship
-        public List<Product> Products { get; set; }
+        public List<Product>? Products { get; set; } = [];
 
         public string Name { get; set; }
 

@@ -1,12 +1,5 @@
 @inject IDialogService Dialog
 @implements IPageComponent
-@using System.Globalization
-@using Application.Service.Queries
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
-@using WebUI.Utilities
 <MudGrid Class="mb-3">
     <MudItem xs="9">
         @if (ShowDeleteButton)
@@ -61,15 +54,15 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col style="max-width: 50px" />
-        <col style="max-width: 50px" />
-        <col style="min-width: 150px" />
-        <col style="min-width: 100px" />
-        <col style="min-width: 150px" />
-        <col style="min-width: 200px" />
-        <col style="min-width: 100px" />
-        <col style="min-width: 100px" />
-        <col style="min-width: 100px" />
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
     </ColGroup>
     <HeaderContent>
         <MudTh>
@@ -125,7 +118,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     <RowEditingTemplate>
         <MudTd DataLabel="Customer">
             <MudSelect @bind-Value="context.CustomerId"
-                       T="Guid"
+                       T="Guid?"
                        ToStringFunc="@(id => $"{_allCustomerModels.FirstOrDefault(customerModel => customerModel.Id == id)?.FirstName} {_allCustomerModels.FirstOrDefault(customerModel => customerModel.Id == id)?.LastName}")"
                        Variant="@_defaultVariant"
                        Label="Status"
@@ -142,7 +135,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                        RequiredError="Please select a courier">
                 @foreach (var customerModel in _allCustomerModels)
                 {
-                    <MudSelectItem Value="@customerModel.Id" />
+                    <MudSelectItem T="Guid?" Value="@customerModel.Id" />
                 }
             </MudSelect>
         </MudTd>
@@ -156,7 +149,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
         <MudTd DataLabel="Courier">
             <MudSelect @bind-Value="context.CourierId"
-                       T="Guid"
+                       T="Guid?"
                        ToStringFunc="@(id => _allCourierModels.FirstOrDefault(courierModel => courierModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Status"
@@ -173,7 +166,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                        RequiredError="Please select a courier">
                 @foreach (var courierModel in _allCourierModels)
                 {
-                    <MudSelectItem Value="@courierModel.Id" />
+                    <MudSelectItem T="Guid?" Value="@courierModel.Id" />
                 }
             </MudSelect>
         </MudTd>
@@ -191,7 +184,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
         <MudTd DataLabel="Bin">
             <MudSelect @bind-Value="context.BinId"
-                       T="Guid"
+                       T="Guid?"
                        ToStringFunc="@(id => _allBinModels.FirstOrDefault(binModel => binModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Bin"
@@ -208,7 +201,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                        RequiredError="Please select a bin">
                 @foreach (var binModel in _allBinModels)
                 {
-                    <MudSelectItem Value="@binModel.Id" />
+                    <MudSelectItem T="Guid?" Value="@binModel.Id" />
                 }
             </MudSelect>
         </MudTd>
@@ -246,7 +239,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public List<CustomerOrderModel> CustomerOrderModels { get; set; } = new List<CustomerOrderModel>();
 
     [Parameter]
-    public GetStaffResponseDTO? CurrentStaff { get; set; }
+    public CurrentUserModel? CurrentStaff { get; set; }
 
     private HashSet<CustomerOrderModel> _selectedCustomerOrders = new HashSet<CustomerOrderModel>();
     private bool _disableDelete => !_selectedCustomerOrders.Any();

@@ -1,5 +1,6 @@
 ﻿using Application.DTO.Response;
 using MudBlazor;
+using WebUI.Components.Models;
 using WebUI.Components.Pages;
 using WebUI.Components.Pages.Company.Company;
 using WebUI.Components.Pages.Company.Staff;
@@ -27,14 +28,14 @@ namespace WebUI.Utilities
     public static class ViewDialogUtilities
     {
         public static async Task<DialogResult?> OpenCompanyDialogAsync(
-    Guid companyId, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+    Guid companyId, CurrentUserModel currentStaff, IDialogService dialogService,
     IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             return await OpenCompanyDialogAsync([companyId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
         public static async Task<DialogResult?> OpenCompanyDialogAsync(
-            List<Guid> companyIds, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            List<Guid> companyIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<CompanyDialog>()
@@ -51,14 +52,14 @@ namespace WebUI.Utilities
         }
 
         public static async Task<DialogResult?> OpenStaffDialogAsync(
-            Guid staffId, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            Guid staffId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             return await OpenStaffDialogAsync([staffId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
         public static async Task<DialogResult?> OpenStaffDialogAsync(
-            List<Guid> staffIds, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            List<Guid> staffIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<StaffDialog>()
@@ -75,14 +76,14 @@ namespace WebUI.Utilities
         }
 
         public static async Task<DialogResult?> OpenIncomingOrderDialogAsync(
-            Guid incomingOrderId, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            Guid incomingOrderId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             return await OpenIncomingOrderDialogAsync([incomingOrderId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
         public static async Task<DialogResult?> OpenIncomingOrderDialogAsync(
-            List<Guid> incomingOrderIds, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            List<Guid> incomingOrderIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<IncomingOrderDialog>()
@@ -99,14 +100,14 @@ namespace WebUI.Utilities
         }
 
         public static async Task<DialogResult?> OpenIncomingOrderProductDialogAsync(
-            Guid incomingOrderProductId, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            Guid incomingOrderProductId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             return await OpenIncomingOrderProductDialogAsync([incomingOrderProductId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
         public static async Task<DialogResult?> OpenIncomingOrderProductDialogAsync(
-            List<Guid> incomingOrderProductIds, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            List<Guid> incomingOrderProductIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<IncomingOrderProductDialog>()
@@ -123,14 +124,14 @@ namespace WebUI.Utilities
         }
 
         public static async Task<DialogResult?> OpenVendorDialogAsync(
-            Guid vendorId, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            Guid vendorId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             return await OpenVendorDialogAsync([vendorId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
         public static async Task<DialogResult?> OpenVendorDialogAsync(
-            List<Guid> vendorIds, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            List<Guid> vendorIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<VendorDialog>()
@@ -147,14 +148,14 @@ namespace WebUI.Utilities
         }
 
         public static async Task<DialogResult?> OpenInventoryDialogAsync(
-            Guid inventoryId, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            Guid inventoryId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             return await OpenInventoryDialogAsync([inventoryId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
         public static async Task<DialogResult?> OpenInventoryDialogAsync(
-            List<Guid> inventoryIds, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            List<Guid> inventoryIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<InventoryDialog>()
@@ -171,14 +172,14 @@ namespace WebUI.Utilities
         }
 
         public static async Task<DialogResult?> OpenRackDialogAsync(
-            Guid rackId, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            Guid rackId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             return await OpenRackDialogAsync([rackId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
         public static async Task<DialogResult?> OpenRackDialogAsync(
-            List<Guid> rackIds, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            List<Guid> rackIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<RackDialog>()
@@ -195,14 +196,14 @@ namespace WebUI.Utilities
         }
 
         public static async Task<DialogResult?> OpenWarehouseDialogAsync(
-            Guid warehouseId, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            Guid warehouseId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             return await OpenWarehouseDialogAsync([warehouseId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
         public static async Task<DialogResult?> OpenWarehouseDialogAsync(
-            List<Guid> warehouseIds, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            List<Guid> warehouseIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<WarehouseDialog>()
@@ -219,14 +220,14 @@ namespace WebUI.Utilities
         }
 
         public static async Task<DialogResult?> OpenZoneDialogAsync(
-            Guid zoneId, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            Guid zoneId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             return await OpenZoneDialogAsync([zoneId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
         public static async Task<DialogResult?> OpenZoneDialogAsync(
-            List<Guid> zoneIds, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            List<Guid> zoneIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<ZoneDialog>()
@@ -243,14 +244,14 @@ namespace WebUI.Utilities
         }
 
         public static async Task<DialogResult?> OpenBinDialogAsync(
-            Guid binId, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            Guid binId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             return await OpenBinDialogAsync([binId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
         public static async Task<DialogResult?> OpenBinDialogAsync(
-            List<Guid> binIds, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            List<Guid> binIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<BinDialog>()
@@ -267,14 +268,14 @@ namespace WebUI.Utilities
         }
 
         public static async Task<DialogResult?> OpenCourierDialogAsync(
-            Guid courierId, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            Guid courierId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             return await OpenCourierDialogAsync([courierId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
         public static async Task<DialogResult?> OpenCourierDialogAsync(
-            List<Guid> courierIds, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            List<Guid> courierIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<CourierDialog>()
@@ -291,14 +292,14 @@ namespace WebUI.Utilities
         }
 
         public static async Task<DialogResult?> OpenCustomerDialogAsync(
-            Guid customerId, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            Guid customerId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             return await OpenCustomerDialogAsync([customerId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
         public static async Task<DialogResult?> OpenCustomerDialogAsync(
-            List<Guid> customerIds, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            List<Guid> customerIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<CustomerDialog>()
@@ -315,14 +316,14 @@ namespace WebUI.Utilities
         }
 
         public static async Task<DialogResult?> OpenCustomerOrderDialogAsync(
-            Guid customerOrderId, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            Guid customerOrderId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             return await OpenCustomerOrderDialogAsync([customerOrderId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
         public static async Task<DialogResult?> OpenCustomerOrderDialogAsync(
-            List<Guid> customerOrderIds, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            List<Guid> customerOrderIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<CustomerOrderDialog>()
@@ -339,14 +340,14 @@ namespace WebUI.Utilities
         }
 
         public static async Task<DialogResult?> OpenCustomerOrderDetailDialogAsync(
-            Guid customerOrderDetailId, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            Guid customerOrderDetailId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             return await OpenCustomerOrderDetailDialogAsync([customerOrderDetailId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
         public static async Task<DialogResult?> OpenCustomerOrderDetailDialogAsync(
-            List<Guid> customerOrderDetailIds, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            List<Guid> customerOrderDetailIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<CustomerOrderDetailDialog>()
@@ -363,14 +364,14 @@ namespace WebUI.Utilities
         }
 
         public static async Task<DialogResult?> OpenProductDialogAsync(
-            Guid productId, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            Guid productId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             return await OpenProductDialogAsync([productId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
         public static async Task<DialogResult?> OpenProductDialogAsync(
-            List<Guid> productIds, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            List<Guid> productIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<ProductDialog>()
@@ -387,14 +388,14 @@ namespace WebUI.Utilities
         }
 
         public static async Task<DialogResult?> OpenProductGroupDialogAsync(
-            Guid productGroupId, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            Guid productGroupId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             return await OpenProductGroupDialogAsync([productGroupId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
         public static async Task<DialogResult?> OpenProductGroupDialogAsync(
-            List<Guid> productGroupIds, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            List<Guid> productGroupIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<ProductGroupDialog>()
@@ -411,14 +412,14 @@ namespace WebUI.Utilities
         }
 
         public static async Task<DialogResult?> OpenRefundOrderDialogAsync(
-            Guid refundOrderId, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            Guid refundOrderId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             return await OpenRefundOrderDialogAsync([refundOrderId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
         public static async Task<DialogResult?> OpenRefundOrderDialogAsync(
-            List<Guid> refundOrderIds, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            List<Guid> refundOrderIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<RefundOrderDialog>()
@@ -435,14 +436,14 @@ namespace WebUI.Utilities
         }
 
         public static async Task<DialogResult?> OpenRefundOrderProductDialogAsync(
-            Guid refundOrderProductId, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            Guid refundOrderProductId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             return await OpenRefundOrderProductDialogAsync([refundOrderProductId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
         public static async Task<DialogResult?> OpenRefundOrderProductDialogAsync(
-            List<Guid> refundOrderProductIds, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            List<Guid> refundOrderProductIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<RefundOrderProductDialog>()
@@ -459,14 +460,14 @@ namespace WebUI.Utilities
         }
 
         public static async Task<DialogResult?> OpenShopDialogAsync(
-            Guid shopId, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            Guid shopId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             return await OpenShopDialogAsync([shopId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
         public static async Task<DialogResult?> OpenShopDialogAsync(
-            List<Guid> shopIds, GetStaffResponseDTO currentStaff, IDialogService dialogService,
+            List<Guid> shopIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<ShopDialog>()

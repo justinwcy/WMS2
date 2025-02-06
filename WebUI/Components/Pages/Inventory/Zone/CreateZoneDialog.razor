@@ -11,7 +11,7 @@
         <MudForm @bind-IsValid="@_isFormValid">
             
             <MudSelect @bind-Value="_zoneModel.WarehouseId"
-                       T="Guid"
+                       T="Guid?"
                        ToStringFunc="@(id=> _allWarehouseModels.FirstOrDefault(warehouseModel=>warehouseModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Warehouse"
@@ -28,7 +28,7 @@
                        RequiredError="Please select a warehouse">
                 @foreach (var warehouseModel in _allWarehouseModels)
                 {
-                    <MudSelectItem Value="@warehouseModel.Id"/>
+                    <MudSelectItem T="Guid?" Value="@warehouseModel.Id" />
                 }
             </MudSelect>
 
@@ -56,7 +56,7 @@
     private ZoneModel _zoneModel { get; set; } = new ZoneModel();
 
     [Parameter]
-    public required GetStaffResponseDTO CurrentStaff { get; set; }
+    public required CurrentUserModel CurrentStaff { get; set; }
 
     private List<WarehouseModel> _allWarehouseModels { get; set; } = [];
 

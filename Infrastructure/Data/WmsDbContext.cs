@@ -41,11 +41,6 @@ namespace Infrastructure.Data
             base.OnModelCreating(modelBuilder);
 
             #region ManyToManyRelationships
-
-            
-
-            
-
             modelBuilder
                 .Entity<Shop>()
                 .HasMany(shop => shop.Products)

@@ -1,12 +1,5 @@
 @inject IDialogService Dialog
 @implements IPageComponent
-@using System.Reflection
-@using Application.Constants
-@using Application.Service.Queries
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
 <MudGrid Class="mb-3">
     <MudItem xs="9">
         @if (ShowDeleteButton)
@@ -63,11 +56,11 @@
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col style="max-width: 50px" />
-        <col style="max-width: 50px" />
-        <col style="min-width: 150px" />
-        <col style="min-width: 100px" />
-        <col style="min-width: 100px" />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
     </ColGroup>
     <HeaderContent>
         <MudTh>Product</MudTh>
@@ -83,7 +76,7 @@
     <RowEditingTemplate>
         <MudTd DataLabel="Products">
             <MudSelect @bind-Value="context.ProductId"
-                       T="Guid"
+                       T="Guid?"
                        ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Status"
@@ -100,7 +93,7 @@
                        RequiredError="Please select a product">
                 @foreach (var productModel in _allProductModels)
                 {
-                    <MudSelectItem Value="@productModel"></MudSelectItem>
+                    <MudSelectItem T="Guid?" Value="@productModel.Id"></MudSelectItem>
                 }
             </MudSelect>
         </MudTd>
@@ -164,7 +157,7 @@
     public List<IncomingOrderProductModel> IncomingOrderProductModels { get; set; } = new List<IncomingOrderProductModel>();
 
     [Parameter]
-    public GetStaffResponseDTO? CurrentStaff { get; set; }
+    public CurrentUserModel? CurrentStaff { get; set; }
 
     private Guid _incomingOrderId { get; set; }
     private GetIncomingOrderResponseDTO _incomingOrder { get; set; }
@@ -363,7 +356,7 @@
         }
         else
         {
-            _incomingOrderId = uniqueIncomingOrders.First();
+            _incomingOrderId = uniqueIncomingOrders.FirstOrDefault().Value;
             var getIncomingOrderByIdQuery = new GetIncomingOrderByIdQuery(_incomingOrderId);
             var incomingOrderDTO = await Mediator.Send(getIncomingOrderByIdQuery);
 

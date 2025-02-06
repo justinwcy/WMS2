@@ -1,21 +1,16 @@
 @inject IDialogService Dialog
 @implements IPageComponent
-@using Application.Service.Queries
-@using WebUI.Components.Models
-@using Application.Service.Commands
-@using Application.DTO.Request
-@using Application.DTO.Response
-@using WebUI.Utilities
+
 <MudGrid Class="mb-3">
     <MudItem xs="9">
         @if (ShowDeleteButton)
         {
             <MudButton OnClick="@DeleteZones"
-            Color="Color.Error"
-            Variant="Variant.Filled"
-            Size="Size.Large"
-            FullWidth="false"
-            Disabled="_disableDelete">
+                       Color="Color.Error"
+                       Variant="Variant.Filled"
+                       Size="Size.Large"
+                       FullWidth="false"
+                       Disabled="_disableDelete">
                 Delete Zone
             </MudButton>
         }
@@ -24,35 +19,35 @@
         @if (ShowCreateButton)
         {
             <MudButton OnClick="@(OpenCreateZoneDialogAsync)"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Large"
-            FullWidth="false">
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Large"
+                       FullWidth="false">
                 Create Zone
             </MudButton>
         }
     </MudItem>
 </MudGrid>
 
-<MudTable Hover="true"  FixedHeader="true"
-Filter="new Func<ZoneModel,bool>(FilterFunc)"
-CanCancelEdit="true"
-Items="@ZoneModels"
-GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-GroupFooterClass="mb-4"
-Dense="true"
-Loading="@_loading" LoadingProgressColor="Color.Info"
-MultiSelection="true"
-@bind-SelectedItems="_selectedZones"
-SelectOnRowClick="false"
-CommitEditTooltip="Commit Edit"
-CancelEditTooltip="Cancel Edit"
-IsEditRowSwitchingBlocked="false"
-RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-RowEditCommit="ItemHasBeenCommitted"
-ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-@ref="_tableRef">
+<MudTable Hover="true" FixedHeader="true"
+          Filter="new Func<ZoneModel,bool>(FilterFunc)"
+          CanCancelEdit="true"
+          Items="@ZoneModels"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4"
+          Dense="true"
+          Loading="@_loading" LoadingProgressColor="Color.Info"
+          MultiSelection="true"
+          @bind-SelectedItems="_selectedZones"
+          SelectOnRowClick="false"
+          CommitEditTooltip="Commit Edit"
+          CancelEditTooltip="Cancel Edit"
+          IsEditRowSwitchingBlocked="false"
+          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted"
+          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+          @ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Zones</MudText>
@@ -60,12 +55,12 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col style="max-width: 50px" />
-        <col style="max-width: 50px" />
-        <col style="min-width: 150px" />
-        <col style="min-width: 100px" />
-        <col style="min-width: 100px" />
-        <col style="min-width: 100px" />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<ZoneModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
@@ -84,20 +79,20 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
         <MudTd DataLabel="Staff">
             <MudButton OnClick="@(() => OpenStaffDialogAsync(@context.StaffIds))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
                 View (@context.StaffIds.Count)
             </MudButton>
         </MudTd>
 
         <MudTd DataLabel="Rack">
             <MudButton OnClick="@(() => OpenRackDialogAsync(@context.RackIds))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
                 View (@context.RackIds.Count)
             </MudButton>
         </MudTd>
@@ -110,74 +105,74 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
         <MudTd DataLabel="Warehouse">
             <MudSelect @bind-Value="context.WarehouseId"
-            T="Guid"
-            ToStringFunc="@(id=> _allWarehouseModels.FirstOrDefault(warehouseModel=>warehouseModel.Id == id)?.Name)"
-            Variant="@_defaultVariant"
-            Label="Warehouse"
-            Margin="Margin.Normal"
-            Dense="false"
-            Disabled="false"
-            ReadOnly="false"
-            Placeholder=@("Warehouse")
-            MultiSelection="false"
-            HelperText=@("Please select a warehouse")
-            HelperTextOnFocus="true"
-            Clearable="false"
-            Required="true"
-            RequiredError="Please select a warehouse">
+                       T="Guid?"
+                       ToStringFunc="@(id=> _allWarehouseModels.FirstOrDefault(warehouseModel=>warehouseModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Warehouse"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Warehouse")
+                       MultiSelection="false"
+                       HelperText=@("Please select a warehouse")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a warehouse">
                 @foreach (var warehouseModel in _allWarehouseModels)
                 {
-                    <MudSelectItem Value="@warehouseModel.Id"/>
+                    <MudSelectItem T="Guid?" Value="@warehouseModel.Id" />
                 }
             </MudSelect>
         </MudTd>
+
         <MudTd DataLabel="Staff">
-            <MudSelect T="Guid"
-            ToStringFunc="@(id=> _allStaffModels.FirstOrDefault(staffModel=>staffModel.Id == id)?.FullName)"
-            Variant="@_defaultVariant"
-            Label="Staff"
-            Margin="Margin.Normal"
-            Dense="false"
-            Disabled="false"
-            ReadOnly="false"
-            Placeholder=@("Staff")
-            MultiSelection="true"
-            HelperText=@("Please select a staff")
-            HelperTextOnFocus="true"
-            Clearable="false"
-            Required="false"
-            RequiredError="Please select a staff"
-            SelectedValues="@(context.StaffIds)"
-            SelectedValuesChanged="@(x=> context.StaffIds = x.ToList())"
-            >
+            <MudSelect T="Guid?"
+                       ToStringFunc="@(id=> _allStaffModels.FirstOrDefault(staffModel=>staffModel.Id == id)?.FullName)"
+                       Variant="@_defaultVariant"
+                       Label="Staff"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Staff")
+                       MultiSelection="true"
+                       HelperText=@("Please select a staff")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="false"
+                       RequiredError="Please select a staff"
+                       SelectedValues="@(context.StaffIds.Select(x=>(Guid?)x))"
+                       SelectedValuesChanged="@(x=> context.StaffIds = x.Select(y=>y.Value).ToList())">
                 @foreach (var staffModel in _allStaffModels)
                 {
-                    <MudSelectItem T="Guid" Value="@staffModel.Id" />
+                    <MudSelectItem T="Guid?" Value="@staffModel.Id" />
                 }
             </MudSelect>
         </MudTd>
 
         <MudTd DataLabel="Rack">
-            <MudSelect T="Guid"
-            ToStringFunc="@(id=> _allRackModels.FirstOrDefault(rackModel=>rackModel.Id == id)?.Name)"
-            Variant="@_defaultVariant"
-            Label="Rack"
-            Margin="Margin.Normal"
-            Dense="false"
-            Disabled="false"
-            ReadOnly="false"
-            Placeholder=@("Rack")
-            MultiSelection="true"
-            HelperText=@("Please select a rack")
-            HelperTextOnFocus="true"
-            Clearable="false"
-            Required="false"
-            RequiredError="Please select a rack"
-            SelectedValues="@(context.RackIds)"
-            SelectedValuesChanged="@(x=> context.RackIds = x.ToList())">
+            <MudSelect T="Guid?"
+                       ToStringFunc="@(id=> _allRackModels.FirstOrDefault(rackModel=>rackModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Rack"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Rack")
+                       MultiSelection="true"
+                       HelperText=@("Please select a rack")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="false"
+                       RequiredError="Please select a rack"
+                       SelectedValues="@(context.RackIds.Select(x=>(Guid?)x))"
+                       SelectedValuesChanged="@(x=> context.RackIds = x.Select(y=>y.Value).ToList())">
                 @foreach (var rackModel in _allRackModels)
                 {
-                    <MudSelectItem T="Guid" Value="@rackModel.Id" />
+                    <MudSelectItem T="Guid?" Value="@rackModel.Id" />
                 }
             </MudSelect>
         </MudTd>
@@ -185,10 +180,10 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-        RowsPerPageString="Rows per page:"
-        InfoFormat="{first_item}-{last_item} of {all_items}"
-        AllItemsText="All"
-        HorizontalAlignment="HorizontalAlignment.Right" />
+                       RowsPerPageString="Rows per page:"
+                       InfoFormat="{first_item}-{last_item} of {all_items}"
+                       AllItemsText="All"
+                       HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -212,7 +207,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public List<Guid> ZoneIds { get; set; } = new List<Guid>();
     public List<ZoneModel> ZoneModels { get; set; } = new List<ZoneModel>();
 
-    [Parameter] public GetStaffResponseDTO? CurrentStaff { get; set; }
+    [Parameter] public CurrentUserModel? CurrentStaff { get; set; }
 
     private HashSet<ZoneModel> _selectedZones = new HashSet<ZoneModel>();
     private bool _disableDelete => !_selectedZones.Any();
@@ -284,13 +279,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
 
         _zoneModelBeforeEdit = new ZoneModel()
-        {
-            Id = ((ZoneModel)zoneModel).Id,
-            Name = ((ZoneModel)zoneModel).Name,
-            StaffIds = ((ZoneModel)zoneModel).StaffIds,
-            RackIds = ((ZoneModel)zoneModel).RackIds,
-            WarehouseId = ((ZoneModel)zoneModel).WarehouseId,
-        };
+            {
+                Id = ((ZoneModel)zoneModel).Id,
+                Name = ((ZoneModel)zoneModel).Name,
+                StaffIds = ((ZoneModel)zoneModel).StaffIds,
+                RackIds = ((ZoneModel)zoneModel).RackIds,
+                WarehouseId = ((ZoneModel)zoneModel).WarehouseId,
+            };
         StateHasChanged();
     }
 
@@ -308,14 +303,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private async void ItemHasBeenCommitted(object zoneModel)
     {
         var updateZoneDTO = new UpdateZoneRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Id = ((ZoneModel)zoneModel).Id,
-            Name = ((ZoneModel)zoneModel).Name,
-            StaffIds = ((ZoneModel)zoneModel).StaffIds,
-            RackIds = ((ZoneModel)zoneModel).RackIds,
-            WarehouseId = ((ZoneModel)zoneModel).WarehouseId,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Id = ((ZoneModel)zoneModel).Id,
+                Name = ((ZoneModel)zoneModel).Name,
+                StaffIds = ((ZoneModel)zoneModel).StaffIds,
+                RackIds = ((ZoneModel)zoneModel).RackIds,
+                WarehouseId = ((ZoneModel)zoneModel).WarehouseId,
+            };
         var updateZoneCommand = new UpdateZoneCommand(updateZoneDTO);
         var response = await Mediator.Send(updateZoneCommand);
         SnackBar.Add(response.Message);
@@ -407,7 +402,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                 FirstName = getStaffResponseDTO.FirstName,
                 LastName = getStaffResponseDTO.LastName,
                 ZoneIds = getStaffResponseDTO.ZoneIds,
-                CompanyId = getStaffResponseDTO.CompanyId,
+                CompanyId = getStaffResponseDTO.CompanyId.GetValueOrDefault(),
             };
             _allStaffModels.Add(staffModel);
         }
@@ -422,16 +417,16 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             var getRackResponseDTO = await Mediator.Send(getRackByIdQuery);
 
             var rackModel = new RackModel()
-            {
-                Id = getRackResponseDTO.Id,
-                Name = getRackResponseDTO.Name,
-                ProductIds = getRackResponseDTO.ProductIds,
-                Depth = getRackResponseDTO.Depth,
-                MaxWeight = getRackResponseDTO.MaxWeight,
-                Width = getRackResponseDTO.Width,
-                Height = getRackResponseDTO.Height,
-                ZoneId = getRackResponseDTO.ZoneId,
-            };
+                {
+                    Id = getRackResponseDTO.Id,
+                    Name = getRackResponseDTO.Name,
+                    ProductIds = getRackResponseDTO.ProductIds,
+                    Depth = getRackResponseDTO.Depth,
+                    MaxWeight = getRackResponseDTO.MaxWeight,
+                    Width = getRackResponseDTO.Width,
+                    Height = getRackResponseDTO.Height,
+                    ZoneId = getRackResponseDTO.ZoneId.GetValueOrDefault(),
+                };
             _allRackModels.Add(rackModel);
         }
 
@@ -465,4 +460,3 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     }
 }
 
-    

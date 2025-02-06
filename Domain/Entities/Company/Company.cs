@@ -4,8 +4,8 @@
     {
         public string Name { get; set; }
 
-        public List<Warehouse> Warehouses { get; set; }
+        public List<Warehouse>? Warehouses { get; set; } = [];
 
-        public List<Staff> Staffs { get; set; }
+        public List<Staff>? Staffs { get; set; } = [];
     }
 }
