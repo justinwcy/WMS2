@@ -370,4 +370,9 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             }
         }
     }
+
+    public async ValueTask DisposeAsync()
+    {
+        PageComponents.Remove(this);
+    }
 }

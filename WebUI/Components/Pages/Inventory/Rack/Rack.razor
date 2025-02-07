@@ -382,4 +382,9 @@
             }
         }
     }
+
+    public async ValueTask DisposeAsync()
+    {
+        PageComponents.Remove(this);
+    }
 }
