@@ -99,19 +99,20 @@ namespace WebUI.Utilities
             return await dialog.Result;
         }
 
-        public static async Task<DialogResult?> OpenIncomingOrderProductDialogAsync(
+        public static async Task<DialogResult?> OpenIncomingOrderProductDialogAsync(Guid incomingOrderId,
             Guid incomingOrderProductId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
-            return await OpenIncomingOrderProductDialogAsync([incomingOrderProductId], currentStaff, dialogService, mainPage, pageComponents);
+            return await OpenIncomingOrderProductDialogAsync(incomingOrderId, [incomingOrderProductId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
-        public static async Task<DialogResult?> OpenIncomingOrderProductDialogAsync(
+        public static async Task<DialogResult?> OpenIncomingOrderProductDialogAsync(Guid incomingOrderId,
             List<Guid> incomingOrderProductIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<IncomingOrderProductDialog>()
             {
+                { x => x.ParentIncomingOrderId, incomingOrderId},
                 { x => x.CurrentStaff, currentStaff },
                 { x => x.IncomingOrderProductIds, incomingOrderProductIds },
                 { x => x.MainPage, mainPage },

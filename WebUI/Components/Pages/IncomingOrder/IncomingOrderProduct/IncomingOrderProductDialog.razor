@@ -8,7 +8,8 @@
                               MainPage="MainPage" 
                               PageComponents="PageComponents"
                               ShowCreateButton=@ShowCreateButton
-                              ShowDeleteButton=@ShowDeleteButton/>
+                              ShowDeleteButton=@ShowDeleteButton
+                              ParentIncomingOrderId=@ParentIncomingOrderId/>
     </DialogContent>
 </MudDialog>
 
@@ -24,6 +25,9 @@
 
     [Parameter]
     public CurrentUserModel CurrentStaff { get; set; }
+
+    [Parameter]
+    public Guid ParentIncomingOrderId { get; set; }
     
     private bool ShowCreateButton { get; set; }
 
@@ -35,4 +39,5 @@
         ShowCreateButton = !PageComponents.Select(pageComponent => pageComponent.Name).Contains("IncomingOrderProduct");
         ShowDeleteButton = !PageComponents.Select(pageComponent => pageComponent.Name).Contains("IncomingOrderProduct");
     }
+
 }

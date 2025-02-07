@@ -1,4 +1,5 @@
 @inject IDialogService Dialog
+@implements IAsyncDisposable
 @implements IPageComponent
 <MudGrid Class="mb-3">
     <MudItem xs="5">
@@ -14,7 +15,7 @@
             </MudButton>
         }
     </MudItem>
-    <MudItem xs="2"/>
+    <MudItem xs="2" />
     <MudItem xs="5">
         @if (ShowCreateButton)
         {
@@ -28,7 +29,7 @@
         }
     </MudItem>
 </MudGrid>
-@* 
+
 <MudTable Hover="true" FixedHeader="true"
           Filter="new Func<IncomingOrderProductModel,bool>(FilterFunc)"
           CanCancelEdit="true"
@@ -50,7 +51,7 @@
           @ref="_tableRef">
 
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Incoming Order Products @_incomingOrder.PONumber</MudText>
+        <MudText Typo="Typo.h6">Incoming Order Details @_incomingOrder.PONumber</MudText>
         <MudSpacer />
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
@@ -132,7 +133,7 @@
                        HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
- *@
+
 @code {
 
     public string Name => "IncomingOrderProduct";
@@ -158,8 +159,9 @@
     [Parameter]
     public CurrentUserModel? CurrentStaff { get; set; }
 
-    private Guid _incomingOrderId { get; set; }
-    private GetIncomingOrderResponseDTO _incomingOrder { get; set; }
+    [Parameter]
+    public Guid ParentIncomingOrderId { get; set; }
+    private GetIncomingOrderResponseDTO _incomingOrder { get; set; } = new();
 
     private HashSet<IncomingOrderProductModel> _selectedIncomingOrderProducts = new HashSet<IncomingOrderProductModel>();
     private bool _disableDelete => !_selectedIncomingOrderProducts.Any();
@@ -181,6 +183,11 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        var getIncomingOrderByIdQuery = new GetIncomingOrderByIdQuery(ParentIncomingOrderId);
+        var incomingOrderDTO = await Mediator.Send(getIncomingOrderByIdQuery);
+
+        _incomingOrder = incomingOrderDTO;
+
         // check to make sure all parameters are set before running
         if (CurrentStaff == null || !IncomingOrderProductIds.Any())
         {
@@ -277,7 +284,7 @@
         var parameters = new DialogParameters<CreateIncomingOrderProductDialog>()
         {
             { x => x.CurrentStaff,  CurrentStaff},
-            { x => x.IncomingOrderId, _incomingOrderId},
+            { x => x.IncomingOrderId, ParentIncomingOrderId},
         };
 
         var options = Theme.DefaultCreateDialogOptions();
@@ -345,23 +352,6 @@
             IncomingOrderProductModels.Add(incomingOrderProductModel);
         }
 
-        var uniqueIncomingOrders = IncomingOrderProductModels
-            .GroupBy(incomingOrderProductModel => incomingOrderProductModel.IncomingOrderId)
-            .Select(x => x.Key)
-            .ToList();
-
-        if (uniqueIncomingOrders.Count != 1)
-        {
-            throw new Exception("Incoming orders passed is not unique");
-        }
-        else
-        {
-            _incomingOrderId = uniqueIncomingOrders.FirstOrDefault().Value;
-            var getIncomingOrderByIdQuery = new GetIncomingOrderByIdQuery(_incomingOrderId);
-            var incomingOrderDTO = await Mediator.Send(getIncomingOrderByIdQuery);
-
-            _incomingOrder = incomingOrderDTO;
-        }
         return true;
     }
 }

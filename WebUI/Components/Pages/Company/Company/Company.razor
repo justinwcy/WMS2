@@ -1,4 +1,5 @@
 ﻿@inject IDialogService Dialog
+@implements IAsyncDisposable
 @implements IPageComponent
 
 <MudGrid Class="mb-3">
@@ -6,11 +7,11 @@
         @if (ShowDeleteButton)
         {
             <MudButton OnClick="@DeleteCompanies"
-                       Color="Color.Error"
-                       Variant="Variant.Filled"
-                       Size="Size.Large"
-                       FullWidth="true"
-                       Disabled="_disableDelete">
+            Color="Color.Error"
+            Variant="Variant.Filled"
+            Size="Size.Large"
+            FullWidth="true"
+            Disabled="_disableDelete">
                 Delete Company
             </MudButton>
         }
@@ -20,10 +21,10 @@
         @if (ShowCreateButton)
         {
             <MudButton OnClick="@(OpenCreateCompanyDialogAsync)"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="true">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Large"
+            FullWidth="true">
                 Create Company
             </MudButton>
         }
@@ -31,24 +32,24 @@
 </MudGrid>
 
 <MudTable Hover="true" FixedHeader="true"
-          Filter="new Func<CompanyModel,bool>(FilterFunc)"
-          CanCancelEdit="true"
-          Items="@CompanyModels"
-          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-          GroupFooterClass="mb-4"
-          Dense="true"
-          Loading="@_loading" LoadingProgressColor="Color.Info"
-          MultiSelection="true"
-          @bind-SelectedItems="_selectedCompanies"
-          SelectOnRowClick="false"
-          CommitEditTooltip="Commit Edit"
-          CancelEditTooltip="Cancel Edit"
-          IsEditRowSwitchingBlocked="false"
-          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-          RowEditCommit="ItemHasBeenCommitted"
-          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-          @ref="_tableRef">
+Filter="new Func<CompanyModel,bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@CompanyModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedCompanies"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Companies</MudText>
@@ -72,19 +73,19 @@
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Warehouse">
             <MudButton OnClick="@(() => OpenWarehouseDialogAsync(@context.WarehouseIds))"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Small"
-                       FullWidth="false">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
                 View (@context.WarehouseIds.Count)
             </MudButton>
         </MudTd>
         <MudTd DataLabel="Staff">
             <MudButton OnClick="@(() => OpenStaffDialogAsync(@context.StaffIds))"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Small"
-                       FullWidth="false">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
                 View (@context.StaffIds.Count)
             </MudButton>
         </MudTd>
@@ -97,22 +98,22 @@
 
         <MudTd DataLabel="Warehouse">
             <MudSelect T="Guid?"
-                       ToStringFunc="@(id=> _allWarehouseModels.FirstOrDefault(warehouseModel=>warehouseModel.Id == id)?.Name)"
-                       Variant="@_defaultVariant"
-                       Label="Rack"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Warehouse")
-                       MultiSelection="true"
-                       HelperText=@("Please select a warehouse")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="false"
-                       RequiredError="Please select a warehouse"
-                       SelectedValues="@(context.WarehouseIds.Select(x=>(Guid?)x))"
-                       SelectedValuesChanged="@(x=> context.WarehouseIds = x.Select(x=>x.Value).ToList())">
+            ToStringFunc="@(id=> _allWarehouseModels.FirstOrDefault(warehouseModel=>warehouseModel.Id == id)?.Name)"
+            Variant="@_defaultVariant"
+            Label="Rack"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Warehouse")
+            MultiSelection="true"
+            HelperText=@("Please select a warehouse")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="false"
+            RequiredError="Please select a warehouse"
+            SelectedValues="@(context.WarehouseIds.Select(x=>(Guid?)x))"
+            SelectedValuesChanged="@(x=> context.WarehouseIds = x.Select(x=>x.Value).ToList())">
                 @foreach (var warehouseModel in _allWarehouseModels)
                 {
                     <MudSelectItem T="Guid?" Value="@warehouseModel.Id" />
@@ -121,22 +122,22 @@
         </MudTd>
         <MudTd DataLabel="Staff">
             <MudSelect T="Guid?"
-                       ToStringFunc="@(id=> _allStaffModels.FirstOrDefault(staffModel=>staffModel.Id == id)?.FullName)"
-                       Variant="@_defaultVariant"
-                       Label="Staff"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Staff")
-                       MultiSelection="true"
-                       HelperText=@("Please select a staff")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="false"
-                       RequiredError="Please select a staff"
-                       SelectedValues="@(context.StaffIds.Select(x=>(Guid?)x))"
-                       SelectedValuesChanged="@(x=> context.StaffIds = x.Select(x=>x.Value).ToList())">
+            ToStringFunc="@(id=> _allStaffModels.FirstOrDefault(staffModel=>staffModel.Id == id)?.FullName)"
+            Variant="@_defaultVariant"
+            Label="Staff"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Staff")
+            MultiSelection="true"
+            HelperText=@("Please select a staff")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="false"
+            RequiredError="Please select a staff"
+            SelectedValues="@(context.StaffIds.Select(x=>(Guid?)x))"
+            SelectedValuesChanged="@(x=> context.StaffIds = x.Select(x=>x.Value).ToList())">
                 @foreach (var staffModel in _allStaffModels)
                 {
                     <MudSelectItem T="Guid?" Value="@staffModel.Id" />
@@ -147,10 +148,10 @@
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new[] { 10, 25, 50, 100, int.MaxValue }"
-                       RowsPerPageString="Rows per page:"
-                       InfoFormat="{first_item}-{last_item} of {all_items}"
-                       AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right" />
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -394,5 +395,10 @@
                 var success = await pageComponent.FetchData();
             }
         }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        PageComponents.Remove(this);
     }
 }
