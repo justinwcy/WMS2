@@ -8,20 +8,21 @@
                        Color="Color.Error"
                        Variant="Variant.Filled"
                        Size="Size.Large"
-                       FullWidth="false"
+                       FullWidth="true"
                        Disabled="_disableDelete">
                 Delete Bin
             </MudButton>
         }
     </MudItem>
-    <MudItem xs="3">
+    <MudItem xs="2"/>
+    <MudItem xs="5">
         @if (ShowCreateButton)
         {
             <MudButton OnClick="@(OpenCreateBinDialogAsync)"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
                        Size="Size.Large"
-                       FullWidth="false">
+                       FullWidth="true">
                 Create Bin
             </MudButton>
         }

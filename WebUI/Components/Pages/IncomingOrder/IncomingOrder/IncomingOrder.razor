@@ -1,27 +1,28 @@
 @inject IDialogService Dialog
 @implements IPageComponent
 <MudGrid Class="mb-3">
-    <MudItem xs="9">
+    <MudItem xs="5">
         @if (ShowDeleteButton)
         {
             <MudButton OnClick="@DeleteIncomingOrders"
                        Color="Color.Error"
                        Variant="Variant.Filled"
                        Size="Size.Large"
-                       FullWidth="false"
+                       FullWidth="true"
                        Disabled="_disableDelete">
-                Delete IncomingOrder
+                Delete Incoming Order
             </MudButton>
         }
     </MudItem>
-    <MudItem xs="3">
+    <MudItem xs="2"/>
+    <MudItem xs="5">
         @if (ShowCreateButton)
         {
             <MudButton OnClick="@(OpenCreateIncomingOrderDialogAsync)"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
                        Size="Size.Large"
-                       FullWidth="false">
+                       FullWidth="true">
                 Create Incoming Order
             </MudButton>
         }
@@ -56,12 +57,10 @@
     <ColGroup>
         <col />
         <col />
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
+        @for (var i = 0; i < 6; i++)
+        {
+            <col style="min-width:250px;" />
+        }
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderModel, object>(x=>x.PONumber)">PO Number</MudTableSortLabel></MudTh>
@@ -156,7 +155,15 @@
             </MudSelect>
         </MudTd>
 
-        <MudTd DataLabel="Details"></MudTd>
+        <MudTd DataLabel="Details">
+            <MudButton OnClick="@(() => OpenIncomingOrderProductDialogAsync(@context.IncomingOrderProductIds))"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
+                View (@context.IncomingOrderProductIds.Count)
+            </MudButton>
+        </MudTd>
 
     </RowEditingTemplate>
 
@@ -363,7 +370,6 @@
 
         var getAllVendorIdsByCompanyIdQuery = new GetAllVendorIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         var vendorIds = await Mediator.Send(getAllVendorIdsByCompanyIdQuery);
-
         foreach (var vendorId in vendorIds)
         {
             var getVendorByIdQuery = new GetVendorByIdQuery(vendorId);
@@ -381,6 +387,7 @@
                 };
             _allVendorModels.Add(vendorModel);
         }
+
         return true;
     }
 

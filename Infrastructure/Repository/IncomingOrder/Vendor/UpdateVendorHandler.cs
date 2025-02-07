@@ -20,8 +20,9 @@ namespace Infrastructure.Repository
             try
             {
                 await using var wmsDbContext = contextFactory.CreateDbContext();
-                var vendorFound = await wmsDbContext.Vendors.FirstOrDefaultAsync(
-                    vendor => vendor.Id.Equals(request.Model.Id),
+                var vendorFound = await wmsDbContext.Vendors
+                    .Include(vendor=>vendor.IncomingOrders)
+                    .FirstOrDefaultAsync(vendor => vendor.Id.Equals(request.Model.Id),
                     cancellationToken);
                 if (vendorFound == null)
                 {

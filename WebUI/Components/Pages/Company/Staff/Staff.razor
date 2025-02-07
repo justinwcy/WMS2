@@ -1,27 +1,28 @@
 @inject IDialogService Dialog
 @implements IPageComponent
 <MudGrid Class="mb-3">
-    <MudItem xs="9">
+    <MudItem xs="5">
         @if (ShowDeleteButton)
         {
             <MudButton OnClick="@DeleteStaffs"
                        Color="Color.Error"
                        Variant="Variant.Filled"
                        Size="Size.Large"
-                       FullWidth="false"
+                       FullWidth="true"
                        Disabled="_disableDelete">
                 Delete Staff
             </MudButton>
         }
     </MudItem>
-    <MudItem xs="3">
+    <MudItem xs="2"/>
+    <MudItem xs="5">
         @if (ShowCreateButton)
         {
             <MudButton OnClick="@(OpenCreateStaffDialogAsync)"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
                        Size="Size.Large"
-                       FullWidth="false">
+                       FullWidth="true">
                 Create Staff
             </MudButton>
         }
@@ -58,12 +59,10 @@
     <ColGroup>
         <col />
         <col />
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
+        @for (var i = 0; i < 6; i++)
+        {
+            <col style="min-width:200px;" />
+        }
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.FirstName)">First Name</MudTableSortLabel></MudTh>
@@ -151,9 +150,32 @@
                     <MudSelectItem T="Guid?" Value="companyModel.Id"></MudSelectItem>
                 }
             </MudSelect>
-
         </MudTd>
-        <MudTd DataLabel="Zone"></MudTd>
+
+        <MudTd DataLabel="Zone">
+            <MudSelect T="Guid?"
+                       ToStringFunc="@(id=> _allZoneModels.FirstOrDefault(zoneModel=>zoneModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Zone"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Zone")
+                       MultiSelection="true"
+                       HelperText=@("Please select a zone")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="false"
+                       RequiredError="Please select a staff"
+                       SelectedValues="@(context.ZoneIds?.Select(x=>(Guid?)x))"
+                       SelectedValuesChanged="@(x=> context.ZoneIds = x.Select(x=>x.Value).ToList())">
+                @foreach (var zoneModel in _allZoneModels)
+                {
+                    <MudSelectItem T="Guid?" Value="@zoneModel.Id" />
+                }
+            </MudSelect>
+        </MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
@@ -198,6 +220,7 @@
     private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
 
     private List<CompanyModel> _allCompanyModels { get; set; } = [];
+    private List<ZoneModel> _allZoneModels { get; set; } = [];
     private List<string> _allStaffRoles = new();
 
     protected override async Task OnParametersSetAsync()
@@ -267,6 +290,8 @@
                 Email = ((StaffModel)staffModel).Email,
                 ZoneIds = ((StaffModel)staffModel).ZoneIds,
                 Roles = ((StaffModel)staffModel).Roles,
+                CustomClaims = ((StaffModel)staffModel).CustomClaims,
+                StaffNotificationIds = ((StaffModel)staffModel).StaffNotificationIds,
             };
         StateHasChanged();
     }
@@ -280,6 +305,8 @@
         ((StaffModel)staffModel).Email = _staffModelBeforeEdit.Email;
         ((StaffModel)staffModel).Roles = _staffModelBeforeEdit.Roles;
         ((StaffModel)staffModel).ZoneIds = _staffModelBeforeEdit.ZoneIds;
+        ((StaffModel)staffModel).CustomClaims = _staffModelBeforeEdit.CustomClaims;
+        ((StaffModel)staffModel).StaffNotificationIds = _staffModelBeforeEdit.StaffNotificationIds;
 
         StateHasChanged();
     }
@@ -297,6 +324,8 @@
                 Email = staffModelConverted.Email,
                 ZoneIds = staffModelConverted.ZoneIds,
                 Roles = staffModelConverted.Roles,
+                StaffNotificationIds = staffModelConverted.StaffNotificationIds,
+                CustomClaims = staffModelConverted.CustomClaims,
             };
         var updateStaffCommand = new UpdateStaffCommand(updateStaffDTO);
         var response = await Mediator.Send(updateStaffCommand);
@@ -353,6 +382,7 @@
             StaffModels.Add(staffModel);
         }
 
+        _allCompanyModels.Clear();
         var getAllCompanyIdsQuery = new GetAllCompanyIdsQuery();
         var allCompanyIds = await Mediator.Send(getAllCompanyIdsQuery);
         foreach (var companyId in allCompanyIds)
@@ -370,9 +400,29 @@
             _allCompanyModels.Add(companyModel);
         }
 
+        _allStaffRoles.Clear();
         var getAllStaffRolesQuery = new GetAllStaffRolesQuery();
         var allStaffRoles = await Mediator.Send(getAllStaffRolesQuery);
         _allStaffRoles = allStaffRoles.ToList();
+
+        _allZoneModels.Clear();
+        var getAllZoneIdsByCompanyIdQuery = new GetAllZoneIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var allZoneIds = await Mediator.Send(getAllZoneIdsByCompanyIdQuery);
+        foreach (var zoneId in allZoneIds)
+        {
+            var getZoneByIdQuery = new GetZoneByIdQuery(zoneId);
+            var getZoneResponseDTO = await Mediator.Send(getZoneByIdQuery);
+            var zoneModel = new ZoneModel()
+                {
+                    Id = zoneId,
+                    StaffIds = getZoneResponseDTO.StaffIds,
+                    Name = getZoneResponseDTO.Name,
+                    RackIds = getZoneResponseDTO.RackIds,
+                    WarehouseId = getZoneResponseDTO.WarehouseId,
+                };
+
+            _allZoneModels.Add(zoneModel);
+        }
 
         return true;
     }

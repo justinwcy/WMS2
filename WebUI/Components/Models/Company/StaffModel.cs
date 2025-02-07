@@ -13,6 +13,10 @@
         public Guid? CompanyId { get; set; }
         public List<Guid>? ZoneIds { get; set; } = [];
 
+        public List<Guid> StaffNotificationIds { get; set; } = [];
+
+        public Dictionary<string, string> CustomClaims { get; set; } = new();
+
         public string FullName => $"{FirstName} {LastName}";
 
         public object Clone()

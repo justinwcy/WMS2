@@ -2,27 +2,28 @@
 @implements IPageComponent
 
 <MudGrid Class="mb-3">
-    <MudItem xs="9">
+    <MudItem xs="5">
         @if (ShowDeleteButton)
         {
             <MudButton OnClick="@DeleteZones"
                        Color="Color.Error"
                        Variant="Variant.Filled"
                        Size="Size.Large"
-                       FullWidth="false"
+                       FullWidth="true"
                        Disabled="_disableDelete">
                 Delete Zone
             </MudButton>
         }
     </MudItem>
-    <MudItem xs="3">
+    <MudItem xs="2"/>
+    <MudItem xs="5">
         @if (ShowCreateButton)
         {
             <MudButton OnClick="@(OpenCreateZoneDialogAsync)"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
                        Size="Size.Large"
-                       FullWidth="false">
+                       FullWidth="true">
                 Create Zone
             </MudButton>
         }

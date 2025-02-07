@@ -2,27 +2,28 @@
 @implements IPageComponent
 
 <MudGrid Class="mb-3">
-    <MudItem xs="9">
+    <MudItem xs="5">
         @if (ShowDeleteButton)
         {
             <MudButton OnClick="@DeleteCompanies"
                        Color="Color.Error"
                        Variant="Variant.Filled"
                        Size="Size.Large"
-                       FullWidth="false"
+                       FullWidth="true"
                        Disabled="_disableDelete">
                 Delete Company
             </MudButton>
         }
     </MudItem>
-    <MudItem xs="3">
+    <MudItem xs="2"/>
+    <MudItem xs="5">
         @if (ShowCreateButton)
         {
             <MudButton OnClick="@(OpenCreateCompanyDialogAsync)"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
                        Size="Size.Large"
-                       FullWidth="false">
+                       FullWidth="true">
                 Create Company
             </MudButton>
         }
@@ -57,9 +58,10 @@
     <ColGroup>
         <col />
         <col />
-        <col />
-        <col />
-        <col />
+        @for (var i = 0; i < 3; i++)
+        {
+            <col style="min-width:200px;" />
+        }
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<CompanyModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
@@ -121,7 +123,7 @@
             <MudSelect T="Guid?"
                        ToStringFunc="@(id=> _allStaffModels.FirstOrDefault(staffModel=>staffModel.Id == id)?.FullName)"
                        Variant="@_defaultVariant"
-                       Label="Rack"
+                       Label="Staff"
                        Margin="Margin.Normal"
                        Dense="false"
                        Disabled="false"
