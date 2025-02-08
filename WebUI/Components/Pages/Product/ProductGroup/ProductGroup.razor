@@ -58,9 +58,10 @@
     <ColGroup>
         <col />
         <col />
-        <col />
-        <col />
-        <col />
+        @for (var i = 0; i < 3; i++)
+        {
+            <col style="min-width:200px;" />
+        }
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<ProductGroupModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>

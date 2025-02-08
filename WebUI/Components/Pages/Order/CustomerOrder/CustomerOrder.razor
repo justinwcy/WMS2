@@ -205,7 +205,15 @@
             </MudSelect>
         </MudTd>
 
-        <MudTd DataLabel="Details"></MudTd>
+        <MudTd DataLabel="Details">
+            <MudButton OnClick="@(() => OpenCustomerOrderDetailDialogAsync(@context.CustomerOrderDetailIds))"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
+                View (@context.CustomerOrderDetailIds.Count)
+            </MudButton>
+        </MudTd>
     </RowEditingTemplate>
 
     <PagerContent>

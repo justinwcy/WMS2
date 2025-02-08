@@ -61,17 +61,10 @@
     <ColGroup>
         <col />
         <col />
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
+        @for (var i = 0; i < 11; i++)
+        {
+            <col style="min-width:200px;" />
+        }
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Sku)">SKU</MudTableSortLabel></MudTh>
@@ -145,8 +138,54 @@
         <MudTd DataLabel="Width (cm)">
             <MudTextField @bind-Value="context.Width" Required />
         </MudTd>
-        <MudTd DataLabel="Shop"></MudTd>
-        <MudTd DataLabel="Product Group"></MudTd>
+        <MudTd DataLabel="Shop">
+            <MudSelect T="Guid?"
+                       ToStringFunc="@(id=> _allShopModels.FirstOrDefault(shopModel=>shopModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Shop"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Shop")
+                       MultiSelection="true"
+                       HelperText=@("Please select a Shop")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="false"
+                       RequiredError="Please select a Shop"
+                       SelectedValues="@(context.ShopIds.Select(x=>(Guid?)x))"
+                       SelectedValuesChanged="@(x=> context.ShopIds = x.Select(y=>y.Value).ToList())">
+                @foreach (var shopModel in _allShopModels)
+                {
+                    <MudSelectItem T="Guid?" Value="@shopModel.Id" />
+                }
+            </MudSelect>
+        </MudTd>
+        <MudTd DataLabel="Product Group">
+            <MudSelect T="Guid?"
+                       ToStringFunc="@(id=> _allProductGroupModels.FirstOrDefault(productGroupModel=>productGroupModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Product Group"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Product Group")
+                       MultiSelection="true"
+                       HelperText=@("Please select a Product Group")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="false"
+                       RequiredError="Please select a Product Group"
+                       SelectedValues="@(context.ProductGroupIds.Select(x=>(Guid?)x))"
+                       SelectedValuesChanged="@(x=> context.ProductGroupIds = x.Select(y=>y.Value).ToList())">
+                @foreach (var productGroupModel in _allProductGroupModels)
+                {
+                    <MudSelectItem T="Guid?" Value="@productGroupModel.Id" />
+                }
+            </MudSelect>
+        </MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
@@ -189,6 +228,9 @@
 
     private bool _loading { get; set; }
     private string searchString = "";
+    private readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+    private List<ProductGroupModel> _allProductGroupModels { get; set; } = [];
+    private List<ShopModel> _allShopModels { get; set; } = [];
 
     protected override async Task OnParametersSetAsync()
     {
@@ -356,6 +398,40 @@
                 };
 
             ProductModels.Add(productModel);
+        }
+
+        var getAllShopIdsByCompanyIdQuery = new GetAllShopIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var allShopIds = await Mediator.Send(getAllShopIdsByCompanyIdQuery);
+        foreach (var shopId in allShopIds)
+        {
+            var getShopByIdQuery = new GetShopByIdQuery(shopId);
+            var getShopResponseDTO = await Mediator.Send(getShopByIdQuery);
+            var shopModel = new ShopModel()
+            {
+                Id = getShopResponseDTO.Id,
+                Name = getShopResponseDTO.Name,
+                Address = getShopResponseDTO.Address,
+                ProductIds = getShopResponseDTO.ProductIds,
+                Platform = getShopResponseDTO.Platform,
+                Website = getShopResponseDTO.Website,
+            };
+            _allShopModels.Add(shopModel);
+        }
+
+        var getAllProductGroupIdsByCompanyIdQuery = new GetAllProductGroupIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var allProductGroupIds = await Mediator.Send(getAllProductGroupIdsByCompanyIdQuery);
+        foreach (var productGroupId in allProductGroupIds)
+        {
+            var getProductGroupByIdQuery = new GetProductGroupByIdQuery(productGroupId);
+            var getProductGroupResponseDTO = await Mediator.Send(getProductGroupByIdQuery);
+            var productGroupModel = new ProductGroupModel()
+                {
+                    Id = getProductGroupResponseDTO.Id,
+                    Name = getProductGroupResponseDTO.Name,
+                    ProductIds = getProductGroupResponseDTO.ProductIds,
+                    Description = getProductGroupResponseDTO.Description,
+                };
+            _allProductGroupModels.Add(productGroupModel);
         }
         return true;
     }
