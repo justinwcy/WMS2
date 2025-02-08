@@ -52,7 +52,7 @@
 
     private bool _isFormValid { get; set; } = false;
 
-    private RefundOrderModel _refundOrderModel { get; set; }
+    private RefundOrderModel _refundOrderModel { get; set; } = new();
     private List<string> _orderStates { get; set; }
 
     [Parameter]

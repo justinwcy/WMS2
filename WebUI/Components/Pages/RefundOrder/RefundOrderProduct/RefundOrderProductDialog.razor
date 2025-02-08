@@ -8,7 +8,8 @@
                             MainPage="MainPage" 
                             PageComponents="PageComponents"
                             ShowCreateButton=@ShowCreateButton
-                            ShowDeleteButton=@ShowDeleteButton/>
+                            ShowDeleteButton=@ShowDeleteButton
+                            ParentRefundOrderId=@ParentRefundOrderId />
     </DialogContent>
 </MudDialog>
 
@@ -24,6 +25,9 @@
 
     [Parameter]
     public CurrentUserModel CurrentStaff { get; set; }
+
+    [Parameter]
+    public Guid ParentRefundOrderId { get; set; }
     
     private bool ShowCreateButton { get; set; }
 

@@ -58,10 +58,10 @@
     <ColGroup>
         <col />
         <col />
-        <col />
-        <col />
-        <col />
-        <col />
+        @for (var i = 0; i < 4; i++)
+        {
+            <col style="min-width:200px;" />
+        }
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderModel, object>(x=>x.RefundDate)">Refund Date</MudTableSortLabel></MudTh>
@@ -74,7 +74,7 @@
         <MudTd DataLabel="Status">@context.Status</MudTd>
         <MudTd DataLabel="Reason">@context.RefundReason</MudTd>
         <MudTd DataLabel="Details">
-            <MudButton OnClick="@(() => OpenRefundOrderProductDialogAsync(@context.RefundOrderProductIds))"
+            <MudButton OnClick="@(() => OpenRefundOrderProductDialogAsync(@context.Id, @context.RefundOrderProductIds))"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
                        Size="Size.Small"
@@ -117,7 +117,15 @@
         <MudTd DataLabel="Reason">
             <MudTextField @bind-Value="context.RefundReason" Required />
         </MudTd>
-        <MudTd DataLabel="Details"></MudTd>
+        <MudTd DataLabel="Details">
+            <MudButton OnClick="@(() => OpenRefundOrderProductDialogAsync(@context.Id, @context.RefundOrderProductIds))"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
+                View (@context.RefundOrderProductIds.Count)
+            </MudButton>
+        </MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
@@ -312,9 +320,9 @@
         return true;
     }
 
-    private async Task OpenRefundOrderProductDialogAsync(List<Guid> refundOrderProductIds)
+    private async Task OpenRefundOrderProductDialogAsync(Guid refundOrderId, List<Guid> refundOrderProductIds)
     {
-        var dialogResult = await ViewDialogUtilities.OpenRefundOrderProductDialogAsync(refundOrderProductIds, CurrentStaff, Dialog, MainPage, PageComponents);
+        var dialogResult = await ViewDialogUtilities.OpenRefundOrderProductDialogAsync(refundOrderId, refundOrderProductIds, CurrentStaff, Dialog, MainPage, PageComponents);
         await MainPage.InitializeData();
         foreach (var pageComponent in PageComponents)
         {

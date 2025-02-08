@@ -1,5 +1,4 @@
-﻿using Application.DTO.Response;
-using MudBlazor;
+﻿using MudBlazor;
 using WebUI.Components.Models;
 using WebUI.Components.Pages;
 using WebUI.Components.Pages.Company.Company;
@@ -436,19 +435,20 @@ namespace WebUI.Utilities
             return await dialog.Result;
         }
 
-        public static async Task<DialogResult?> OpenRefundOrderProductDialogAsync(
+        public static async Task<DialogResult?> OpenRefundOrderProductDialogAsync(Guid parentRefundOrderId,
             Guid refundOrderProductId, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
-            return await OpenRefundOrderProductDialogAsync([refundOrderProductId], currentStaff, dialogService, mainPage, pageComponents);
+            return await OpenRefundOrderProductDialogAsync(parentRefundOrderId, [refundOrderProductId], currentStaff, dialogService, mainPage, pageComponents);
         }
 
-        public static async Task<DialogResult?> OpenRefundOrderProductDialogAsync(
+        public static async Task<DialogResult?> OpenRefundOrderProductDialogAsync(Guid parentRefundOrderId,
             List<Guid> refundOrderProductIds, CurrentUserModel currentStaff, IDialogService dialogService,
             IMainPage mainPage, List<IPageComponent> pageComponents)
         {
             var parameters = new DialogParameters<RefundOrderProductDialog>()
             {
+                { x => x.ParentRefundOrderId, parentRefundOrderId},
                 { x => x.CurrentStaff, currentStaff },
                 { x => x.RefundOrderProductIds, refundOrderProductIds },
                 { x => x.MainPage, mainPage },

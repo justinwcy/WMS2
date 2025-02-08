@@ -11,7 +11,7 @@
                        Size="Size.Large"
                        FullWidth="true"
                        Disabled="_disableDelete">
-                Delete RefundOrderProduct
+                Delete Refund Order Details
             </MudButton>
         }
     </MudItem>
@@ -24,7 +24,7 @@
                        Color="Color.Primary"
                        Size="Size.Large"
                        FullWidth="true">
-                Create RefundOrderProduct
+                Create Refund Order Details
             </MudButton>
         }
     </MudItem>
@@ -157,6 +157,10 @@
     [Parameter]
     public CurrentUserModel? CurrentStaff { get; set; }
 
+    [Parameter]
+    public Guid ParentRefundOrderId { get; set; }
+    private GetRefundOrderResponseDTO _refundOrder { get; set; } = new();
+
     private HashSet<RefundOrderProductModel> _selectedRefundOrderProducts = new HashSet<RefundOrderProductModel>();
     private bool _disableDelete => !_selectedRefundOrderProducts.Any();
 
@@ -168,8 +172,6 @@
     private List<ProductModel> _allProductModels { get; set; } = [];
     private List<string> _orderStates { get; set; }
     private readonly Variant _defaultVariant = Theme.DefaultInputVariant();
-    private Guid _refundOrderId { get; set; }
-    private GetRefundOrderResponseDTO _refundOrder { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -181,6 +183,10 @@
     }
     protected override async Task OnParametersSetAsync()
     {
+        var getRefundOrderByIdQuery = new GetRefundOrderByIdQuery(ParentRefundOrderId);
+        var getRefundOrderDTO = await Mediator.Send(getRefundOrderByIdQuery);
+        _refundOrder = getRefundOrderDTO;
+
         // check to make sure all parameters are set before running
         if (CurrentStaff == null)
         {
@@ -277,7 +283,7 @@
         var parameters = new DialogParameters<CreateRefundOrderProductDialog>()
         {
             { x => x.CurrentStaff,  CurrentStaff},
-            { x => x.RefundOrderId, _refundOrderId},
+            { x => x.RefundOrderId, ParentRefundOrderId},
         };
 
         var options = Theme.DefaultCreateDialogOptions();
@@ -346,21 +352,6 @@
             RefundOrderProductModels.Add(refundOrderProductModel);
         }
 
-        var uniqueRefundOrders = RefundOrderProductModels
-            .GroupBy(incomingOrderProductModel => incomingOrderProductModel.RefundOrderId)
-            .Select(x => x.Key)
-            .ToList();
-
-        if (uniqueRefundOrders.Count != 1)
-        {
-            throw new Exception("Refund orders passed is not unique");
-        }
-        else
-        {
-            _refundOrderId = uniqueRefundOrders.FirstOrDefault().Value;
-            var getRefundOrderByIdQuery = new GetRefundOrderByIdQuery(_refundOrderId);
-            _refundOrder = await Mediator.Send(getRefundOrderByIdQuery);
-        }
         return true;
     }
 

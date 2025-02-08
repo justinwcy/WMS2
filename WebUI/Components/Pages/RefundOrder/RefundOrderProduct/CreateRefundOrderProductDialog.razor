@@ -6,21 +6,21 @@
         <MudForm @bind-IsValid="@_isFormValid">
 
             <MudSelect @bind-Value="_refundOrderProductModel.ProductId"
-                       T="Guid?"
-                       ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
-                       Variant="@_defaultVariant"
-                       Label="Status"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Product")
-                       MultiSelection="false"
-                       HelperText=@("Please select a product")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="true"
-                       RequiredError="Please select a product">
+            T="Guid?"
+            ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
+            Variant="@_defaultVariant"
+            Label="Status"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Product")
+            MultiSelection="false"
+            HelperText=@("Please select a product")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="true"
+            RequiredError="Please select a product">
                 @foreach (var productModel in _allProductModels)
                 {
                     <MudSelectItem T="Guid?" Value="@productModel.Id"></MudSelectItem>
@@ -28,19 +28,19 @@
             </MudSelect>
 
             <MudSelect @bind-Value="_refundOrderProductModel.Status"
-                       Variant="@_defaultVariant"
-                       Label="Status"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Status")
-                       MultiSelection="false"
-                       HelperText=@("Please select a status")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="true"
-                       RequiredError="Please select a status">
+            Variant="@_defaultVariant"
+            Label="Status"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Status")
+            MultiSelection="false"
+            HelperText=@("Please select a status")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="true"
+            RequiredError="Please select a status">
                 @foreach (var orderState in _orderStates)
                 {
                     <MudSelectItem Value="@orderState">@orderState</MudSelectItem>
@@ -48,11 +48,11 @@
             </MudSelect>
 
             <MudTextField @bind-value="_refundOrderProductModel.Quantity"
-                          Variant="@_defaultVariant"
-                          T="int"
-                          Label="Quantity"
-                          Required="true" RequiredError="Quantity is required!"
-                          Margin="Margin.Dense" />
+            Variant="@_defaultVariant"
+            T="int"
+            Label="Quantity"
+            Required="true" RequiredError="Quantity is required!"
+            Margin="Margin.Dense" />
 
         </MudForm>
     </DialogContent>
@@ -71,7 +71,7 @@
     private RefundOrderProductModel _refundOrderProductModel { get; set; } = new RefundOrderProductModel();
 
     private List<ProductModel> _allProductModels { get; set; } = [];
-    private List<string> _orderStates { get; set; }
+    private List<string> _orderStates { get; set; } = [];
 
     [Parameter]
     public required CurrentUserModel CurrentStaff { get; set; }

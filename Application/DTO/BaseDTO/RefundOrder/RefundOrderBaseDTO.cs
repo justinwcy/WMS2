@@ -2,9 +2,9 @@
 {
     public class RefundOrderBaseDTO : BaseDTO
     {
-        public required string RefundReason { get; set; } = string.Empty;
+        public string RefundReason { get; set; } = string.Empty;
 
-        public required string Status { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
 
         public DateTime RefundDate { get; set; }
 
