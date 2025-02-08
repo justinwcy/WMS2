@@ -15,7 +15,7 @@
             </MudButton>
         }
     </MudItem>
-    <MudItem xs="2"/>
+    <MudItem xs="2" />
     <MudItem xs="5">
         @if (ShowCreateButton)
         {
@@ -58,13 +58,10 @@
     <ColGroup>
         <col />
         <col />
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
+        @for (var i = 0; i < 7; i++)
+        {
+            <col style="min-width:200px;" />
+        }
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<RackModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
@@ -141,7 +138,30 @@
                 }
             </MudSelect>
         </MudTd>
-        <MudTd DataLabel="Products"></MudTd>
+        <MudTd DataLabel="Products">
+            <MudSelect T="Guid?"
+                       ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Product"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Product")
+                       MultiSelection="true"
+                       HelperText=@("Please select a product")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="false"
+                       RequiredError="Please select a product"
+                       SelectedValues="@(context.ProductIds.Select(x=>(Guid?)x))"
+                       SelectedValuesChanged="@(x=> context.ProductIds = x.Select(x=>x.Value).ToList())">
+                @foreach (var productModel in _allProductModels)
+                {
+                    <MudSelectItem T="Guid?" Value="@productModel.Id" />
+                }
+            </MudSelect>
+        </MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
@@ -186,11 +206,12 @@
     private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
 
     private List<ZoneModel> _allZoneModels { get; set; } = [];
+    private List<ProductModel> _allProductModels { get; set; } = [];
 
     protected override async Task OnParametersSetAsync()
     {
         // check to make sure all parameters are set before running
-        if (CurrentStaff == null || !RackIds.Any())
+        if (CurrentStaff == null)
         {
             return;
         }
@@ -353,6 +374,30 @@
                 };
 
             _allZoneModels.Add(zoneModel);
+        }
+
+        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
+        foreach (var productId in productIds)
+        {
+            var getProductByIdQuery = new GetProductByIdQuery(productId);
+            var productDTO = await Mediator.Send(getProductByIdQuery);
+            var productModel = new ProductModel()
+                {
+                    Id = productDTO.Id,
+                    Name = productDTO.Name,
+                    Description = productDTO.Description,
+                    Height = productDTO.Height,
+                    Length = productDTO.Length,
+                    Price = productDTO.Price,
+                    ProductGroupIds = productDTO.ProductGroupIds,
+                    ShopIds = productDTO.ShopIds,
+                    Sku = productDTO.Sku,
+                    Tag = productDTO.Tag,
+                    Weight = productDTO.Weight,
+                    Width = productDTO.Width,
+                };
+            _allProductModels.Add(productModel);
         }
         return true;
     }

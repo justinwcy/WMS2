@@ -16,8 +16,9 @@ namespace Infrastructure.Repository
             try
             {
                 await using var wmsDbContext = contextFactory.CreateDbContext();
-                var binFound = await wmsDbContext.Bins.FirstOrDefaultAsync(
-                    bin => bin.Id.Equals(request.Model.Id),
+                var binFound = await wmsDbContext.Bins
+                    .Include(bin=>bin.CustomerOrders)
+                    .FirstOrDefaultAsync(bin => bin.Id.Equals(request.Model.Id),
                     cancellationToken);
                 if (binFound == null)
                 {

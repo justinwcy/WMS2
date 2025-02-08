@@ -9,7 +9,7 @@
                        T="Guid?"
                        ToStringFunc="@(id => $"{_allCustomerModels.FirstOrDefault(customerModel => customerModel.Id == id)?.FirstName} {_allCustomerModels.FirstOrDefault(customerModel => customerModel.Id == id)?.LastName}")"
                        Variant="@_defaultVariant"
-                       Label="Status"
+                       Label="Customer"
                        Margin="Margin.Normal"
                        Dense="false"
                        Disabled="false"

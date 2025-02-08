@@ -336,7 +336,7 @@ namespace WebUI.Utilities
             };
 
             var options = Theme.DefaultViewDialogOptions();
-            var dialog = await dialogService.ShowAsync<CustomerOrderDialog>("CustomerOrder", parameters, options);
+            var dialog = await dialogService.ShowAsync<CustomerOrderDialog>("Customer Order", parameters, options);
             return await dialog.Result;
         }
 

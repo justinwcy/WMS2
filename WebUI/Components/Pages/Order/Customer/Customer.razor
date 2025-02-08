@@ -15,7 +15,7 @@
             </MudButton>
         }
     </MudItem>
-    <MudItem xs="2"/>
+    <MudItem xs="2" />
     <MudItem xs="5">
         @if (ShowCreateButton)
         {
@@ -31,24 +31,24 @@
 </MudGrid>
 
 <MudTable Hover="true" FixedHeader="true"
-Filter="new Func<CustomerModel,bool>(FilterFunc)"
-CanCancelEdit="true"
-Items="@CustomerModels"
-GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-GroupFooterClass="mb-4"
-Dense="true"
-Loading="@_loading" LoadingProgressColor="Color.Info"
-MultiSelection="true"
-@bind-SelectedItems="_selectedCustomers"
-SelectOnRowClick="false"
-CommitEditTooltip="Commit Edit"
-CancelEditTooltip="Cancel Edit"
-IsEditRowSwitchingBlocked="false"
-RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-RowEditCommit="ItemHasBeenCommitted"
-ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-@ref="_tableRef">
+          Filter="new Func<CustomerModel,bool>(FilterFunc)"
+          CanCancelEdit="true"
+          Items="@CustomerModels"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4"
+          Dense="true"
+          Loading="@_loading" LoadingProgressColor="Color.Info"
+          MultiSelection="true"
+          @bind-SelectedItems="_selectedCustomers"
+          SelectOnRowClick="false"
+          CommitEditTooltip="Commit Edit"
+          CancelEditTooltip="Cancel Edit"
+          IsEditRowSwitchingBlocked="false"
+          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted"
+          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+          @ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Customers</MudText>
@@ -58,11 +58,15 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     <ColGroup>
         <col />
         <col />
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
+        @for (var i = 0; i < 2; i++)
+        {
+            <col style="min-width:200px;" />
+        }
+        
+        @for (var i = 0; i < 3; i++)
+        {
+            <col style="min-width:250px;" />
+        }
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x=>x.FirstName)">First Name</MudTableSortLabel></MudTh>
@@ -77,7 +81,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Email">@context.Email</MudTd>
         <MudTd DataLabel="Address">@context.Address</MudTd>
         <MudTd DataLabel="Customer Orders">
-            <MudButton OnClick="@(() => OpenProductDialogAsync(@context.CustomerOrderIds))"
+            <MudButton OnClick="@(() => OpenCustomerOrderDialogAsync(@context.CustomerOrderIds))"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
                        Size="Size.Small"
@@ -95,7 +99,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Last Name">
             <MudTextField @bind-Value="context.LastName" Required />
         </MudTd>
-        
+
         <MudTd DataLabel="Email">
             <MudTextField @bind-Value="context.Email" Required />
         </MudTd>
@@ -104,15 +108,23 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             <MudTextField @bind-Value="context.Address" Required />
         </MudTd>
 
-        <MudTd DataLabel="Customer Orders"></MudTd>
+        <MudTd DataLabel="Customer Orders">
+            <MudButton OnClick="@(() => OpenCustomerOrderDialogAsync(@context.CustomerOrderIds))"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
+                View (@context.CustomerOrderIds.Count)
+            </MudButton>
+        </MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-        RowsPerPageString="Rows per page:"
-        InfoFormat="{first_item}-{last_item} of {all_items}"
-        AllItemsText="All"
-        HorizontalAlignment="HorizontalAlignment.Right" />
+                       RowsPerPageString="Rows per page:"
+                       InfoFormat="{first_item}-{last_item} of {all_items}"
+                       AllItemsText="All"
+                       HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -122,13 +134,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     [Parameter]
     public bool ShowCreateButton { get; set; }
-    
+
     [Parameter]
     public bool ShowDeleteButton { get; set; }
 
     [Parameter]
     public IMainPage MainPage { get; set; }
-    
+
     [Parameter]
     public List<IPageComponent> PageComponents { get; set; }
 
@@ -150,7 +162,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     protected override async Task OnParametersSetAsync()
     {
         // check to make sure all parameters are set before running
-        if (CurrentStaff == null || !CustomerIds.Any())
+        if (CurrentStaff == null)
         {
             return;
         }
@@ -206,14 +218,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     {
 
         _customerModelBeforeEdit = new CustomerModel()
-        {
-            Id = ((CustomerModel)customerModel).Id,
-            FirstName = ((CustomerModel)customerModel).FirstName,
-            LastName = ((CustomerModel)customerModel).LastName,
-            Email = ((CustomerModel)customerModel).Email,
-            Address = ((CustomerModel)customerModel).Address,
-            CustomerOrderIds = ((CustomerModel)customerModel).CustomerOrderIds,
-        };
+            {
+                Id = ((CustomerModel)customerModel).Id,
+                FirstName = ((CustomerModel)customerModel).FirstName,
+                LastName = ((CustomerModel)customerModel).LastName,
+                Email = ((CustomerModel)customerModel).Email,
+                Address = ((CustomerModel)customerModel).Address,
+                CustomerOrderIds = ((CustomerModel)customerModel).CustomerOrderIds,
+            };
         StateHasChanged();
     }
 
@@ -232,15 +244,15 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private async void ItemHasBeenCommitted(object customerModel)
     {
         var updateCustomerDTO = new UpdateCustomerRequestDTO()
-        {
-            CreatedBy = CurrentStaff.Id,
-            Id = ((CustomerModel)customerModel).Id,
-            FirstName = ((CustomerModel)customerModel).FirstName,
-            LastName = ((CustomerModel)customerModel).LastName,
-            Email = ((CustomerModel)customerModel).Email,
-            Address = ((CustomerModel)customerModel).Address,
-            CustomerOrderIds = ((CustomerModel)customerModel).CustomerOrderIds,
-        };
+            {
+                CreatedBy = CurrentStaff.Id,
+                Id = ((CustomerModel)customerModel).Id,
+                FirstName = ((CustomerModel)customerModel).FirstName,
+                LastName = ((CustomerModel)customerModel).LastName,
+                Email = ((CustomerModel)customerModel).Email,
+                Address = ((CustomerModel)customerModel).Address,
+                CustomerOrderIds = ((CustomerModel)customerModel).CustomerOrderIds,
+            };
         var updateCustomerCommand = new UpdateCustomerCommand(updateCustomerDTO);
         var response = await Mediator.Send(updateCustomerCommand);
         await FetchData();
@@ -298,9 +310,9 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         return true;
     }
 
-    private async Task OpenProductDialogAsync(List<Guid> productIds)
+    private async Task OpenCustomerOrderDialogAsync(List<Guid> productIds)
     {
-        var dialogResult = await ViewDialogUtilities.OpenProductDialogAsync(productIds, CurrentStaff, Dialog, MainPage, PageComponents);
+        var dialogResult = await ViewDialogUtilities.OpenCustomerOrderDialogAsync(productIds, CurrentStaff, Dialog, MainPage, PageComponents);
         await MainPage.InitializeData();
         foreach (var pageComponent in PageComponents)
         {

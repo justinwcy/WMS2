@@ -185,7 +185,7 @@
     protected override async Task OnParametersSetAsync()
     {
         // check to make sure all parameters are set before running
-        if (CurrentStaff == null || !CustomerOrderDetailIds.Any())
+        if (CurrentStaff == null)
         {
             return;
         }

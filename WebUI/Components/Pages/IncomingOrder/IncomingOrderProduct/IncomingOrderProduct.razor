@@ -6,11 +6,11 @@
         @if (ShowDeleteButton)
         {
             <MudButton OnClick="@DeleteIncomingOrderProducts"
-                       Color="Color.Error"
-                       Variant="Variant.Filled"
-                       Size="Size.Large"
-                       FullWidth="true"
-                       Disabled="_disableDelete">
+            Color="Color.Error"
+            Variant="Variant.Filled"
+            Size="Size.Large"
+            FullWidth="true"
+            Disabled="_disableDelete">
                 Delete Incoming Order Details
             </MudButton>
         }
@@ -20,10 +20,10 @@
         @if (ShowCreateButton)
         {
             <MudButton OnClick="@(OpenCreateIncomingOrderProductDialogAsync)"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="true">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Large"
+            FullWidth="true">
                 Create Incoming Order Details
             </MudButton>
         }
@@ -31,24 +31,24 @@
 </MudGrid>
 
 <MudTable Hover="true" FixedHeader="true"
-          Filter="new Func<IncomingOrderProductModel,bool>(FilterFunc)"
-          CanCancelEdit="true"
-          Items="@IncomingOrderProductModels"
-          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-          GroupFooterClass="mb-4"
-          Dense="true"
-          Loading="@_loading" LoadingProgressColor="Color.Info"
-          MultiSelection="true"
-          @bind-SelectedItems="_selectedIncomingOrderProducts"
-          SelectOnRowClick="false"
-          CommitEditTooltip="Commit Edit"
-          CancelEditTooltip="Cancel Edit"
-          IsEditRowSwitchingBlocked="false"
-          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-          RowEditCommit="ItemHasBeenCommitted"
-          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-          @ref="_tableRef">
+Filter="new Func<IncomingOrderProductModel,bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@IncomingOrderProductModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedIncomingOrderProducts"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Incoming Order Details @_incomingOrder.PONumber</MudText>
@@ -76,21 +76,21 @@
     <RowEditingTemplate>
         <MudTd DataLabel="Products">
             <MudSelect @bind-Value="context.ProductId"
-                       T="Guid?"
-                       ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
-                       Variant="@_defaultVariant"
-                       Label="Status"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Product")
-                       MultiSelection="false"
-                       HelperText=@("Please select a product")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="true"
-                       RequiredError="Please select a product">
+            T="Guid?"
+            ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
+            Variant="@_defaultVariant"
+            Label="Status"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Product")
+            MultiSelection="false"
+            HelperText=@("Please select a product")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="true"
+            RequiredError="Please select a product">
                 @foreach (var productModel in _allProductModels)
                 {
                     <MudSelectItem T="Guid?" Value="@productModel.Id"></MudSelectItem>
@@ -100,19 +100,19 @@
 
         <MudTd DataLabel="Status">
             <MudSelect @bind-Value="context.Status"
-                       Variant="@_defaultVariant"
-                       Label="Status"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Status")
-                       MultiSelection="false"
-                       HelperText=@("Please select a status")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="true"
-                       RequiredError="Please select a status">
+            Variant="@_defaultVariant"
+            Label="Status"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Status")
+            MultiSelection="false"
+            HelperText=@("Please select a status")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="true"
+            RequiredError="Please select a status">
                 @foreach (var orderState in _orderStates)
                 {
                     <MudSelectItem Value="@orderState" />
@@ -127,10 +127,10 @@
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-                       RowsPerPageString="Rows per page:"
-                       InfoFormat="{first_item}-{last_item} of {all_items}"
-                       AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right" />
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -185,11 +185,10 @@
     {
         var getIncomingOrderByIdQuery = new GetIncomingOrderByIdQuery(ParentIncomingOrderId);
         var incomingOrderDTO = await Mediator.Send(getIncomingOrderByIdQuery);
-
         _incomingOrder = incomingOrderDTO;
 
         // check to make sure all parameters are set before running
-        if (CurrentStaff == null || !IncomingOrderProductIds.Any())
+        if (CurrentStaff == null)
         {
             return;
         }
@@ -302,13 +301,13 @@
             IncomingOrderProductIds.Add(incomingOrderProductModelCreated.Id);
             IncomingOrderProductModels.Add(incomingOrderProductModelCreated);
             StateHasChanged();
-            SnackBar.Add("Product created in order");
+            SnackBar.Add("Product created inside incoming order");
         }
     }
 
     public async Task<bool> FetchData()
     {
-        IncomingOrderProductModels.Clear();
+        _allProductModels.Clear();
         var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
 
@@ -335,6 +334,7 @@
             _allProductModels.Add(productModel);
         }
 
+        IncomingOrderProductModels.Clear();
         foreach (var incomingOrderProductId in IncomingOrderProductIds)
         {
             var getIncomingOrderProductByIdQuery = new GetIncomingOrderProductByIdQuery(incomingOrderProductId);

@@ -11,7 +11,7 @@
                        Size="Size.Large"
                        FullWidth="true"
                        Disabled="_disableDelete">
-                Delete ProductGroup
+                Delete Product Group
             </MudButton>
         }
     </MudItem>
@@ -24,7 +24,7 @@
                        Color="Color.Primary"
                        Size="Size.Large"
                        FullWidth="true">
-                Create ProductGroup
+                Create Product Group
             </MudButton>
         }
     </MudItem>
@@ -51,7 +51,7 @@
           @ref="_tableRef">
 
     <ToolBarContent>
-        <MudText Typo="Typo.h6">ProductGroups</MudText>
+        <MudText Typo="Typo.h6">Product Groups</MudText>
         <MudSpacer />
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
@@ -90,7 +90,30 @@
             <MudTextField @bind-Value="context.Description" Required />
         </MudTd>
 
-        <MudTd DataLabel="Products"></MudTd>
+        <MudTd DataLabel="Products">
+            <MudSelect T="Guid?"
+                       ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Product"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Product")
+                       MultiSelection="true"
+                       HelperText=@("Please select a product")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="false"
+                       RequiredError="Please select a product"
+                       SelectedValues="@(context.ProductIds.Select(x=>(Guid?)x))"
+                       SelectedValuesChanged="@(x=> context.ProductIds = x.Select(x=>x.Value).ToList())">
+                @foreach (var productModel in _allProductModels)
+                {
+                    <MudSelectItem T="Guid?" Value="@productModel.Id" />
+                }
+            </MudSelect>
+        </MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
@@ -132,11 +155,13 @@
     private string searchString = "";
     private MudTable<ProductGroupModel> _tableRef;
     private ProductGroupModel _productGroupModelBeforeEdit { get; set; }
+    private readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+    private List<ProductModel> _allProductModels { get; set; } = [];
 
     protected override async Task OnParametersSetAsync()
     {
         // check to make sure all parameters are set before running
-        if (CurrentStaff == null || !ProductGroupIds.Any())
+        if (CurrentStaff == null)
         {
             return;
         }
@@ -265,6 +290,31 @@
                     ProductIds = productGroupDTO.ProductIds,
                 };
             ProductGroupModels.Add(productGroupModel);
+        }
+        
+        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
+        foreach (var productId in productIds)
+        {
+            var getProductByIdQuery = new GetProductByIdQuery(productId);
+            var productDTO = await Mediator.Send(getProductByIdQuery);
+
+            var productModel = new ProductModel()
+            {
+                Id = productDTO.Id,
+                Name = productDTO.Name,
+                Description = productDTO.Description,
+                Height = productDTO.Height,
+                Length = productDTO.Length,
+                Price = productDTO.Price,
+                ProductGroupIds = productDTO.ProductGroupIds,
+                ShopIds = productDTO.ShopIds,
+                Sku = productDTO.Sku,
+                Tag = productDTO.Tag,
+                Weight = productDTO.Weight,
+                Width = productDTO.Width,
+            };
+            _allProductModels.Add(productModel);
         }
         return true;
     }

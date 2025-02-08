@@ -97,7 +97,30 @@
             <MudTextField @bind-Value="context.Remark" Required />
         </MudTd>
 
-        <MudTd DataLabel="Customer Orders"></MudTd>
+        <MudTd DataLabel="Customer Orders">
+            <MudSelect T="Guid?"
+                       ToStringFunc="@(id=> _allCustomerOrderModels.FirstOrDefault(customerOrderModel=>customerOrderModel.Id == id)?.OrderAddress)"
+                       Variant="@_defaultVariant"
+                       Label="Product"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Customer Order")
+                       MultiSelection="true"
+                       HelperText=@("Please select a Customer Order")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="false"
+                       RequiredError="Please select a customer order"
+                       SelectedValues="@(context.CustomerOrderIds.Select(x=>(Guid?)x))"
+                       SelectedValuesChanged="@(x=> context.CustomerOrderIds = x.Select(x=>x.Value).ToList())">
+                @foreach (var customerOrderModel in _allCustomerOrderModels)
+                {
+                    <MudSelectItem T="Guid?" Value="@customerOrderModel.Id" />
+                }
+            </MudSelect>
+        </MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
@@ -139,11 +162,13 @@
     private string searchString = "";
     private MudTable<CourierModel> _tableRef;
     private CourierModel _courierModelBeforeEdit { get; set; }
+    private List<CustomerOrderModel> _allCustomerOrderModels { get; set; } = [];
+    private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
 
     protected override async Task OnParametersSetAsync()
     {
         // check to make sure all parameters are set before running
-        if (CurrentStaff == null || !CourierIds.Any())
+        if (CurrentStaff == null)
         {
             return;
         }
@@ -277,6 +302,28 @@
                 };
 
             CourierModels.Add(courierModel);
+        }
+
+        _allCustomerOrderModels.Clear();
+        var getAllCustomerOrderIdsByCompanyIdQuery = new GetAllCustomerOrderIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var allCustomerOrderIds = await Mediator.Send(getAllCustomerOrderIdsByCompanyIdQuery);
+        foreach (var customerOrderId in allCustomerOrderIds)
+        {
+            var getCustomerOrderByIdQuery = new GetCustomerOrderByIdQuery(customerOrderId);
+            var getCustomerOrderResponseDTO = await Mediator.Send(getCustomerOrderByIdQuery);
+            var customerOrderModel = new CustomerOrderModel()
+            {
+                Id = getCustomerOrderResponseDTO.Id,
+                BinId = getCustomerOrderResponseDTO.BinId,
+                OrderAddress = getCustomerOrderResponseDTO.OrderAddress,
+                CourierId = getCustomerOrderResponseDTO.CourierId,
+                CustomerId = getCustomerOrderResponseDTO.CustomerId,
+                CustomerOrderDetailIds = getCustomerOrderResponseDTO.CustomerOrderDetailIds,
+                ExpectedArrivalDate = getCustomerOrderResponseDTO.ExpectedArrivalDate,
+                OrderCreationDate = getCustomerOrderResponseDTO.OrderCreationDate,
+            };
+
+            _allCustomerOrderModels.Add(customerOrderModel);
         }
         return true;
     }
