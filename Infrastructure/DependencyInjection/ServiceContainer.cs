@@ -1,8 +1,10 @@
 ﻿using Application.Constants;
+using Application.Interface;
 using Application.Interface.Identity;
 
 using Infrastructure.Data;
 using Infrastructure.Extensions.Identity;
+using Infrastructure.FileStorage;
 using Infrastructure.Repository;
 
 using Microsoft.AspNetCore.Identity;
@@ -16,6 +18,10 @@ namespace Infrastructure.DependencyInjection
     {
         public static IServiceCollection AddInfrastructureService(this IServiceCollection services, IConfiguration config)
         {
+            
+            var localStoragePath = Path.Combine(Directory.GetCurrentDirectory(), @"..\LocalFileStorage\ProductPictures");
+            services.AddSingleton<IFileStorage>(new LocalFileStorage(localStoragePath));
+
             services.AddDbContextFactory<WmsDbContext>(
                 option => option.UseSqlServer(config.GetConnectionString("Default")),
                 ServiceLifetime.Transient);

@@ -7,6 +7,7 @@
 @using Application.Constants
 @using Application.DTO.Request
 @using Application.DTO.Response
+@using Application.Interface
 @using Application.Interface.Identity
 @using Application.Service.Commands
 @using Application.Service.Queries
@@ -34,3 +35,4 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject ISnackbar SnackBar
+@inject IFileStorage FileStorage
