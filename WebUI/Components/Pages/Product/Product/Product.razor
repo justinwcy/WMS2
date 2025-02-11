@@ -6,11 +6,11 @@
         @if (ShowDeleteButton)
         {
             <MudButton OnClick="@DeleteProducts"
-                       Color="Color.Error"
-                       Variant="Variant.Filled"
-                       Size="Size.Large"
-                       FullWidth="true"
-                       Disabled="_disableDelete">
+            Color="Color.Error"
+            Variant="Variant.Filled"
+            Size="Size.Large"
+            FullWidth="true"
+            Disabled="_disableDelete">
                 Delete Product
             </MudButton>
         }
@@ -20,10 +20,10 @@
         @if (ShowCreateButton)
         {
             <MudButton OnClick="@(OpenCreateProductDialogAsync)"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="true">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Large"
+            FullWidth="true">
                 Create Product
             </MudButton>
         }
@@ -31,37 +31,37 @@
 </MudGrid>
 
 <MudTable Hover="true" FixedHeader="true"
-          Filter="new Func<ProductModel,bool>(FilterFunc)"
-          Items="@ProductModels"
-          Dense="true"
-          Bordered="true"
-          Loading="@_loading" LoadingProgressColor="Color.Info"
-          MultiSelection="true"
-          @bind-SelectedItems="_selectedProducts"
-          SelectOnRowClick="false"
-          CanCancelEdit="true"
-          CommitEditTooltip="Commit Edit"
-          CancelEditTooltip="Cancel Edit"
-          IsEditRowSwitchingBlocked="false"
-          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-          RowEditCommit="ItemHasBeenCommitted"
-          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-          EditButtonPosition="TableEditButtonPosition.StartAndEnd"
-          EditTrigger="TableEditTrigger.RowClick">
+Filter="new Func<ProductModel,bool>(FilterFunc)"
+Items="@ProductModels"
+Dense="true"
+Bordered="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedProducts"
+SelectOnRowClick="false"
+CanCancelEdit="true"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd"
+EditTrigger="TableEditTrigger.RowClick">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Products</MudText>
         <MudSpacer />
         <MudTextField @bind-Value="searchString"
-                      Placeholder="Search"
-                      Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search"
-                      IconSize="Size.Medium" Class="mt-0" />
+        Placeholder="Search"
+        Adornment="Adornment.Start"
+        AdornmentIcon="@Icons.Material.Filled.Search"
+        IconSize="Size.Medium" Class="mt-0" />
     </ToolBarContent>
     <ColGroup>
         <col />
         <col />
-        @for (var i = 0; i < 11; i++)
+        @for (var i = 0; i < 9; i++)
         {
             <col style="min-width:200px;" />
         }
@@ -73,9 +73,7 @@
         <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Price)">Price (RM)</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Tag)">Tag</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Weight)">Weight (g)</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Height)">Height (cm)</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Length)">Length (cm)</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Width)">Width (cm)</MudTableSortLabel></MudTh>
+        <MudTh>Dimensions</MudTh>
         <MudTh>Shop</MudTh>
         <MudTh>Product Group</MudTh>
     </HeaderContent>
@@ -87,24 +85,22 @@
         <MudTd DataLabel="Price (RM)">@context.Price</MudTd>
         <MudTd DataLabel="Tag">@context.Tag</MudTd>
         <MudTd DataLabel="Weight (g)">@context.Weight</MudTd>
-        <MudTd DataLabel="Height (cm)">@context.Height</MudTd>
-        <MudTd DataLabel="Length (cm)">@context.Length</MudTd>
-        <MudTd DataLabel="Width (cm)">@context.Width</MudTd>
+        <MudTd DataLabel="Dimensions">@context.Length x @context.Width x @context.Height</MudTd>
         <MudTd DataLabel="Shop">
             <MudButton OnClick="@(() => OpenShopDialogAsync(context.ShopIds))"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="false">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Large"
+            FullWidth="false">
                 View (@context.ShopIds.Count)
             </MudButton>
         </MudTd>
         <MudTd DataLabel="Product Group">
             <MudButton OnClick="@(() => OpenProductGroupDialogAsync(context.ProductGroupIds))"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="false">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Large"
+            FullWidth="false">
                 View (@context.ProductGroupIds.Count)
             </MudButton>
         </MudTd>
@@ -129,33 +125,29 @@
         <MudTd DataLabel="Weight (g)">
             <MudTextField @bind-Value="context.Weight" Required />
         </MudTd>
-        <MudTd DataLabel="Height (cm)">
-            <MudTextField @bind-Value="context.Height" Required />
-        </MudTd>
-        <MudTd DataLabel="Length (cm)">
-            <MudTextField @bind-Value="context.Length" Required />
-        </MudTd>
-        <MudTd DataLabel="Width (cm)">
-            <MudTextField @bind-Value="context.Width" Required />
+        <MudTd DataLabel="Dimensions">
+            <MudTextField Label="Length" @bind-Value="context.Length" Required />
+            <MudTextField Label="Width" @bind-Value="context.Width" Required />
+            <MudTextField Label="Height" @bind-Value="context.Height" Required />
         </MudTd>
         <MudTd DataLabel="Shop">
             <MudSelect T="Guid?"
-                       ToStringFunc="@(id=> _allShopModels.FirstOrDefault(shopModel=>shopModel.Id == id)?.Name)"
-                       Variant="@_defaultVariant"
-                       Label="Shop"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Shop")
-                       MultiSelection="true"
-                       HelperText=@("Please select a Shop")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="false"
-                       RequiredError="Please select a Shop"
-                       SelectedValues="@(context.ShopIds.Select(x=>(Guid?)x))"
-                       SelectedValuesChanged="@(x=> context.ShopIds = x.Select(y=>y.Value).ToList())">
+            ToStringFunc="@(id=> _allShopModels.FirstOrDefault(shopModel=>shopModel.Id == id)?.Name)"
+            Variant="@_defaultVariant"
+            Label="Shop"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Shop")
+            MultiSelection="true"
+            HelperText=@("Please select a Shop")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="false"
+            RequiredError="Please select a Shop"
+            SelectedValues="@(context.ShopIds.Select(x=>(Guid?)x))"
+            SelectedValuesChanged="@(x=> context.ShopIds = x.Select(y=>y.Value).ToList())">
                 @foreach (var shopModel in _allShopModels)
                 {
                     <MudSelectItem T="Guid?" Value="@shopModel.Id" />
@@ -164,22 +156,22 @@
         </MudTd>
         <MudTd DataLabel="Product Group">
             <MudSelect T="Guid?"
-                       ToStringFunc="@(id=> _allProductGroupModels.FirstOrDefault(productGroupModel=>productGroupModel.Id == id)?.Name)"
-                       Variant="@_defaultVariant"
-                       Label="Product Group"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Product Group")
-                       MultiSelection="true"
-                       HelperText=@("Please select a Product Group")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="false"
-                       RequiredError="Please select a Product Group"
-                       SelectedValues="@(context.ProductGroupIds.Select(x=>(Guid?)x))"
-                       SelectedValuesChanged="@(x=> context.ProductGroupIds = x.Select(y=>y.Value).ToList())">
+            ToStringFunc="@(id=> _allProductGroupModels.FirstOrDefault(productGroupModel=>productGroupModel.Id == id)?.Name)"
+            Variant="@_defaultVariant"
+            Label="Product Group"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Product Group")
+            MultiSelection="true"
+            HelperText=@("Please select a Product Group")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="false"
+            RequiredError="Please select a Product Group"
+            SelectedValues="@(context.ProductGroupIds.Select(x=>(Guid?)x))"
+            SelectedValuesChanged="@(x=> context.ProductGroupIds = x.Select(y=>y.Value).ToList())">
                 @foreach (var productGroupModel in _allProductGroupModels)
                 {
                     <MudSelectItem T="Guid?" Value="@productGroupModel.Id" />
@@ -190,10 +182,10 @@
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-                       RowsPerPageString="Rows per page:"
-                       InfoFormat="{first_item}-{last_item} of {all_items}"
-                       AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right" />
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -290,19 +282,25 @@
     {
 
         _productModelBeforeEdit = new ProductModel()
-            {
-                Id = ((ProductModel)productModel).Id,
-                ProductGroupIds = ((ProductModel)productModel).ProductGroupIds,
-                Description = ((ProductModel)productModel).Description,
-                Name = ((ProductModel)productModel).Name,
-                Height = ((ProductModel)productModel).Height,
-                Length = ((ProductModel)productModel).Length,
-                Width = ((ProductModel)productModel).Width,
-                Price = ((ProductModel)productModel).Price,
-                Sku = ((ProductModel)productModel).Sku,
-                Tag = ((ProductModel)productModel).Tag,
-                Weight = ((ProductModel)productModel).Weight,
-            };
+        {
+            Id = ((ProductModel)productModel).Id,
+            ProductGroupIds = ((ProductModel)productModel).ProductGroupIds,
+            Description = ((ProductModel)productModel).Description,
+            Name = ((ProductModel)productModel).Name,
+            Height = ((ProductModel)productModel).Height,
+            Length = ((ProductModel)productModel).Length,
+            Width = ((ProductModel)productModel).Width,
+            Price = ((ProductModel)productModel).Price,
+            Sku = ((ProductModel)productModel).Sku,
+            Tag = ((ProductModel)productModel).Tag,
+            Weight = ((ProductModel)productModel).Weight,
+            RackIds = ((ProductModel)productModel).RackIds,
+            IncomingOrderIds = ((ProductModel)productModel).IncomingOrderIds,
+            CustomerOrderDetailIds = ((ProductModel)productModel).CustomerOrderDetailIds,
+            InventoryId = ((ProductModel)productModel).InventoryId,
+            RefundOrderIds = ((ProductModel)productModel).RefundOrderIds,
+            ShopIds = ((ProductModel)productModel).ShopIds,
+        };
         StateHasChanged();
     }
 
@@ -319,6 +317,12 @@
         ((ProductModel)productModel).Sku = _productModelBeforeEdit.Sku;
         ((ProductModel)productModel).Tag = _productModelBeforeEdit.Tag;
         ((ProductModel)productModel).Weight = _productModelBeforeEdit.Weight;
+        ((ProductModel)productModel).RackIds = _productModelBeforeEdit.RackIds;
+        ((ProductModel)productModel).IncomingOrderIds = _productModelBeforeEdit.IncomingOrderIds;
+        ((ProductModel)productModel).CustomerOrderDetailIds = _productModelBeforeEdit.CustomerOrderDetailIds;
+        ((ProductModel)productModel).InventoryId = _productModelBeforeEdit.InventoryId;
+        ((ProductModel)productModel).RefundOrderIds = _productModelBeforeEdit.RefundOrderIds;
+        ((ProductModel)productModel).ShopIds = _productModelBeforeEdit.ShopIds;
 
         StateHasChanged();
     }
@@ -339,6 +343,13 @@
                 Sku = productModelConverted.Sku,
                 Tag = productModelConverted.Tag,
                 Weight = productModelConverted.Weight,
+                RackIds = productModelConverted.RackIds,
+                IncomingOrderIds = productModelConverted.IncomingOrderIds,
+                CustomerOrderDetailIds = productModelConverted.CustomerOrderDetailIds,
+                InventoryId = productModelConverted.InventoryId,
+                ProductGroupIds = productModelConverted.ProductGroupIds,
+                RefundOrderIds = productModelConverted.RefundOrderIds,
+                ShopIds = productModelConverted.ShopIds,
             };
         var updateProductCommand = new UpdateProductCommand(updateProductDTO);
         var response = await Mediator.Send(updateProductCommand);
@@ -394,7 +405,12 @@
                     Tag = productDTO.Tag,
                     Weight = productDTO.Weight,
                     Width = productDTO.Width,
-                    ShopIds = productDTO.ShopIds
+                    ShopIds = productDTO.ShopIds,
+                    RackIds = productDTO.RackIds,
+                    CustomerOrderDetailIds = productDTO.CustomerOrderDetailIds,
+                    IncomingOrderIds = productDTO.IncomingOrderIds,
+                    InventoryId = productDTO.InventoryId,
+                    RefundOrderIds = productDTO.RefundOrderIds,
                 };
 
             ProductModels.Add(productModel);

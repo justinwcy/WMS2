@@ -19,7 +19,8 @@ namespace Infrastructure.DependencyInjection
         public static IServiceCollection AddInfrastructureService(this IServiceCollection services, IConfiguration config)
         {
             
-            var localStoragePath = Path.Combine(Directory.GetCurrentDirectory(), @"..\LocalFileStorage\ProductPictures");
+            var localStoragePath = Path.Combine(Directory.GetCurrentDirectory(), 
+                $@"..\{FileStorageConstants.MainFolder}");
             services.AddSingleton<IFileStorage>(new LocalFileStorage(localStoragePath));
 
             services.AddDbContextFactory<WmsDbContext>(

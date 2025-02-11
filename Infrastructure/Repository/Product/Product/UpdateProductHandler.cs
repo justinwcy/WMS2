@@ -16,8 +16,15 @@ namespace Infrastructure.Repository
             try
             {
                 await using var wmsDbContext = contextFactory.CreateDbContext();
-                var productFound = await wmsDbContext.Products.FirstOrDefaultAsync(
-                    product => product.Id.Equals(request.Model.Id),
+                var productFound = await wmsDbContext.Products
+                    .Include(product=>product.CurrentInventory)
+                    .Include(product=>product.CustomerOrderDetails)
+                    .Include(product=>product.IncomingOrders)
+                    .Include(product=>product.ProductGroups)
+                    .Include(product=>product.RefundOrders)
+                    .Include(product=>product.Racks)
+                    .Include(product=>product.Shops)
+                    .FirstOrDefaultAsync(product => product.Id.Equals(request.Model.Id),
                     cancellationToken);
                 if (productFound == null)
                 {

@@ -1,24 +1,113 @@
 ﻿@page "/FileUploadPage"
 
-<MudFileUpload T="IReadOnlyList<IBrowserFile>" AppendMultipleFiles="false">
-    <ActivatorContent>
+<MudGrid Spacing="5" Justify="Justify.Center">
+    <MudItem>
+        <MudFileUpload T="IBrowserFile" OnFilesChanged="UploadFiles" Accept="image/png, image/jpeg">
+            <ActivatorContent>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.CloudUpload">
+                    Upload Product Photo
+                </MudButton>
+            </ActivatorContent>
+        </MudFileUpload>
+    </MudItem>
+
+    <MudFlexBreak />
+    @if (ImageFile != null)
+    {
+        <MudItem>
+            <MudImage ObjectFit="ObjectFit.ScaleDown" Width="400" Height="300" Elevation="25" Class="rounded-lg" Src=@ImageString></MudImage>
+        </MudItem>
+    }
+
+    <MudFlexBreak/>
+    
+    <MudItem>
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
-                   StartIcon="@Icons.Material.Filled.CloudUpload">
-            AppendMultipleFiles = false
-        </MudButton>
-    </ActivatorContent>
-    <SelectedTemplate>
-        @if (context != null)
-        {
-            @foreach (var file in context)
-            {
-                <MudText>@file.Name</MudText>
-            }
-        }
-        else
-        {
-            <MudText>No Files</MudText>
-        }
-    </SelectedTemplate>
-</MudFileUpload>
+                   StartIcon="@Icons.Material.Filled.Upload"
+                   OnClick="UploadToDatabase"
+                   Disabled="@(ImageFile==null)">Upload to database</MudButton>
+    </MudItem>
+    
+
+    <MudFlexBreak />
+    
+    <MudItem>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.Shower"
+                   OnClick="GetPhotoFromDatabase"
+                   Disabled="@(ImageFile==null)">Show photo from database</MudButton>
+    </MudItem>
+    <MudFlexBreak />
+
+    @if (DatabaseImageString != null)
+    {
+        <MudItem>
+            <MudImage ObjectFit="ObjectFit.ScaleDown" 
+                      Width="400" Height="300" 
+                      Elevation="25" 
+                      Class="rounded-lg"
+                      Src=@DatabaseImageString></MudImage>
+        </MudItem>
+    }
+</MudGrid>
+
+@code
+{
+    private string DatabaseImageString { get; set; }
+    private IBrowserFile? ImageFile { get; set; }
+    private string ImageString { get; set; }
+
+    private async Task UploadFiles(InputFileChangeEventArgs args)
+    {
+        ImageFile = args.File;
+        var imageString = await ConvertToBase64String(ImageFile);
+        ImageString = $"data:image/jpeg;base64,{imageString}";
+        //TODO upload the files to the server
+    }
+
+    public static async Task<string> ConvertToBase64String(IBrowserFile file)
+    {
+        var memoryStream = new MemoryStream();
+        await file.OpenReadStream(file.Size).CopyToAsync(memoryStream);
+
+        var bytes = new byte[file.Size];
+        memoryStream.Position = 0;
+        await memoryStream.ReadAsync(bytes);
+        memoryStream.Close();
+        return Convert.ToBase64String(bytes);
+    }
+
+    public static async Task<string> ConvertToBase64String(Stream stream)
+    {
+        var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream);
+
+        var bytes = new byte[stream.Length];
+        memoryStream.Position = 0;
+        await memoryStream.ReadAsync(bytes);
+        memoryStream.Close();
+        return Convert.ToBase64String(bytes);
+    }
+
+    private async Task<string> UploadToDatabase()
+    {
+        var uploadFileCommand = new UploadFileCommand(
+            ImageFile.OpenReadStream(ImageFile.Size), 
+            @$"{FileStorageConstants.ProductPhotoFolder}\{ImageFile.Name}");
+        var uploadFilePath = await Mediator.Send(uploadFileCommand);
+
+        return uploadFilePath;
+    }
+
+    private async Task GetPhotoFromDatabase()
+    {
+        var downloadFileQuery = new DownloadFileQuery(@$"{FileStorageConstants.ProductPhotoFolder}\PLA_receipt.png");
+        var stream = await Mediator.Send(downloadFileQuery);
+        var imageString = await ConvertToBase64String(stream);
+        DatabaseImageString = $"data:image/jpeg;base64,{imageString}";
+    }
+}
