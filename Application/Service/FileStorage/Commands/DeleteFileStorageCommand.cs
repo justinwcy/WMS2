@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Service.Commands
 {
-    public record DeleteFileCommand(string FileName) : IRequest<ServiceResponse>;
+    public record DeleteFileStorageCommand(string FileName) : IRequest<ServiceResponse>;
 }

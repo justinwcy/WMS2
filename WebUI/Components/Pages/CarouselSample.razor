@@ -2,58 +2,67 @@
 
 <MudGrid Spacing="5" Justify="Justify.Center">
     <MudItem xs="8">
-        <MudCarousel @ref="_carousel"
-                     ItemsSource="@ProductPhotos"
-                     Style="height:200px;"
-                     ShowArrows="true"
-                     ShowBullets="true"
-                     EnableSwipeGesture="true"
-                     AutoCycle="false">
+        <MudCarousel @ref="_allCarousels[index]"
+        ItemsSource="@ProductPhotos"
+        Style="height:200px;"
+        ShowArrows="true"
+        ShowBullets="true"
+        EnableSwipeGesture="true"
+        AutoCycle="false">
             <ItemTemplate>
                 <div class="d-flex flex-column flex-column justify-center">
                     <MudImage ObjectFit="ObjectFit.ScaleDown"
-                              Elevation="25"
-                              Height="200"
-                              Class="rounded-lg"
-                              Src=@context />
+                    Elevation="25"
+                    Height="200"
+                    Class="rounded-lg"
+                    Src=@context />
                 </div>
             </ItemTemplate>
         </MudCarousel>
     </MudItem>
-    
+
     <MudItem xs="4">
         <MudFileUpload T="IBrowserFile" OnFilesChanged="AddPhotoAsync" Accept="image/png, image/jpeg">
             <ActivatorContent>
-                <MudButton Class="ma-2" 
-                           Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           StartIcon="@Icons.Material.Filled.CloudUpload"
-                           FullWidth="true">
+                <MudButton Class="ma-2"
+                Variant="Variant.Filled"
+                Color="Color.Primary"
+                StartIcon="@Icons.Material.Filled.CloudUpload"
+                FullWidth="true">
                     Upload Product Photo
                 </MudButton>
             </ActivatorContent>
         </MudFileUpload>
-        <br/>
+        <br />
         <MudButton Class="ma-2"
-                   Variant="Variant.Filled"
-                   Color="Color.Error"
-                   OnClick="@(async () => await DeleteAsync(_carousel.SelectedIndex))"
-                   FullWidth="true">
+        Variant="Variant.Filled"
+        Color="Color.Error"
+        OnClick="@(async () => await DeleteAsync(_allCarousels[index].SelectedIndex))"
+        FullWidth="true">
             Delete Photo
         </MudButton>
     </MudItem>
 </MudGrid>
 
 @code {
-    private MudCarousel<string> _carousel;
+
+    private int index = 0;
+    private readonly Dictionary<int, MudCarousel<string>> _allCarousels = new();
+    //private MudCarousel<string> _carousel;
     private IList<string> ProductPhotos = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _allCarousels[index] = new MudCarousel<string>();
+    }
 
     private async Task AddPhotoAsync(InputFileChangeEventArgs args)
     {
         var imageFile = args.File;
         var imageString = await ConvertToBase64String(imageFile);
         ProductPhotos.Add(imageString);
-        _carousel.MoveTo(ProductPhotos.Count - 1);
+        _allCarousels[index].MoveTo(ProductPhotos.Count - 1);
     }
 
     private async Task DeleteAsync(int index)
@@ -62,7 +71,7 @@
         {
             ProductPhotos.RemoveAt(index);
             await Task.Delay(1);
-            _carousel.MoveTo(Math.Max(Math.Min(index, ProductPhotos.Count - 1), 0));
+            _allCarousels[index].MoveTo(Math.Max(Math.Min(index, ProductPhotos.Count - 1), 0));
         }
     }
 

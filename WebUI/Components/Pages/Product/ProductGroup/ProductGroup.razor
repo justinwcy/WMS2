@@ -6,24 +6,24 @@
         @if (ShowDeleteButton)
         {
             <MudButton OnClick="@DeleteProductGroups"
-                       Color="Color.Error"
-                       Variant="Variant.Filled"
-                       Size="Size.Large"
-                       FullWidth="true"
-                       Disabled="_disableDelete">
+            Color="Color.Error"
+            Variant="Variant.Filled"
+            Size="Size.Large"
+            FullWidth="true"
+            Disabled="_disableDelete">
                 Delete Product Group
             </MudButton>
         }
     </MudItem>
-    <MudItem xs="2"/>
+    <MudItem xs="2" />
     <MudItem xs="5">
         @if (ShowCreateButton)
         {
             <MudButton OnClick="@(OpenCreateProductGroupDialogAsync)"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="true">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Large"
+            FullWidth="true">
                 Create Product Group
             </MudButton>
         }
@@ -31,24 +31,24 @@
 </MudGrid>
 
 <MudTable Hover="true" FixedHeader="true"
-          Filter="new Func<ProductGroupModel,bool>(FilterFunc)"
-          CanCancelEdit="true"
-          Items="@ProductGroupModels"
-          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-          GroupFooterClass="mb-4"
-          Dense="true"
-          Loading="@_loading" LoadingProgressColor="Color.Info"
-          MultiSelection="true"
-          @bind-SelectedItems="_selectedProductGroups"
-          SelectOnRowClick="false"
-          CommitEditTooltip="Commit Edit"
-          CancelEditTooltip="Cancel Edit"
-          IsEditRowSwitchingBlocked="false"
-          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-          RowEditCommit="ItemHasBeenCommitted"
-          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-          @ref="_tableRef">
+Filter="new Func<ProductGroupModel,bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@ProductGroupModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedProductGroups"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Product Groups</MudText>
@@ -58,25 +58,47 @@
     <ColGroup>
         <col />
         <col />
-        @for (var i = 0; i < 3; i++)
+        <col style="min-width:200px;" />
+        <col style="min-width:500px;" />
+        @for (var i = 0; i < 2; i++)
         {
             <col style="min-width:200px;" />
         }
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<ProductGroupModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh>Photos</MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<ProductGroupModel, object>(x=>x.Description)">Description</MudTableSortLabel></MudTh>
         <MudTh>Products</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Photos">
+            <MudCarousel @ref="_allPhotoCarousels[context.Id]"
+            ItemsSource="@context.PhotoIds"
+            Style="height:200px;"
+            ShowArrows="true"
+            ShowBullets="true"
+            EnableSwipeGesture="true"
+            AutoCycle="false">
+                <ItemTemplate Context="photoId">
+                    <div class="d-flex flex-column flex-column justify-center">
+                        <MudImage ObjectFit="ObjectFit.ScaleDown"
+                        Elevation="25"
+                        Height="150"
+                        Class="rounded-lg"
+                        Src=@($"data:image/jpeg;base64,{_allPhotoBase64String[photoId]}") />
+                    </div>
+                </ItemTemplate>
+            </MudCarousel>
+        </MudTd>
         <MudTd DataLabel="Description">@context.Description</MudTd>
         <MudTd DataLabel="Products">
             <MudButton OnClick="@(() => OpenProductDialogAsync(@context.ProductIds))"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Small"
-                       FullWidth="false">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
                 View (@context.ProductIds.Count)
             </MudButton>
         </MudTd>
@@ -87,28 +109,76 @@
             <MudTextField @bind-Value="context.Name" Required />
         </MudTd>
 
+        <MudTd DataLabel="Photos">
+            <MudGrid Spacing="5" Justify="Justify.Center">
+                <MudItem xs="8">
+                    <MudCarousel @ref="_allPhotoCarousels[context.Id]"
+                                 ItemsSource="@context.PhotoIds"
+                                 Style="height:200px;"
+                                 ShowArrows="true"
+                                 ShowBullets="true"
+                                 EnableSwipeGesture="true"
+                                 AutoCycle="false"
+                                 >
+                        <ItemTemplate Context="photoId">
+                            <div class="d-flex flex-column flex-column justify-center">
+                                <MudImage ObjectFit="ObjectFit.ScaleDown"
+                                          Elevation="25"
+                                          Height="150"
+                                          Class="rounded-lg"
+                                          Src=@($"data:image/jpeg;base64,{_allPhotoBase64String[photoId]}") />
+                            </div>
+                        </ItemTemplate>
+                    </MudCarousel>
+                </MudItem>
+
+                <MudItem xs="4">
+                    <MudFileUpload T="IBrowserFile" OnFilesChanged="((e)=>AddPhotoAsync(context.Id, e))" Accept="image/png, image/jpeg">
+                        <ActivatorContent>
+                            <MudButton Class="ma-2"
+                                       Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.CloudUpload"
+                                       FullWidth="true">
+                                Upload Product Photo
+                            </MudButton>
+                        </ActivatorContent>
+                    </MudFileUpload>
+                    <br />
+                    <MudButton Class="ma-2"
+                               Variant="Variant.Filled"
+                               Color="Color.Error"
+                               OnClick="@(async () => await DeleteAsync(context.Id, _allPhotoCarousels[context.Id].SelectedIndex))"
+                               FullWidth="true"
+                               Disabled="@(!_allPhotoCarousels[context.Id].Items.Any())">
+                        Delete Photo
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudTd>
+
         <MudTd DataLabel="Description">
             <MudTextField @bind-Value="context.Description" Required />
         </MudTd>
 
         <MudTd DataLabel="Products">
             <MudSelect T="Guid?"
-                       ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
-                       Variant="@_defaultVariant"
-                       Label="Product"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Product")
-                       MultiSelection="true"
-                       HelperText=@("Please select a product")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="false"
-                       RequiredError="Please select a product"
-                       SelectedValues="@(context.ProductIds.Select(x=>(Guid?)x))"
-                       SelectedValuesChanged="@(x=> context.ProductIds = x.Select(x=>x.Value).ToList())">
+            ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
+            Variant="@_defaultVariant"
+            Label="Product"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Product")
+            MultiSelection="true"
+            HelperText=@("Please select a product")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="false"
+            RequiredError="Please select a product"
+            SelectedValues="@(context.ProductIds.Select(x=>(Guid?)x))"
+            SelectedValuesChanged="@(x=> context.ProductIds = x.Select(x=>x.Value).ToList())">
                 @foreach (var productModel in _allProductModels)
                 {
                     <MudSelectItem T="Guid?" Value="@productModel.Id" />
@@ -119,10 +189,10 @@
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-                       RowsPerPageString="Rows per page:"
-                       InfoFormat="{first_item}-{last_item} of {all_items}"
-                       AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right" />
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -143,13 +213,13 @@
     public List<IPageComponent> PageComponents { get; set; }
 
     [Parameter]
-    public List<Guid> ProductGroupIds { get; set; } = new List<Guid>();
-    public List<ProductGroupModel> ProductGroupModels { get; set; } = new List<ProductGroupModel>();
+    public List<Guid> ProductGroupIds { get; set; } = [];
+    public List<ProductGroupModel> ProductGroupModels { get; set; } = [];
 
     [Parameter]
     public CurrentUserModel? CurrentStaff { get; set; }
 
-    private HashSet<ProductGroupModel> _selectedProductGroups = new HashSet<ProductGroupModel>();
+    private HashSet<ProductGroupModel> _selectedProductGroups = [];
     private bool _disableDelete => !_selectedProductGroups.Any();
 
     private bool _loading { get; set; }
@@ -158,6 +228,14 @@
     private ProductGroupModel _productGroupModelBeforeEdit { get; set; }
     private readonly Variant _defaultVariant = Theme.DefaultInputVariant();
     private List<ProductModel> _allProductModels { get; set; } = [];
+
+    private readonly Dictionary<Guid, MudCarousel<Guid>> _allPhotoCarousels = new();
+
+    // can contain a mix of photo ids that are in and not in the server when its in editing mode, otherwise all ids are in server
+    private readonly Dictionary<Guid, string> _allPhotoBase64String = new();
+
+    // this is to store the photo ids that are added but not uploaded yet to the server
+    private List<Guid> _addedPhotoIds = new();
 
     protected override async Task OnParametersSetAsync()
     {
@@ -212,13 +290,14 @@
 
     private void BackupItem(object productGroupModel)
     {
-
+        _addedPhotoIds.Clear();
         _productGroupModelBeforeEdit = new ProductGroupModel()
             {
                 Id = ((ProductGroupModel)productGroupModel).Id,
                 Name = ((ProductGroupModel)productGroupModel).Name,
                 Description = ((ProductGroupModel)productGroupModel).Description,
                 ProductIds = ((ProductGroupModel)productGroupModel).ProductIds,
+                PhotoIds = ((ProductGroupModel)productGroupModel).PhotoIds,
             };
         StateHasChanged();
     }
@@ -229,20 +308,47 @@
         ((ProductGroupModel)productGroupModel).Name = _productGroupModelBeforeEdit.Name;
         ((ProductGroupModel)productGroupModel).Description = _productGroupModelBeforeEdit.Description;
         ((ProductGroupModel)productGroupModel).ProductIds = _productGroupModelBeforeEdit.ProductIds;
+        ((ProductGroupModel)productGroupModel).PhotoIds = _productGroupModelBeforeEdit.PhotoIds;
 
         StateHasChanged();
     }
 
     private async void ItemHasBeenCommitted(object productGroupModel)
     {
-        var updateProductGroupDTO = new UpdateProductGroupRequestDTO()
+        // upload picture first to get the id
+        foreach (var photoId in _addedPhotoIds)
+        {
+            var photoBase64String = _allPhotoBase64String[photoId];
+            var bytes = Convert.FromBase64String(photoBase64String);
+            var content = new MemoryStream(bytes);
+            var createFileStorageRequestDTO = new CreateFileStorageRequestDTO()
             {
                 CreatedBy = CurrentStaff.Id,
-                Id = ((ProductGroupModel)productGroupModel).Id,
-                Name = ((ProductGroupModel)productGroupModel).Name,
-                Description = ((ProductGroupModel)productGroupModel).Description,
-                ProductIds = ((ProductGroupModel)productGroupModel).ProductIds,
+                FileName = $"{FileStorageConstants.ProductPhotoFolder}/{Guid.NewGuid()}.jpg",
+                FileStream = content,
+                StorageType = StorageType.LocalFileStorage
             };
+
+            var createFileStorageCommand = new CreateFileStorageCommand(createFileStorageRequestDTO);
+            var createFileStorageResponseDTO = await Mediator.Send(createFileStorageCommand);
+
+            // remove the temporary id and replace with the new Id from the server
+            _allPhotoBase64String.Remove(photoId);
+            _allPhotoBase64String.Add(createFileStorageResponseDTO.Id, photoBase64String);
+
+            ((ProductGroupModel)productGroupModel).PhotoIds.Add(createFileStorageResponseDTO.Id);
+            ((ProductGroupModel)productGroupModel).PhotoIds.Remove(photoId);
+        }
+
+        var updateProductGroupDTO = new UpdateProductGroupRequestDTO()
+        {
+            CreatedBy = CurrentStaff.Id,
+            Id = ((ProductGroupModel)productGroupModel).Id,
+            Name = ((ProductGroupModel)productGroupModel).Name,
+            Description = ((ProductGroupModel)productGroupModel).Description,
+            ProductIds = ((ProductGroupModel)productGroupModel).ProductIds,
+            PhotoIds = ((ProductGroupModel)productGroupModel).PhotoIds,
+        };
         var updateProductGroupCommand = new UpdateProductGroupCommand(updateProductGroupDTO);
         var response = await Mediator.Send(updateProductGroupCommand);
         await FetchData();
@@ -278,6 +384,7 @@
     public async Task<bool> FetchData()
     {
         ProductGroupModels.Clear();
+        _allPhotoBase64String.Clear();
         foreach (var productGroupId in ProductGroupIds)
         {
             var getProductGroupByIdQuery = new GetProductGroupByIdQuery(productGroupId);
@@ -289,10 +396,19 @@
                     Id = productGroupDTO.Id,
                     Name = productGroupDTO.Name,
                     ProductIds = productGroupDTO.ProductIds,
+                    PhotoIds = productGroupDTO.PhotoIds,
                 };
+
+            foreach (var photoId in productGroupDTO.PhotoIds)
+            {
+                var photoBase64String = await PhotoUtilities.GetPhotoBase64String(Mediator, photoId);
+                _allPhotoBase64String.Add(photoId, photoBase64String);
+            }
+
+            _allPhotoCarousels[productGroupModel.Id] = new MudCarousel<Guid>();
             ProductGroupModels.Add(productGroupModel);
         }
-        
+
         var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
         foreach (var productId in productIds)
@@ -301,20 +417,20 @@
             var productDTO = await Mediator.Send(getProductByIdQuery);
 
             var productModel = new ProductModel()
-            {
-                Id = productDTO.Id,
-                Name = productDTO.Name,
-                Description = productDTO.Description,
-                Height = productDTO.Height,
-                Length = productDTO.Length,
-                Price = productDTO.Price,
-                ProductGroupIds = productDTO.ProductGroupIds,
-                ShopIds = productDTO.ShopIds,
-                Sku = productDTO.Sku,
-                Tag = productDTO.Tag,
-                Weight = productDTO.Weight,
-                Width = productDTO.Width,
-            };
+                {
+                    Id = productDTO.Id,
+                    Name = productDTO.Name,
+                    Description = productDTO.Description,
+                    Height = productDTO.Height,
+                    Length = productDTO.Length,
+                    Price = productDTO.Price,
+                    ProductGroupIds = productDTO.ProductGroupIds,
+                    ShopIds = productDTO.ShopIds,
+                    Sku = productDTO.Sku,
+                    Tag = productDTO.Tag,
+                    Weight = productDTO.Weight,
+                    Width = productDTO.Width,
+                };
             _allProductModels.Add(productModel);
         }
         return true;
@@ -331,6 +447,36 @@
                 var success = await pageComponent.FetchData();
             }
         }
+    }
+
+    private async Task AddPhotoAsync(Guid productGroupModelId, InputFileChangeEventArgs inputFileChangeEventArgs)
+    {
+        var imageFile = inputFileChangeEventArgs.File;
+        var imageString = await PhotoUtilities.ConvertToBase64String(imageFile);
+
+        // this is a temporary new id, when its really uploaded, this id will be removed and replaced with a new id
+        var newId = Guid.NewGuid();
+        _allPhotoBase64String.Add(newId, imageString);
+        _addedPhotoIds.Add(newId);
+        var productGroupModel = ProductGroupModels.First(productGroupModel => productGroupModel.Id == productGroupModelId);
+        productGroupModel.PhotoIds.Add(newId);
+        _allPhotoCarousels[productGroupModelId].MoveTo(productGroupModel.PhotoIds.Count - 1);
+
+        // need to add this to update the UI
+        await Task.Delay(10);
+    }
+
+    private async Task DeleteAsync(Guid productGroupModelId, int index)
+    {
+        var productGroupModel = ProductGroupModels.First(productGroupModel => productGroupModel.Id == productGroupModelId);
+        var photoId = productGroupModel.PhotoIds[index];
+        productGroupModel.PhotoIds.RemoveAt(index);
+        _addedPhotoIds.Remove(photoId);
+        _allPhotoCarousels[productGroupModelId].MoveTo(
+            Math.Max(Math.Min(index, productGroupModel.PhotoIds.Count - 1), 0));
+
+        // need to add this to update the UI
+        await Task.Delay(10);
     }
 
     public async ValueTask DisposeAsync()

@@ -1,6 +1,6 @@
 ﻿using Application.Interface;
 
-namespace Infrastructure.FileStorage
+namespace Infrastructure.Extensions
 {
     public class LocalFileStorage : IFileStorage
     {
@@ -19,7 +19,7 @@ namespace Infrastructure.FileStorage
         {
             var filePath = Path.Combine(_basePath, fileName);
             // Use File.Create for better performance with large files
-            await using (var file = File.Create(filePath)) 
+            await using (var file = File.Create(filePath))
             {
                 await fileStream.CopyToAsync(file);
             }
@@ -34,7 +34,7 @@ namespace Infrastructure.FileStorage
                 return null;
             }
 
-            return File.OpenRead(filePath); // Return a FileStream for efficient reading
+            return new MemoryStream(await File.ReadAllBytesAsync(filePath));
         }
 
         public async Task<bool> IsFileExist(string fileName)  // Or string filePath if you store full path

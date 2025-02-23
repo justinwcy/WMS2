@@ -1,6 +1,9 @@
-﻿namespace Application.DTO.Request
+﻿using Application.DTO.BaseDTO;
+
+namespace Application.DTO.Request
 {
-    public class CreateFileStorageRequestDTO
+    public class CreateFileStorageRequestDTO : FileStorageBaseDTO
     {
+        public string FileName { get; set; }
     }
 }

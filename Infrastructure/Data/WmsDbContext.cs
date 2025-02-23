@@ -35,6 +35,7 @@ namespace Infrastructure.Data
         public DbSet<RefundOrderProduct> RefundOrderProducts { get; set; }
         public DbSet<ProductShop> ProductShops { get; set; }
         public DbSet<Shop> Shops { get; set; }
+        public DbSet<FileStorage> FileStorages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -203,6 +204,13 @@ namespace Infrastructure.Data
                 .WithOne(zone => zone.Warehouse)
                 .HasForeignKey(zone => zone.WarehouseId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder
+                .Entity<ProductGroup>()
+                .HasMany(productGroup => productGroup.Photos)
+                .WithOne(photo => photo.ProductGroup)
+                .HasForeignKey(photo => photo.ProductGroupId)
+                .OnDelete(DeleteBehavior.Cascade);
             #endregion
 
             #region OneToOneRelationships
@@ -213,8 +221,6 @@ namespace Infrastructure.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             #endregion
-
-
         }
     }
     

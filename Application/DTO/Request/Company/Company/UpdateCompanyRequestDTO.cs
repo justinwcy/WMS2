@@ -2,7 +2,7 @@
 
 namespace Application.DTO.Request
 {
-    public class UpdateCompanyRequestDTO : FileStorageBaseDTO
+    public class UpdateCompanyRequestDTO : CompanyBaseDTO
     {
         public Guid Id { get; set; }
     }

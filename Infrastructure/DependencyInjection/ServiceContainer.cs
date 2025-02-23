@@ -3,8 +3,8 @@ using Application.Interface;
 using Application.Interface.Identity;
 
 using Infrastructure.Data;
+using Infrastructure.Extensions;
 using Infrastructure.Extensions.Identity;
-using Infrastructure.FileStorage;
 using Infrastructure.Repository;
 
 using Microsoft.AspNetCore.Identity;

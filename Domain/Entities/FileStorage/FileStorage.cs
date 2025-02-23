@@ -2,8 +2,12 @@
 {
     public class FileStorage : EntityBase
     {
-        public string Link { get; set; }
+        public string FileLink { get; set; }
 
-        public string Type { get; set; }
+        public string StorageType { get; set; }
+
+        public Guid? ProductGroupId { get; set; }
+
+        public ProductGroup? ProductGroup { get; set; }
     }
 }

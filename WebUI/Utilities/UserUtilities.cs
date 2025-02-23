@@ -1,5 +1,4 @@
-﻿using Application.DTO.Response;
-using Application.Service.Queries;
+﻿using Application.Service.Queries;
 using MediatR;
 
 using Microsoft.AspNetCore.Components.Authorization;

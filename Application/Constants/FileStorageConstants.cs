@@ -7,7 +7,7 @@
     }
 
     // add other file storages here in the future when deploying to production
-    public class FileStorageType
+    public class StorageType
     {
         public const string LocalFileStorage = "LocalFileStorage";
     }

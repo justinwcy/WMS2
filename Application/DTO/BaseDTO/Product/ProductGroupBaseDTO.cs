@@ -9,5 +9,7 @@ namespace Application.DTO.BaseDTO
         public string Description { get; set; }
 
         public List<Guid>? ProductIds { get; set; }
+
+        public List<Guid>? PhotoIds { get; set; }
     }
 }

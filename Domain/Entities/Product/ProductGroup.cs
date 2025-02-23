@@ -11,5 +11,7 @@ namespace Domain.Entities
         // many to many relationship
         [JsonIgnore]
         public List<Product>? Products { get; set; } = [];
+
+        public List<FileStorage>? Photos { get; set; } = [];
     }
 }

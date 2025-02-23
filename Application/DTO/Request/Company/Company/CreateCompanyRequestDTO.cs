@@ -2,7 +2,7 @@
 
 namespace Application.DTO.Request
 {
-    public class CreateCompanyRequestDTO : FileStorageBaseDTO
+    public class CreateCompanyRequestDTO : CompanyBaseDTO
     {
     }
 }
