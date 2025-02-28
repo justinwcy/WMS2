@@ -1,7 +1,4 @@
 ﻿@using Application.DTO.Request.Identity
-@using Application.Service.Commands
-@using WebUI.Components.Pages
-@using WebUI.Components.Pages.Identity.Authentication
 @using WebUI.Components.Pages.UserProfile
 @using WebUI.Middlewares
 
@@ -35,9 +32,21 @@
              ActivationEvent="@MouseEvent.MouseOver"
              AnchorOrigin="Origin.BottomRight"
              TransformOrigin="Origin.TopRight"
-             AriaLabel="Open user menu">
-        <MudMenuItem Icon="@Icons.Material.Filled.PersonOutline" @onclick=GoToProfile>Profile</MudMenuItem>
-        <MudMenuItem Icon="@Icons.Material.Filled.Logout" OnClick="LogoutUser">Logout</MudMenuItem>
+             AriaLabel="Open user menu"
+             Dense="false">
+        <MudMenuItem @onclick=GoToProfile Class="pa-3">
+            <MudStack Row=true >
+                <MudIcon Icon="@Icons.Material.Filled.PersonOutline"/>
+                <MudText>Profile</MudText>
+            </MudStack>
+        </MudMenuItem>
+        <MudMenuItem OnClick="LogoutUser" Class="pa-3">
+            <MudStack Row=true>
+                <MudIcon Icon="@Icons.Material.Filled.Logout"/>
+                <MudText style="display: inline;">Logout</MudText>
+            </MudStack>
+        </MudMenuItem>
+
     </MudMenu>
 
 </MudAppBar>
