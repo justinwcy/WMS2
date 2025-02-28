@@ -16,8 +16,6 @@
 
         public List<Guid>? RefundOrderIds { get; set; } = [];
 
-        public Guid? InventoryId { get; set; }
-
         public string Name { get; set; }
 
         public string Description { get; set; }

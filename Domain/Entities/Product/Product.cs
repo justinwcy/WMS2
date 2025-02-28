@@ -40,10 +40,6 @@ namespace Domain.Entities
         [JsonIgnore]
         public List<Rack>? Racks { get; set; } = [];
 
-        // one to one relationship
-        [JsonIgnore]
-        public Inventory? CurrentInventory { get; set; }
-
         // one to many relationship
         [JsonIgnore]
         public List<CustomerOrderDetail>? CustomerOrderDetails { get; set; } = [];

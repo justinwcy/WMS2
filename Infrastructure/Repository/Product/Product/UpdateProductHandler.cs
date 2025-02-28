@@ -17,7 +17,6 @@ namespace Infrastructure.Repository
             {
                 await using var wmsDbContext = contextFactory.CreateDbContext();
                 var productFound = await wmsDbContext.Products
-                    .Include(product=>product.CurrentInventory)
                     .Include(product=>product.CustomerOrderDetails)
                     .Include(product=>product.IncomingOrders)
                     .Include(product=>product.ProductGroups)
@@ -40,11 +39,6 @@ namespace Infrastructure.Repository
                 productFound.Tag = request.Model.Tag;
                 productFound.Width = request.Model.Width;
                 productFound.Weight = request.Model.Weight;
-
-                var inventoryFound = await wmsDbContext.Inventories.FirstOrDefaultAsync(
-                    inventory => inventory.Id == request.Model.InventoryId,
-                    cancellationToken);
-                productFound.CurrentInventory = inventoryFound;
                 
                 var customerOrderDetailsToAdd = await wmsDbContext.CustomerOrderDetails
                     .Where(customerOrderDetail => request.Model.CustomerOrderDetailIds.Contains(customerOrderDetail.Id))

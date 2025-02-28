@@ -23,8 +23,13 @@ namespace Infrastructure.DependencyInjection
                 $@"..\{FileStorageConstants.MainFolder}");
             services.AddSingleton<IFileStorage>(new LocalFileStorage(localStoragePath));
 
+
+            var connectionString = config.GetConnectionString("Default");
+
+            var serverVersion = new MariaDbServerVersion(new Version(10, 4, 32));
+
             services.AddDbContextFactory<WmsDbContext>(
-                option => option.UseSqlServer(config.GetConnectionString("Default")),
+                option => option.UseMySql(connectionString, serverVersion),
                 ServiceLifetime.Transient);
             
             services.AddAuthentication(options =>

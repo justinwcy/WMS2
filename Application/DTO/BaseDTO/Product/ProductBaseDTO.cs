@@ -25,7 +25,6 @@
         public List<Guid>? ShopIds { get; set; }
         public List<Guid>? IncomingOrderIds { get; set; }
         public List<Guid>? RefundOrderIds { get; set; }
-        public Guid? InventoryId { get; set; }
         public List<Guid>? RackIds { get; set; }
         public List<Guid>? CustomerOrderDetailIds { get; set; }
         

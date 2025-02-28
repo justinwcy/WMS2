@@ -297,7 +297,6 @@ EditTrigger="TableEditTrigger.RowClick">
             RackIds = ((ProductModel)productModel).RackIds,
             IncomingOrderIds = ((ProductModel)productModel).IncomingOrderIds,
             CustomerOrderDetailIds = ((ProductModel)productModel).CustomerOrderDetailIds,
-            InventoryId = ((ProductModel)productModel).InventoryId,
             RefundOrderIds = ((ProductModel)productModel).RefundOrderIds,
             ShopIds = ((ProductModel)productModel).ShopIds,
         };
@@ -320,7 +319,6 @@ EditTrigger="TableEditTrigger.RowClick">
         ((ProductModel)productModel).RackIds = _productModelBeforeEdit.RackIds;
         ((ProductModel)productModel).IncomingOrderIds = _productModelBeforeEdit.IncomingOrderIds;
         ((ProductModel)productModel).CustomerOrderDetailIds = _productModelBeforeEdit.CustomerOrderDetailIds;
-        ((ProductModel)productModel).InventoryId = _productModelBeforeEdit.InventoryId;
         ((ProductModel)productModel).RefundOrderIds = _productModelBeforeEdit.RefundOrderIds;
         ((ProductModel)productModel).ShopIds = _productModelBeforeEdit.ShopIds;
 
@@ -346,7 +344,6 @@ EditTrigger="TableEditTrigger.RowClick">
                 RackIds = productModelConverted.RackIds,
                 IncomingOrderIds = productModelConverted.IncomingOrderIds,
                 CustomerOrderDetailIds = productModelConverted.CustomerOrderDetailIds,
-                InventoryId = productModelConverted.InventoryId,
                 ProductGroupIds = productModelConverted.ProductGroupIds,
                 RefundOrderIds = productModelConverted.RefundOrderIds,
                 ShopIds = productModelConverted.ShopIds,
@@ -409,7 +406,6 @@ EditTrigger="TableEditTrigger.RowClick">
                     RackIds = productDTO.RackIds,
                     CustomerOrderDetailIds = productDTO.CustomerOrderDetailIds,
                     IncomingOrderIds = productDTO.IncomingOrderIds,
-                    InventoryId = productDTO.InventoryId,
                     RefundOrderIds = productDTO.RefundOrderIds,
                 };
 

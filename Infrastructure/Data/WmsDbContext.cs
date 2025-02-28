@@ -67,12 +67,12 @@ namespace Infrastructure.Data
                         r.HasOne<Rack>(inventory=> inventory.Rack)
                             .WithMany()
                             .HasForeignKey(inventory => inventory.RackId)
-                            .OnDelete(DeleteBehavior.Cascade),
+                            .OnDelete(DeleteBehavior.NoAction),
                     l =>
                         l.HasOne<Product>(inventory => inventory.Product)
                             .WithMany()
                             .HasForeignKey(inventory => inventory.ProductId)
-                            .OnDelete(DeleteBehavior.Cascade)
+                            .OnDelete(DeleteBehavior.NoAction)
                 );
 
             modelBuilder
