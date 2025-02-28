@@ -58,33 +58,79 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     <ColGroup>
         <col />
         <col />
+        <col style="min-width:500px;" />
         @for (var i = 0; i < 5; i++)
         {
             <col style="min-width:200px;" />
         }
     </ColGroup>
     <HeaderContent>
+        <MudTh>Photos</MudTh>
         <MudTh>Product Name</MudTh>
         <MudTh>Product SKU</MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<InventoryModel, object>(x=>x.Quantity)">Quantity</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<InventoryModel, object>(x => x.Quantity)">Quantity</MudTableSortLabel></MudTh>
         <MudTh>Product Location</MudTh>
     </HeaderContent>
     <RowTemplate>
+        <MudTd DataLabel="Photos">
+            <MudCarousel @ref="_allPhotoCarousels[context.Id]"
+                         ItemsSource="@_allProductModels.First(productModel=>productModel.Id == context.ProductId).PhotoIds"
+                         Style="height:200px;"
+                         ShowArrows="true"
+                         ShowBullets="true"
+                         EnableSwipeGesture="true"
+                         AutoCycle="false">
+                <ItemTemplate Context="photoId">
+                    <div class="d-flex flex-column flex-column justify-center">
+                        <MudImage ObjectFit="ObjectFit.ScaleDown"
+                                  Elevation="25"
+                                  Height="150"
+                                  Class="rounded-lg"
+                                  Src=@($"data:image/jpeg;base64,{_allPhotoBase64String[photoId]}") />
+                    </div>
+                </ItemTemplate>
+            </MudCarousel>
+        </MudTd>
         <MudTd DataLabel="Product Name">@(_allProductModels.FirstOrDefault(productModel => productModel.Id == context.ProductId)?.Name)</MudTd>
         <MudTd DataLabel="Product SKU">@(_allProductModels.FirstOrDefault(productModel => productModel.Id == context.ProductId)?.Sku)</MudTd>
         <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
         <MudTd DataLabel="Product Location">
             @_allRackModels.FirstOrDefault(rackModel => rackModel.Id == context.RackId)?.Name
         </MudTd>
-     </RowTemplate>
+    </RowTemplate>
 
     <RowEditingTemplate>
+        
+        <MudTd DataLabel="Photos">
+            <MudGrid Spacing="5" Justify="Justify.Center">
+                <MudItem xs="8">
+                    <MudCarousel @ref="_allPhotoCarousels[context.Id]"
+                                 ItemsSource="@_allProductModels.First(productModel=>productModel.Id == context.ProductId).PhotoIds"
+                                 Style="height:200px;"
+                                 ShowArrows="true"
+                                 ShowBullets="true"
+                                 EnableSwipeGesture="true"
+                                 AutoCycle="false">
+                        <ItemTemplate Context="photoId">
+                            <div class="d-flex flex-column flex-column justify-center">
+                                <MudImage ObjectFit="ObjectFit.ScaleDown"
+                                          Elevation="25"
+                                          Height="150"
+                                          Class="rounded-lg"
+                                          Src=@($"data:image/jpeg;base64,{_allPhotoBase64String[photoId]}") />
+                            </div>
+                        </ItemTemplate>
+                    </MudCarousel>
+                </MudItem>
+            </MudGrid>
+        </MudTd>
+
         <MudTd DataLabel="Product Name">
             <MudSelect @bind-Value="context.ProductId"
                        T="Guid?"
-                       ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
+                       ToStringFunc="@(id => _allProductModels.FirstOrDefault(productModel => productModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
-                       Label="Status"
+                       Label="Product Name"
                        Margin="Margin.Normal"
                        Dense="false"
                        Disabled="false"
@@ -106,9 +152,9 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         <MudTd DataLabel="Product SKU">
             <MudSelect @bind-Value="context.ProductId"
                        T="Guid?"
-                       ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Sku)"
+                       ToStringFunc="@(id => _allProductModels.FirstOrDefault(productModel => productModel.Id == id)?.Sku)"
                        Variant="@_defaultVariant"
-                       Label="Status"
+                       Label="Product Sku"
                        Margin="Margin.Normal"
                        Dense="false"
                        Disabled="false"
@@ -128,13 +174,13 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         </MudTd>
 
         <MudTd DataLabel="Quantity">
-            <MudTextField @bind-Value="context.Quantity" T="int" Required />
+            <MudTextField @bind-Value="context.Quantity" T="int" Required/>
         </MudTd>
-        
+
         <MudTd DataLabel="Product Location">
             <MudSelect @bind-Value="context.RackId"
                        T="Guid?"
-                       ToStringFunc="@(id=> _allRackModels.FirstOrDefault(rackModel=>rackModel.Id == id)?.Name)"
+                       ToStringFunc="@(id => _allRackModels.FirstOrDefault(rackModel => rackModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Rack"
                        Margin="Margin.Normal"
@@ -200,6 +246,15 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     private List<ProductModel> _allProductModels { get; set; } = [];
     private List<RackModel> _allRackModels { get; set; } = [];
     private readonly Variant _defaultVariant = Theme.DefaultInputVariant();
+
+    private List<ProductGroupModel> _allProductGroupModels = [];
+    private readonly Dictionary<Guid, MudCarousel<Guid>> _allPhotoCarousels = new();
+
+    // can contain a mix of photo ids that are in and not in the server when its in editing mode, otherwise all ids are in server
+    private readonly Dictionary<Guid, string> _allPhotoBase64String = new();
+
+    // this is to store the photo ids that are added but not uploaded yet to the server
+    private List<Guid> _addedPhotoIds = new();
 
     protected override async Task OnParametersSetAsync()
     {
@@ -327,14 +382,41 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
             var inventoryDTO = await Mediator.Send(getInventoryByIdQuery);
 
             var inventoryModel = new InventoryModel()
-                {
-                    Id = inventoryDTO.Id,
-                    Quantity = inventoryDTO.Quantity,
-                    ProductId = inventoryDTO.ProductId,
-                    RackId = inventoryDTO.RackId,
-                };
-
+            {
+                Id = inventoryDTO.Id,
+                Quantity = inventoryDTO.Quantity,
+                ProductId = inventoryDTO.ProductId,
+                RackId = inventoryDTO.RackId,
+            };
+            _allPhotoCarousels[inventoryModel.Id] = new MudCarousel<Guid>();
             InventoryModels.Add(inventoryModel);
+        }
+
+        _allProductGroupModels.Clear();
+        _allPhotoBase64String.Clear();
+        var getAllProductGroupIdsByCompanyIdQuery = new GetAllProductGroupIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var productGroupIds = await Mediator.Send(getAllProductGroupIdsByCompanyIdQuery);
+        foreach (var productGroupId in productGroupIds)
+        {
+            var getProductGroupByIdQuery = new GetProductGroupByIdQuery(productGroupId);
+            var productGroupDTO = await Mediator.Send(getProductGroupByIdQuery);
+
+            var productGroupModel = new ProductGroupModel()
+            {
+                Description = productGroupDTO.Description,
+                Id = productGroupDTO.Id,
+                Name = productGroupDTO.Name,
+                ProductIds = productGroupDTO.ProductIds,
+                PhotoIds = productGroupDTO.PhotoIds,
+            };
+
+            foreach (var photoId in productGroupDTO.PhotoIds)
+            {
+                var photoBase64String = await PhotoUtilities.GetPhotoBase64String(Mediator, photoId);
+                _allPhotoBase64String.Add(photoId, photoBase64String);
+            }
+
+            _allProductGroupModels.Add(productGroupModel);
         }
 
         // to get all products
@@ -360,7 +442,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
                     Tag = productDTO.Tag,
                     Weight = productDTO.Weight,
                     Width = productDTO.Width,
+                    PhotoIds = new List<Guid>(),
                 };
+
+            foreach (var productGroupId in productModel.ProductGroupIds)
+            {
+                var productGroupModel = _allProductGroupModels.First(model => model.Id == productGroupId);
+                productModel.PhotoIds = productModel.PhotoIds.Concat(productGroupModel.PhotoIds).ToList();
+            }
             _allProductModels.Add(productModel);
         }
 
