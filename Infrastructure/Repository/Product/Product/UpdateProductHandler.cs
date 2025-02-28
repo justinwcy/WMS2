@@ -44,10 +44,6 @@ namespace Infrastructure.Repository
                 var inventoryFound = await wmsDbContext.Inventories.FirstOrDefaultAsync(
                     inventory => inventory.Id == request.Model.InventoryId,
                     cancellationToken);
-                if (inventoryFound == null)
-                {
-                    return GeneralDbResponses.ItemNotFound("Inventory");
-                }
                 productFound.CurrentInventory = inventoryFound;
                 
                 var customerOrderDetailsToAdd = await wmsDbContext.CustomerOrderDetails

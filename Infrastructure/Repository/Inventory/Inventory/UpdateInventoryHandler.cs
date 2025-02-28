@@ -25,7 +25,6 @@ namespace Infrastructure.Repository
                 }
 
                 inventoryFound.Quantity = request.Model.Quantity;
-                inventoryFound.DaysLeadTime = request.Model.DaysLeadTime;
 
                 var productFound = await wmsDbContext.Products.FirstOrDefaultAsync(
                     product => product.Id == request.Model.ProductId, cancellationToken);
@@ -36,6 +35,16 @@ namespace Infrastructure.Repository
 
                 inventoryFound.Product = productFound;
                 inventoryFound.ProductId = request.Model.ProductId;
+
+                var rackFound = await wmsDbContext.Racks.FirstOrDefaultAsync(
+                    rack => rack.Id == request.Model.RackId, cancellationToken);
+                if (rackFound == null)
+                {
+                    return GeneralDbResponses.ItemNotFound("Rack");
+                }
+
+                inventoryFound.Rack = rackFound;
+                inventoryFound.RackId = request.Model.RackId;
 
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
                 return GeneralDbResponses.ItemUpdated("Inventory");

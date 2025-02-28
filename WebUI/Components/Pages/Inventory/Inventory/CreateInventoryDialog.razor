@@ -26,18 +26,33 @@
                 }
             </MudSelect>
 
+            <MudSelect @bind-Value="_inventoryModel.RackId"
+                       T="Guid?"
+                       ToStringFunc="@(id=> _allRackModels.FirstOrDefault(rackModel=>rackModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Rack"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Rack")
+                       MultiSelection="false"
+                       HelperText=@("Please select a rack")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="true"
+                       RequiredError="Please select a rack">
+                @foreach (var rackModel in _allRackModels)
+                {
+                    <MudSelectItem T="Guid?" Value="@rackModel.Id" />
+                }
+            </MudSelect>
+
             <MudTextField @bind-value="_inventoryModel.Quantity"
                           Variant="@_defaultVariant"
                           T="int"
                           Label="Quantity"
                           Required="true" RequiredError="Quantity is required!"
-                          Margin="Margin.Dense" />
-
-            <MudTextField @bind-value="_inventoryModel.DaysLeadTime"
-                          Variant="@_defaultVariant"
-                          T="int"
-                          Label="Lead Time (Days)"
-                          Required="true" RequiredError="Lead time is required!"
                           Margin="Margin.Dense" />
 
         </MudForm>
@@ -60,9 +75,11 @@
     public required CurrentUserModel CurrentStaff { get; set; }
 
     private List<ProductModel> _allProductModels { get; set; } = [];
+    private List<RackModel> _allRackModels { get; set; } = [];
 
     protected override async Task OnParametersSetAsync()
     {
+        _allProductModels.Clear();
         var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
 
@@ -88,6 +105,30 @@
                 };
             _allProductModels.Add(productModel);
         }
+
+        _allRackModels.Clear();
+        var getAllRackIdsByCompanyIdQuery = new GetAllRackIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var rackIds = await Mediator.Send(getAllRackIdsByCompanyIdQuery);
+
+        foreach (var rackId in rackIds)
+        {
+            var getRackByIdQuery = new GetRackByIdQuery(rackId);
+            var rackDTO = await Mediator.Send(getRackByIdQuery);
+
+            var rackModel = new RackModel()
+                {
+                    Id = rackDTO.Id,
+                    Name = rackDTO.Name,
+                    Height = rackDTO.Height,
+                    Width = rackDTO.Width,
+                    Depth = rackDTO.Depth,
+                    MaxWeight = rackDTO.MaxWeight,
+                    ProductIds = rackDTO.ProductIds,
+                    ZoneId = rackDTO.ZoneId,
+
+                };
+            _allRackModels.Add(rackModel);
+        }
     }
 
     private async Task Submit()
@@ -97,7 +138,7 @@
                 CreatedBy = CurrentStaff.Id,
                 Quantity = _inventoryModel.Quantity,
                 ProductId = _inventoryModel.ProductId,
-                DaysLeadTime = _inventoryModel.DaysLeadTime,
+                RackId = _inventoryModel.RackId,
 
 
             };
@@ -109,7 +150,7 @@
                 Id = createdInventoryResponseDTO.Id,
                 Quantity = _inventoryModel.Quantity,
                 ProductId = _inventoryModel.ProductId,
-                DaysLeadTime = _inventoryModel.DaysLeadTime,
+                RackId = _inventoryModel.RackId,
             };
         MudDialog.Close(DialogResult.Ok(createdInventoryModel));
     }

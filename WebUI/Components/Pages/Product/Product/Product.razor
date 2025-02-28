@@ -416,6 +416,7 @@ EditTrigger="TableEditTrigger.RowClick">
             ProductModels.Add(productModel);
         }
 
+        _allShopModels.Clear();
         var getAllShopIdsByCompanyIdQuery = new GetAllShopIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         var allShopIds = await Mediator.Send(getAllShopIdsByCompanyIdQuery);
         foreach (var shopId in allShopIds)
@@ -434,6 +435,7 @@ EditTrigger="TableEditTrigger.RowClick">
             _allShopModels.Add(shopModel);
         }
 
+        _allProductGroupModels.Clear();
         var getAllProductGroupIdsByCompanyIdQuery = new GetAllProductGroupIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         var allProductGroupIds = await Mediator.Send(getAllProductGroupIdsByCompanyIdQuery);
         foreach (var productGroupId in allProductGroupIds)

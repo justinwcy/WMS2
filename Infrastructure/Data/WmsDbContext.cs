@@ -18,7 +18,6 @@ namespace Infrastructure.Data
         public DbSet<IncomingOrderProduct> IncomingOrderProducts { get; set; }
         public DbSet<Vendor> Vendors { get; set; }
         public DbSet<Inventory> Inventories { get; set; }
-        public DbSet<ProductRack> ProductRacks { get; set; }
         public DbSet<Rack> Racks { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }
         public DbSet<Zone> Zones { get; set; }
@@ -63,16 +62,16 @@ namespace Infrastructure.Data
                 .Entity<Product>()
                 .HasMany(product => product.Racks)
                 .WithMany(rack => rack.Products)
-                .UsingEntity<ProductRack>(
+                .UsingEntity<Inventory>(
                     r =>
-                        r.HasOne<Rack>(productRack=>productRack.Rack)
+                        r.HasOne<Rack>(inventory=> inventory.Rack)
                             .WithMany()
-                            .HasForeignKey(productRack => productRack.RackId)
+                            .HasForeignKey(inventory => inventory.RackId)
                             .OnDelete(DeleteBehavior.Cascade),
                     l =>
-                        l.HasOne<Product>(productRack => productRack.Product)
+                        l.HasOne<Product>(inventory => inventory.Product)
                             .WithMany()
-                            .HasForeignKey(productRack => productRack.ProductId)
+                            .HasForeignKey(inventory => inventory.ProductId)
                             .OnDelete(DeleteBehavior.Cascade)
                 );
 
@@ -211,15 +210,6 @@ namespace Infrastructure.Data
                 .WithOne(photo => photo.ProductGroup)
                 .HasForeignKey(photo => photo.ProductGroupId)
                 .OnDelete(DeleteBehavior.Cascade);
-            #endregion
-
-            #region OneToOneRelationships
-            modelBuilder
-                .Entity<Product>()
-                .HasOne(product => product.CurrentInventory)
-                .WithOne(inventory => inventory.Product)
-                .OnDelete(DeleteBehavior.Restrict);
-
             #endregion
         }
     }

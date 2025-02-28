@@ -41,14 +41,6 @@ namespace Infrastructure.Repository
                     wmsDbContext.ProductGroupProducts.Remove(foundProductGroupProduct);
                 }
 
-                var foundProductRack = await wmsDbContext.ProductRacks.FirstOrDefaultAsync(
-                    productRack => productRack.ProductId == request.Id,
-                    cancellationToken);
-                if (foundProductRack != null)
-                {
-                    wmsDbContext.ProductRacks.Remove(foundProductRack);
-                }
-
                 wmsDbContext.Products.Remove(foundProduct);
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
                 return GeneralDbResponses.ItemDeleted("Product");
