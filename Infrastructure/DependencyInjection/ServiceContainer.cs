@@ -37,7 +37,7 @@ namespace Infrastructure.DependencyInjection
                 options.DefaultScheme = IdentityConstants.ApplicationScheme;
                 options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
             }).AddIdentityCookies();
-
+            
             services.AddIdentityCore<WmsStaff>(options=>options.SignIn.RequireConfirmedEmail = false)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<WmsDbContext>()
