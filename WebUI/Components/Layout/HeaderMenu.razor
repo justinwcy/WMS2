@@ -1,6 +1,4 @@
-﻿@using Application.DTO.Request.Identity
-@using WebUI.Components.Pages.UserProfile
-@using WebUI.Middlewares
+﻿@using WebUI.Components.Pages.UserProfile
 
 <MudAppBar Elevation="1">
     <MudTooltip Arrow="true" Text="Toggle menu">
@@ -33,19 +31,23 @@
              AnchorOrigin="Origin.BottomRight"
              TransformOrigin="Origin.TopRight"
              AriaLabel="Open user menu"
-             Dense="false">
+             Dense="true">
         <MudMenuItem @onclick=GoToProfile Class="pa-3">
             <MudStack Row=true >
                 <MudIcon Icon="@Icons.Material.Filled.PersonOutline"/>
                 <MudText>Profile</MudText>
             </MudStack>
         </MudMenuItem>
-        <MudMenuItem OnClick="LogoutUser" Class="pa-3">
-            <MudStack Row=true>
-                <MudIcon Icon="@Icons.Material.Filled.Logout"/>
-                <MudText style="display: inline;">Logout</MudText>
-            </MudStack>
-        </MudMenuItem>
+
+        <form action="Account/Logout" method="post">
+            <AntiforgeryToken />
+            <button type="submit" class="mud-nav-link mud-ripple pa-3">
+                <MudStack Row=true>
+                    <MudIcon Icon="@Icons.Material.Filled.Logout"/>
+                    <MudText style="display: inline;">Logout</MudText>
+                </MudStack>
+            </button>
+        </form>
 
     </MudMenu>
 
@@ -64,14 +66,6 @@
     
     [Parameter] 
     public EventCallback ToggleNavigationMenuDrawer { get; set; }
-
-    private async Task LogoutUser()
-    {
-        var key = Guid.NewGuid();
-        var logoutRequestDTO = new LogoutStaffRequestDTO();
-        BlazorCookieLogoutMiddleware.LogoutDetails[key] = logoutRequestDTO;
-        NavigationManager.NavigateTo($"/logout?key={key}", true);
-    }
 
     private void GoToProfile()
     {

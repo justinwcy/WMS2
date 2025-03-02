@@ -5,7 +5,9 @@ using Application.DependencyInjection;
 using Application.Interface.Identity;
 using Application.Service.Commands;
 using Application.Service.Queries;
+
 using Infrastructure.DependencyInjection;
+using Infrastructure.Extensions.Identity;
 
 using MediatR;
 
@@ -15,7 +17,6 @@ using MudBlazor;
 using MudBlazor.Services;
 
 using WebUI.Components;
-using WebUI.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddInfrastructureService(builder.Configuration);
@@ -53,8 +54,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseMiddleware<BlazorCookieLoginMiddleware>();
-app.UseMiddleware<BlazorCookieLogoutMiddleware>();
+app.MapAdditionalIdentityEndpoints();
 app.UseStaticFiles();
 app.UseAntiforgery();
 

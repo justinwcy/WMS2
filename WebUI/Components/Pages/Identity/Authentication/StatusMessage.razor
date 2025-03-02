@@ -1,16 +1,31 @@
-﻿@if (!string.IsNullOrEmpty(Message))
+﻿@if (!string.IsNullOrEmpty(DisplayMessage))
 {
-    var statusMessageClass = Error ? "error" : "success";
-    <div class="mud-alert mud-alert-text-@statusMessageClass mud-elevation-0" role="alert">
-        <div class="mud-alert-position justify-sm-start">
-            <div class="mud-alert-message">
-                @Message
-            </div>
-        </div>
-    </div>
+    var severity = DisplayMessage.StartsWith("Error") ? Severity.Error : Severity.Success;
+
+    <MudAlert Variant="Variant.Outlined" Severity="@severity">@DisplayMessage</MudAlert>
 }
 
 @code {
-    [Parameter] public string? Message { get; set; }
-    [Parameter] public bool Error { get; set; }
+
+    private string? _messageFromCookie;
+
+    private const string StatusCookieName = "Identity.StatusMessage";
+
+    [Parameter]
+    public string? Message { get; set; }
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = null!;
+
+    private string? DisplayMessage => Message ?? _messageFromCookie;
+
+    protected override void OnInitialized()
+    {
+        _messageFromCookie = HttpContext.Request.Cookies[StatusCookieName];
+
+        if (_messageFromCookie is not null)
+        {
+            HttpContext.Response.Cookies.Delete(StatusCookieName);
+        }
+    }
 }

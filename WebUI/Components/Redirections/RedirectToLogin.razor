@@ -3,7 +3,7 @@
     {
         var uri = new Uri(NavigationManager.Uri);
         var returnUrl = uri.PathAndQuery.TrimStart('/');
-        NavigationManager.NavigateTo($"/pages/authentication/login?returnUrl={returnUrl}", true);
+        NavigationManager.NavigateTo($"/Account/login?returnUrl={returnUrl}", true);
 
         await base.OnAfterRenderAsync(firstRender);
     }

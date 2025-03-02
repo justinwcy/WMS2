@@ -6,7 +6,7 @@ using Infrastructure.Data;
 using Infrastructure.Extensions;
 using Infrastructure.Extensions.Identity;
 using Infrastructure.Repository;
-
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -105,8 +105,9 @@ namespace Infrastructure.DependencyInjection
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<AccountService>();
             services.AddMediatR(config => config.RegisterServicesFromAssemblies(typeof(CreateCompanyHandler).Assembly));
-            services.AddScoped<IWmsDbContextFactory<WmsDbContext>, DbContextFactory<WmsDbContext>>();
-            
+            services.AddScoped<IWmsDbContextFactory<WmsDbContext>, DbContextFactory<WmsDbContext>>(); 
+            services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
             return services;
         }
     }

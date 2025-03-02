@@ -1,54 +1,55 @@
-﻿@page "/pages/authentication/login"
-@using System.ComponentModel.DataAnnotations
+﻿@page "/Account/login"
 @using Application.DTO.Request.Identity
-@using Application.Service.Commands
 @using Microsoft.AspNetCore.Authentication
-@using WebUI.Middlewares
-
-@inject ISnackbar Snackbar
 
 <PageTitle>@_title</PageTitle>
 
-<MudForm @bind-IsValid="@_isFormValid">
+<StatusMessage Message="@errorMessage" />
+<EditForm Model="_loginModel" method="post" OnValidSubmit="LoginUser" FormName="login">
+    <DataAnnotationsValidator />
     <MudText Typo="Typo.h4" GutterBottom="true">Sign In</MudText>
-    <MudText Class="mb-3">
-        Don't have an account? <MudLink Href="@Register.PageUrl">Sign Up</MudLink>
-    </MudText>
-    <MudTextField @bind-value="_loginModel.Email"
-                  Variant="@_defaultVariant"
-                  T="string"
-                  Label="Email"
-                  Required="true" RequiredError="Email is required!"
-                  Validation="@(new EmailAddressAttribute() { ErrorMessage = "The email address is invalid" })"/>
 
-    <MudTextField @bind-value="_loginModel.Password"
-                  Variant="@_defaultVariant"
-                  T="string" Label="Password"
-                  InputType="InputType.Password"
-                  Required="true"
-                  RequiredError="Password is required!"/>
+    <MudStack Row="false">
+        <MudStaticTextField For="@(() => _loginModel.Email)"
+                            @bind-Value="_loginModel.Email"
+                            Variant="@_defaultVariant"
+                            Label="Email"
+                            Placeholder="name@email.com"
+                            UserAttributes="@(new() { { "autocomplete", "true" }, { "aria-required", "true" } })"/>
 
-    <MudSwitch @bind-Value="_loginModel.RememberMe" Label="Remember Me" Color="Color.Primary"/>
+        <MudStaticTextField For="@(() => _loginModel.Password)"
+                            @bind-Value="_loginModel.Password"
+                            Label="Password"
+                            InputType="InputType.Password"
+                            Placeholder="Password"
+                            UserAttributes="@(new() { { "autocomplete", "current-password" }, { "aria-required", "true" } })"/>
 
-    <MudButton Variant="Variant.Filled"
-               Color="Color.Primary"
-               Size="Size.Large"
-               Disabled="@(!_isFormValid)"
-               OnClick="@LoginUser"
-               FullWidth="true">
-        <MudText>Sign In</MudText>
-    </MudButton>
-</MudForm>
+        <MudStaticSwitch For="@(() => _loginModel.RememberMe)"
+                         @bind-Value="_loginModel.RememberMe"
+                         Label="Remember me"
+                         Color="Color.Primary"/>
+
+        <MudStaticButton Variant="Variant.Filled"
+                         Color="Color.Primary"
+                         FullWidth="true"
+                         FormAction="FormAction.Submit">Log in</MudStaticButton>
+    </MudStack>
+</EditForm>
 
 @code {
-    public const string PageUrl = "/pages/authentication/login";
 
-    private bool _isFormValid { get; set; } = true;
+    private string? errorMessage;
+
+    public const string PageUrl = "/Account/login";
+
     private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
 
-    [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
+    [CascadingParameter] 
+    private HttpContext HttpContext { get; set; } = default!;
+
     private const string _title = "Sign In";
 
+    [SupplyParameterFromForm]
     private LoginModel _loginModel { get; set; } = new()
     {
         Email = "master@control.com",
@@ -67,39 +68,38 @@
 
     public async Task LoginUser()
     {
-        var checkLoginStaffRequestDTO = new CheckLoginStaffRequestDTO()
+        var loginStaffRequestDTO = new LoginStaffRequestDTO()
         {
             Email = _loginModel.Email,
             Password = _loginModel.Password,
             RememberMe = _loginModel.RememberMe,
         };
-        var checkLoginStaffCommand = new CheckLoginStaffCommand(checkLoginStaffRequestDTO);
-        var result = await Mediator.Send(checkLoginStaffCommand);
+        var loginStaffCommand = new LoginStaffCommand(loginStaffRequestDTO);
+        var response = await Mediator.Send(loginStaffCommand);
 
-        if (result.Success)
+        if (response.Success)
         {
-            var key = Guid.NewGuid();
-            var loginStaffRequestDTO = new LoginStaffRequestDTO()
-            {
-                Email = _loginModel.Email,
-                Password = _loginModel.Password,
-                RememberMe = _loginModel.RememberMe,
-            };
-            BlazorCookieLoginMiddleware.LoginDetails[key] = loginStaffRequestDTO;
-            NavigationManager.NavigateTo($"/login?key={key}", true);
+            HttpContext.Response.Redirect("/");
+            //RedirectManager.RedirectTo("/");
+            //NavigationManager.NavigateTo($"/", true);
         }
         else
         {
-            Snackbar.Add(result.Message);
+            errorMessage = $"Error: {response.Message}";
         }
     }
 
     public sealed class LoginModel
     {
+        [Required]
+        [EmailAddress(ErrorMessage = "The email address is invalid")]
         public string Email { get; set; } = "";
 
+        [Required]
+        [DataType(DataType.Password)]
         public string Password { get; set; } = "";
 
+        [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; } = true;
     }
 
