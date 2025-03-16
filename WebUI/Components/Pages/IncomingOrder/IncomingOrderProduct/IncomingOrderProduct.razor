@@ -177,19 +177,16 @@
     private string searchString = "";
     private MudTable<IncomingOrderProductModel> _tableRef;
     private IncomingOrderProductModel _incomingOrderProductModelBeforeEdit { get; set; }
-
+    
+    private bool _isReadOnly = false;
+    
     protected override async Task OnInitializedAsync()
     {
         _orderStates = typeof(OrderState)
             .GetFields(BindingFlags.Public | BindingFlags.Static)
             .Select(field => field.GetValue(null).ToString())
             .ToList();
-    }
 
-    private bool _isReadOnly = false;
-    
-    protected override async Task OnInitializedAsync()
-    {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
     

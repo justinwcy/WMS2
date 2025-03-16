@@ -179,18 +179,15 @@
     private List<ProductModel> _allProductModels { get; set; } = [];
     private List<string> _orderStates { get; set; }
 
+    private bool _isReadOnly = false;
+    
     protected override async Task OnInitializedAsync()
     {
         _orderStates = typeof(OrderState)
             .GetFields(BindingFlags.Public | BindingFlags.Static)
             .Select(field => field.GetValue(null).ToString())
             .ToList();
-    }
 
-    private bool _isReadOnly = false;
-    
-    protected override async Task OnInitializedAsync()
-    {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
     
