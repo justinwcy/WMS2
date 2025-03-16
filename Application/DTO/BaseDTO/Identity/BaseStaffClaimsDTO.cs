@@ -1,6 +1,4 @@
-﻿using Application.Service.Queries;
-
-namespace Application.DTO.BaseDTO.Identity
+﻿namespace Application.DTO.BaseDTO.Identity
 {
     public class BaseStaffClaimsDTO : BaseDTO
     {

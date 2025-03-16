@@ -1,12 +1,14 @@
-﻿using Application.Constants;
+﻿using System.Reflection;
+using Application.Constants;
 using Application.Interface;
 using Application.Interface.Identity;
-
 using Infrastructure.Data;
 using Infrastructure.Extensions;
 using Infrastructure.Extensions.Identity;
+using Infrastructure.Extensions.Identity.Authorization;
 using Infrastructure.Repository;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -45,66 +47,48 @@ namespace Infrastructure.DependencyInjection
                 .AddSignInManager()
                 .AddDefaultTokenProviders();
 
-            services.AddAuthorizationBuilder()
-                .AddPolicy(StaffPolicy.AdminPolicy, authPolicyBuilder =>
+            // Replace the default authorization policy provider with our own
+            // custom provider which can return authorization policies for given
+            // policy names (instead of using the default policy provider)
+            services.AddSingleton<IAuthorizationPolicyProvider, DataAccessPolicyProvider>();
+
+            // As always, handlers must be provided for the requirements of the authorization policies
+            services.AddSingleton<IAuthorizationHandler, DataAccessAuthorizationHandler>();
+
+            services.AddAuthorization(options =>
+            {
+                var accessNames = typeof(AccessName)
+                    .GetFields(BindingFlags.Public | BindingFlags.Static)
+                    .Select(field => field.GetValue(null).ToString())
+                    .ToList();
+                var dataTableNames = typeof(DataTableName)
+                    .GetFields(BindingFlags.Public | BindingFlags.Static)
+                    .Select(field => field.GetValue(null).ToString())
+                    .ToList();
+
+                foreach (var accessName in accessNames)
                 {
-                    authPolicyBuilder.RequireAuthenticatedUser();
-                    authPolicyBuilder.RequireRole(StaffRole.Admin);
-                })
-                .AddPolicy(StaffPolicy.ManagerPolicy, authPolicyBuilder =>
-                {
-                    authPolicyBuilder.RequireAuthenticatedUser();
-                    authPolicyBuilder.RequireRole(StaffRole.Manager);
-                })
-                .AddPolicy(StaffPolicy.SupervisorPolicy, authPolicyBuilder =>
-                {
-                    authPolicyBuilder.RequireAuthenticatedUser();
-                    authPolicyBuilder.RequireRole(StaffRole.Supervisor);
-                })
-                .AddPolicy(StaffPolicy.StockKeeperPolicy, authPolicyBuilder =>
-                {
-                    authPolicyBuilder.RequireAuthenticatedUser();
-                    authPolicyBuilder.RequireRole(StaffRole.StockKeeper);
-                })
-                .AddPolicy(StaffPolicy.ReceiverPolicy, authPolicyBuilder =>
-                {
-                    authPolicyBuilder.RequireAuthenticatedUser();
-                    authPolicyBuilder.RequireRole(StaffRole.Receiver);
-                })
-                .AddPolicy(StaffPolicy.PurchaserPolicy, authPolicyBuilder =>
-                {
-                    authPolicyBuilder.RequireAuthenticatedUser();
-                    authPolicyBuilder.RequireRole(StaffRole.Purchaser);
-                })
-                .AddPolicy(StaffPolicy.PickerPolicy, authPolicyBuilder =>
-                {
-                    authPolicyBuilder.RequireAuthenticatedUser();
-                    authPolicyBuilder.RequireRole(StaffRole.Picker);
-                })
-                .AddPolicy(StaffPolicy.PackerPolicy, authPolicyBuilder =>
-                {
-                    authPolicyBuilder.RequireAuthenticatedUser();
-                    authPolicyBuilder.RequireRole(StaffRole.Packer);
-                })
-                .AddPolicy(StaffPolicy.VendorPolicy, authPolicyBuilder =>
-                {
-                    authPolicyBuilder.RequireAuthenticatedUser();
-                    authPolicyBuilder.RequireRole(StaffRole.Vendor);
-                })
-                .AddPolicy(StaffPolicy.QcInspectorPolicy, authPolicyBuilder =>
-                {
-                    authPolicyBuilder.RequireAuthenticatedUser();
-                    authPolicyBuilder.RequireRole(StaffRole.QcInspector);
-                })
-                .AddPolicy(StaffPolicy.MasterControlPolicy, authPolicyBuilder =>
-                {
-                    authPolicyBuilder.RequireAuthenticatedUser();
-                    authPolicyBuilder.RequireRole(StaffRole.MasterControl);
-                });
+                    if (accessName == null)
+                    {
+                        continue;
+                    }
+
+                    foreach (var dataTableName in dataTableNames)
+                    {
+                        if (dataTableName == null)
+                        {
+                            continue;
+                        }
+                        options.AddPolicy(
+                            DataAccessUtilities.GetPolicyString(accessName, dataTableName), 
+                            policy => policy.Requirements.Add(
+                                new DataAccessRequirement(accessName, dataTableName)));
+                    }
+                }
+            });
 
             services.AddCascadingAuthenticationState();
             services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<AccountService>();
             services.AddMediatR(config => config.RegisterServicesFromAssemblies(typeof(CreateCompanyHandler).Assembly));
             services.AddScoped<IWmsDbContextFactory<WmsDbContext>, DbContextFactory<WmsDbContext>>(); 
             services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();

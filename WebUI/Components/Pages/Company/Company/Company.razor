@@ -2,6 +2,9 @@
 @implements IAsyncDisposable
 @implements IPageComponent
 
+<AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Company)>
+    <h1>You are authorized to view this</h1>
+</AuthorizeView>
 <MudGrid Class="mb-3">
     <MudItem xs="5">
         @if (ShowDeleteButton)

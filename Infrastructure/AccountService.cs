@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-
-using Application.Constants;
+﻿using Application.Constants;
 using Application.DTO.Request;
 using Application.DTO.Request.Identity;
 using Application.DTO.Response;
@@ -14,6 +12,8 @@ using Infrastructure.Extensions.Identity;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using Infrastructure.UserClaim;
 
 namespace Infrastructure.Repository
 {
@@ -136,33 +136,6 @@ namespace Infrastructure.Repository
             return userList;
         }
 
-        public async Task<GetStaffWithClaimResponseDTO?> GetStaffWithClaimsByIdAsync(Guid staffId)
-        {
-            await using var wmsDbContext = contextFactory.CreateDbContext();
-
-            var currentUser = await userManager.FindByIdAsync(staffId.ToString());
-            if (currentUser == null)
-            {
-                return null;
-            }
-            
-            var currentUserClaims = await userManager.GetClaimsAsync(currentUser);
-            var customClaims = currentUserClaims.ToDictionary(
-                claim => claim.Type, claim => claim.Value);
-            var roles = await userManager.GetRolesAsync(currentUser);
-
-            var getStaffWithClaimResponseDTO = new GetStaffWithClaimResponseDTO()
-            {
-                Email = currentUser.Email,
-                FirstName = currentUser.FirstName,
-                LastName = currentUser.LastName,
-                Roles = roles,
-                CustomClaims = customClaims
-            };
-
-            return getStaffWithClaimResponseDTO;
-        }
-
         public async Task SetUpAsync()
         {
             var adminEmail = "master@control.com";
@@ -200,47 +173,16 @@ namespace Infrastructure.Repository
             }
 
             // update roles and claims
-            foreach (var role in model.Roles)
-            {
-                var roleExists = await roleManager.RoleExistsAsync(role);
-                if (!roleExists)
-                {
-                    return new ServiceResponse(false, $"Role {role} is not found");
-                }
-            }
-
-            var oldUserClaims = await userManager.GetClaimsAsync(user);
-            result = await userManager.RemoveClaimsAsync(user, oldUserClaims);
-            response = CheckResult(result);
+            response = await AddStaffClaim(model);
             if (!response.Success)
             {
                 return new ServiceResponse(false, response.Message);
             }
 
-            var oldUserRoles = await userManager.GetRolesAsync(user);
-            result = await userManager.RemoveFromRolesAsync(user, oldUserRoles);
-            response = CheckResult(result);
+            response = await AddStaffRole(model);
             if (!response.Success)
             {
                 return new ServiceResponse(false, response.Message);
-            }
-
-            result = await userManager.AddToRolesAsync(user, model.Roles);
-            response = CheckResult(result);
-            if (!response.Success)
-            {
-                return new ServiceResponse(false, response.Message);
-            }
-
-            foreach (var claimValuePair in model.CustomClaims)
-            {
-                var claim = new Claim(claimValuePair.Key, claimValuePair.Value);
-                var addNewClaims = await userManager.AddClaimAsync(user, claim);
-                response = CheckResult(addNewClaims);
-                if (!response.Success)
-                {
-                    return new ServiceResponse(false, response.Message);
-                }
             }
 
             return new ServiceResponse(true, "User updated");
@@ -378,6 +320,24 @@ namespace Infrastructure.Repository
             return new ServiceResponse(false, errors);
         }
 
+        private async Task<ServiceResponse> AddStaffRole(UpdateStaffRequestDTO model)
+        {
+            var createStaffRequestDTO = new CreateStaffRequestDTO()
+            {
+                Claims = model.Claims,
+                CompanyId = model.CompanyId,
+                CreatedBy = model.CreatedBy,
+                Email = model.Email,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Roles = model.Roles,
+                StaffNotificationIds = model.StaffNotificationIds,
+                ZoneIds = model.ZoneIds,
+            };
+
+            return await AddStaffRole(createStaffRequestDTO);
+        }
+
         private async Task<ServiceResponse> AddStaffRole(CreateStaffRequestDTO model)
         {
             if (model.Roles.Any(string.IsNullOrEmpty) || !model.Roles.Any())
@@ -399,15 +359,80 @@ namespace Infrastructure.Repository
                 return new ServiceResponse(false, $"User {model.Email} not found");
             }
 
-            var result = new ServiceResponse(false, "User roles not added");
+            var currentRoles = await userManager.GetRolesAsync(user);
+            var removeRolesResult = await userManager.RemoveFromRolesAsync(user, currentRoles);
+            var result = CheckResult(removeRolesResult);
+            result = CheckResult(removeRolesResult);
+            if (!result.Success)
+            {
+                return result;
+            }
+
+            var addRolesResult = await userManager.AddToRolesAsync(user, model.Roles);
+            result = CheckResult(addRolesResult);
+            if (!result.Success)
+            {
+                return result;
+            }
+
+            return result;
+        }
+
+        private async Task<ServiceResponse> AddStaffClaim(UpdateStaffRequestDTO model)
+        {
+            var createStaffRequestDTO = new CreateStaffRequestDTO()
+            {
+                Claims = model.Claims,
+                CompanyId = model.CompanyId,
+                CreatedBy = model.CreatedBy,
+                Email = model.Email,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Roles = model.Roles,
+                StaffNotificationIds = model.StaffNotificationIds,
+                ZoneIds = model.ZoneIds,
+            };
+
+            return await AddStaffClaim(createStaffRequestDTO);
+        }
+
+        private async Task<ServiceResponse> AddStaffClaim(CreateStaffRequestDTO model)
+        {
+            var user = await FindUserByEmail(model.Email);
+            if (user == null)
+            {
+                return new ServiceResponse(false, $"User {model.Email} not found");
+            }
+
+            var currentClaims = await userManager.GetClaimsAsync(user);
+            var removeClaimsResult = await userManager.RemoveClaimsAsync(user, currentClaims);
+            var result = CheckResult(removeClaimsResult);
+            result = CheckResult(removeClaimsResult);
+            if (!result.Success)
+            {
+                return result;
+            }
+            
             foreach (var role in model.Roles)
             {
-                var identityResult = await userManager.AddToRoleAsync(user, role);
-                result = CheckResult(identityResult);
-                if (!result.Success)
+                var claimDictionary = ClaimUtilities.GetClaimsFromRoles(role);
+                foreach (var claimKeyValue in claimDictionary)
                 {
-                    return result;
+                    model.Claims[claimKeyValue.Key] = claimKeyValue.Value;
                 }
+            }
+
+            var claims = new List<Claim>();
+            foreach (var claimKeyValue in model.Claims)
+            {
+                var claim = new Claim(claimKeyValue.Key, claimKeyValue.Value);
+                claims.Add(claim);
+            }
+            var addClaimsResult = await userManager.AddClaimsAsync(user, claims);
+            result = CheckResult(addClaimsResult);
+            if (!result.Success)
+            {
+                return result;
             }
 
             return result;
@@ -442,6 +467,12 @@ namespace Infrastructure.Repository
             }
 
             result = await AddStaffRole(model);
+            if (!result.Success)
+            {
+                return result;
+            }
+
+            result = await AddStaffClaim(model);
             if (!result.Success)
             {
                 return result;
