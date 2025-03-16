@@ -1,4 +1,5 @@
-﻿using Application.DTO.Request.Identity;
+﻿using Application.DTO.Request;
+using Application.DTO.Request.Identity;
 using Application.DTO.Response;
 using Application.Service.Commands;
 
@@ -39,8 +40,8 @@ namespace Infrastructure.Repository
                 staffFound.CreatedBy = request.Model.CreatedBy;
                     
                 var accountHandler = new AccountService(userManager, signInManager, roleManager, contextFactory);
-                var changeStaffClaimRequestDTO = request.Model.Adapt<ChangeStaffClaimRequestDTO>();
-                var response = await accountHandler.UpdateStaffAsync(changeStaffClaimRequestDTO);
+                var updateStaffRequestDTO = request.Model.Adapt<UpdateStaffRequestDTO>();
+                var response = await accountHandler.UpdateStaffAsync(updateStaffRequestDTO);
 
                 staffFound.CompanyId = request.Model.CompanyId;
                 var companyFound = await wmsDbContext.Companies

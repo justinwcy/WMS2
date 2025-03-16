@@ -2,7 +2,6 @@
 using Application.DTO.Request;
 using Application.DTO.Request.Identity;
 using Application.DTO.Response;
-using Application.DTO.Response.Identity;
 using Application.Interface.Identity;
 
 using Domain.Entities;
@@ -95,7 +94,7 @@ namespace Infrastructure.Repository
             return response;
         }
 
-        public async Task<IEnumerable<GetStaffWithClaimResponseDTO>> GetAllStaffWithClaimsAsync(Guid companyId)
+        public async Task<IEnumerable<GetStaffResponseDTO>> GetAllStaffWithClaimsAsync(Guid companyId)
         {
             await using var wmsDbContext = contextFactory.CreateDbContext();
             var company = wmsDbContext.Companies
@@ -107,7 +106,7 @@ namespace Infrastructure.Repository
                 .Where(user=> staffIds.Contains(user.Id))
                 .ToListAsync();
 
-            var userList = new List<GetStaffWithClaimResponseDTO>();
+            var userList = new List<GetStaffResponseDTO>();
             if (allUsers.Count == 0)
             {
                 return userList;
@@ -121,13 +120,13 @@ namespace Infrastructure.Repository
                     claim => claim.Type, claim => claim.Value);
                 var roles = await userManager.GetRolesAsync(currentUser);
 
-                var getStaffWithClaimResponseDTO = new GetStaffWithClaimResponseDTO()
+                var getStaffWithClaimResponseDTO = new GetStaffResponseDTO()
                 {
                     Email = user.Email,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    Roles = roles,
-                    CustomClaims = customClaims,
+                    Roles = roles.ToList(),
+                    Claims = customClaims,
                     CompanyId = companyId,
                 };
                 userList.Add(getStaffWithClaimResponseDTO);
@@ -154,7 +153,7 @@ namespace Infrastructure.Repository
             await CreateStaffAsync(createStaffRequestDTO, true);
         }
 
-        public async Task<ServiceResponse> UpdateStaffAsync(ChangeStaffClaimRequestDTO model)
+        public async Task<ServiceResponse> UpdateStaffAsync(UpdateStaffRequestDTO model)
         {
             var user = await userManager.FindByIdAsync(model.Id.ToString());
             if (user == null)

@@ -1,6 +1,4 @@
-﻿using Application.DTO.BaseDTO.Identity;
-
-namespace Application.DTO.Request.Identity
+﻿namespace Application.DTO.Request.Identity
 {
     public class ChangePasswordStaffRequestDTO
     {

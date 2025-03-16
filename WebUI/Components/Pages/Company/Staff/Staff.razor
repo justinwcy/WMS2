@@ -326,7 +326,7 @@
                 ZoneIds = staffModelConverted.ZoneIds,
                 Roles = staffModelConverted.Roles,
                 StaffNotificationIds = staffModelConverted.StaffNotificationIds,
-                CustomClaims = staffModelConverted.CustomClaims,
+                Claims = staffModelConverted.CustomClaims,
             };
         var updateStaffCommand = new UpdateStaffCommand(updateStaffDTO);
         var response = await Mediator.Send(updateStaffCommand);
