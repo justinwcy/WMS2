@@ -34,7 +34,8 @@
     </MudItem>
 </MudGrid>
 
-<MudTable Hover="true" FixedHeader="true"
+<MudTable ReadOnly="_isReadOnly" 
+          Hover="true" FixedHeader="true"
           Filter="new Func<CustomerModel, bool>(FilterFunc)"
           CanCancelEdit="true"
           Items="@CustomerModels"
@@ -162,6 +163,33 @@
     private string searchString = "";
     private MudTable<CustomerModel> _tableRef;
     private CustomerModel _customerModelBeforeEdit { get; set; }
+
+    private bool _isReadOnly = false;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+    
+        var updatePolicyString = DataAccessUtilities.GetPolicyString(AccessName.Update, DataTableName.Customer);
+        var updatePolicyClaim = user.Claims.FirstOrDefault(claim => claim.Type == updatePolicyString);
+    
+        _isReadOnly = true;
+        if (updatePolicyClaim != null)
+        {
+            var expiryDateString = updatePolicyClaim.Value;
+            var expiryDate = DateTime.ParseExact(
+                expiryDateString,
+                "yyyy/MMM/dd HH:mm:ss",
+                CultureInfo.InvariantCulture);
+            var dateNow = DateTime.Now;
+    
+            if (expiryDate > dateNow)
+            {
+                _isReadOnly = false;
+            }
+        }
+    }
 
     protected override async Task OnParametersSetAsync()
     {
