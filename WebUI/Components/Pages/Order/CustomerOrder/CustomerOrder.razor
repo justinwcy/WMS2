@@ -3,7 +3,8 @@
 @implements IPageComponent
 <MudGrid Class="mb-3">
     <MudItem xs="5">
-        @if (ShowDeleteButton)
+            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.CustomerOrder)>
+            @if (ShowDeleteButton)
         {
             <MudButton OnClick="@DeleteCustomerOrders"
                        Color="Color.Error"
@@ -14,9 +15,11 @@
                 Delete Customer Order
             </MudButton>
         }
-    </MudItem>
+             </AuthorizeView>
+            </MudItem>
     <MudItem xs="2" />
     <MudItem xs="5">
+            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.CustomerOrder)>
         @if (ShowCreateButton)
         {
             <MudButton OnClick="@(OpenCreateCustomerOrderDialogAsync)"
@@ -27,7 +30,8 @@
                 Create Customer Order
             </MudButton>
         }
-    </MudItem>
+             </AuthorizeView>
+        </MudItem>
 </MudGrid>
 
 <MudTable Hover="true" FixedHeader="true"

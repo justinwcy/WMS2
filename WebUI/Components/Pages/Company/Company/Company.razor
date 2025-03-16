@@ -2,12 +2,10 @@
 @implements IAsyncDisposable
 @implements IPageComponent
 
-<AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Company)>
-    <h1>You are authorized to view this</h1>
-</AuthorizeView>
 <MudGrid Class="mb-3">
     <MudItem xs="5">
-        @if (ShowDeleteButton)
+            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Company)>
+            @if (ShowDeleteButton)
         {
             <MudButton OnClick="@DeleteCompanies"
                        Color="Color.Error"
@@ -18,9 +16,11 @@
                 Delete Company
             </MudButton>
         }
-    </MudItem>
+             </AuthorizeView>
+            </MudItem>
     <MudItem xs="2" />
     <MudItem xs="5">
+            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Company)>
         @if (ShowCreateButton)
         {
             <MudButton OnClick="@(OpenCreateCompanyDialogAsync)"
@@ -31,7 +31,8 @@
                 Create Company
             </MudButton>
         }
-    </MudItem>
+             </AuthorizeView>
+        </MudItem>
 </MudGrid>
 
 <MudTable Hover="true" FixedHeader="true"

@@ -4,7 +4,8 @@
 
 <MudGrid Class="mb-3">
     <MudItem xs="5">
-        @if (ShowDeleteButton)
+            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Zone)>
+            @if (ShowDeleteButton)
         {
             <MudButton OnClick="@DeleteZones"
                        Color="Color.Error"
@@ -15,9 +16,11 @@
                 Delete Zone
             </MudButton>
         }
-    </MudItem>
+             </AuthorizeView>
+            </MudItem>
     <MudItem xs="2"/>
     <MudItem xs="5">
+            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Zone)>
         @if (ShowCreateButton)
         {
             <MudButton OnClick="@(OpenCreateZoneDialogAsync)"
@@ -28,7 +31,8 @@
                 Create Zone
             </MudButton>
         }
-    </MudItem>
+             </AuthorizeView>
+        </MudItem>
 </MudGrid>
 
 <MudTable Hover="true" FixedHeader="true"
