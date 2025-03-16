@@ -1,5 +1,5 @@
 using System.Globalization;
-
+using System.Security.Claims;
 using Application.Constants;
 
 using Microsoft.AspNetCore.Authorization;
@@ -21,14 +21,14 @@ namespace Infrastructure.Extensions.Identity.Authorization
                               DataAccessUtilities.GetPolicyString(requirement.AccessName, requirement.DataTableName));
 
             // Check if claim is present
-            var dataAccessClaim = context.User.FindFirst(requirement.PolicyName);
+            var dataAccessClaim = context.User.Claims.FirstOrDefault(claim=>claim.Type == requirement.PolicyName);
             if (dataAccessClaim != null)
             {
                 // get expiry date and check if past expiry
                 var expiryDateString = dataAccessClaim.Value;
                 var expiryDate = DateTime.ParseExact(
-                    expiryDateString, 
-                    "dd/MM/yyyy HH:mm:ss",
+                    expiryDateString,
+                    "yyyy/MMM/dd HH:mm:ss",
                     CultureInfo.InvariantCulture);
 
                 var dateNow = DateTime.Now;

@@ -550,7 +550,7 @@ namespace Infrastructure.UserClaim
 
         private static string GetExpiryDateString(DateTime expiryDate)
         {
-            return expiryDate.ToString("yyyy-MM-dd HH:mm:ss");
+            return expiryDate.ToString("yyyy/MMM/dd HH:mm:ss");
         }
     }
 }

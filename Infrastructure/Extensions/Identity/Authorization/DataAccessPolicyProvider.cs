@@ -41,7 +41,7 @@ namespace Infrastructure.Extensions.Identity.Authorization
                 var accessName = splitString[0];
 
                 var policy = new AuthorizationPolicyBuilder();
-                policy.AddRequirements(new DataAccessRequirement(dataTableName, accessName));
+                policy.AddRequirements(new DataAccessRequirement(accessName, dataTableName));
                 return Task.FromResult(policy.Build());
             }
 
