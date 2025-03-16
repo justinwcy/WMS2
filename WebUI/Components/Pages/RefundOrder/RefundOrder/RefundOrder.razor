@@ -3,39 +3,39 @@
 @implements IPageComponent
 <MudGrid Class="mb-3">
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.RefundOrder)>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.RefundOrder)>
             @if (ShowDeleteButton)
-        {
-            <MudButton OnClick="@DeleteRefundOrders"
-                       Color="Color.Error"
-                       Variant="Variant.Filled"
-                       Size="Size.Large"
-                       FullWidth="true"
-                       Disabled="_disableDelete">
-                Delete Refund Order
-            </MudButton>
-        }
-             </AuthorizeView>
-            </MudItem>
+            {
+                <MudButton OnClick="@DeleteRefundOrders"
+                           Color="Color.Error"
+                           Variant="Variant.Filled"
+                           Size="Size.Large"
+                           FullWidth="true"
+                           Disabled="_disableDelete">
+                    Delete Refund Order
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
     <MudItem xs="2"/>
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.RefundOrder)>
-        @if (ShowCreateButton)
-        {
-            <MudButton OnClick="@(OpenCreateRefundOrderDialogAsync)"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="true">
-                Create Refund Order
-            </MudButton>
-        }
-             </AuthorizeView>
-        </MudItem>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.RefundOrder)>
+            @if (ShowCreateButton)
+            {
+                <MudButton OnClick="@(OpenCreateRefundOrderDialogAsync)"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large"
+                           FullWidth="true">
+                    Create Refund Order
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
 </MudGrid>
 
 <MudTable Hover="true" FixedHeader="true"
-          Filter="new Func<RefundOrderModel,bool>(FilterFunc)"
+          Filter="new Func<RefundOrderModel, bool>(FilterFunc)"
           CanCancelEdit="true"
           Items="@RefundOrderModels"
           GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
@@ -56,21 +56,21 @@
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">RefundOrders</MudText>
-        <MudSpacer />
+        <MudSpacer/>
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col />
-        <col />
+        <col/>
+        <col/>
         @for (var i = 0; i < 4; i++)
         {
-            <col style="min-width:200px;" />
+            <col style="min-width:200px;"/>
         }
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderModel, object>(x=>x.RefundDate)">Refund Date</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderModel, object>(x=>x.Status)">Status</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderModel, object>(x=>x.RefundReason)">Reason</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderModel, object>(x => x.RefundDate)">Refund Date</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderModel, object>(x => x.Status)">Status</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<RefundOrderModel, object>(x => x.RefundReason)">Reason</MudTableSortLabel></MudTh>
         <MudTh>Details</MudTh>
     </HeaderContent>
     <RowTemplate>
@@ -93,7 +93,7 @@
             <MudDatePicker Label="Refund Order Date"
                            Editable="true"
                            @bind-Date="context.RefundDate"
-                           Placeholder="Refund Order Date" />
+                           Placeholder="Refund Order Date"/>
         </MudTd>
 
         <MudTd DataLabel="Status">
@@ -119,7 +119,7 @@
         </MudTd>
 
         <MudTd DataLabel="Reason">
-            <MudTextField @bind-Value="context.RefundReason" Required />
+            <MudTextField @bind-Value="context.RefundReason" Required/>
         </MudTd>
         <MudTd DataLabel="Details">
             <MudButton OnClick="@(() => OpenRefundOrderProductDialogAsync(@context.Id, @context.RefundOrderProductIds))"
@@ -137,7 +137,7 @@
                        RowsPerPageString="Rows per page:"
                        InfoFormat="{first_item}-{last_item} of {all_items}"
                        AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right" />
+                       HorizontalAlignment="HorizontalAlignment.Right"/>
     </PagerContent>
 </MudTable>
 

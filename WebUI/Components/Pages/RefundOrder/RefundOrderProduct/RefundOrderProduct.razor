@@ -3,39 +3,39 @@
 @implements IPageComponent
 <MudGrid Class="mb-3">
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.RefundOrderProduct)>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.RefundOrderProduct)>
             @if (ShowDeleteButton)
-        {
-            <MudButton OnClick="@DeleteRefundOrderProducts"
-                       Color="Color.Error"
-                       Variant="Variant.Filled"
-                       Size="Size.Large"
-                       FullWidth="true"
-                       Disabled="_disableDelete">
-                Delete Refund Order Details
-            </MudButton>
-        }
-             </AuthorizeView>
-            </MudItem>
+            {
+                <MudButton OnClick="@DeleteRefundOrderProducts"
+                           Color="Color.Error"
+                           Variant="Variant.Filled"
+                           Size="Size.Large"
+                           FullWidth="true"
+                           Disabled="_disableDelete">
+                    Delete Refund Order Details
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
     <MudItem xs="2"/>
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.RefundOrderProduct)>
-        @if (ShowCreateButton)
-        {
-            <MudButton OnClick="@(OpenCreateRefundOrderProductDialogAsync)"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="true">
-                Create Refund Order Details
-            </MudButton>
-        }
-             </AuthorizeView>
-        </MudItem>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.RefundOrderProduct)>
+            @if (ShowCreateButton)
+            {
+                <MudButton OnClick="@(OpenCreateRefundOrderProductDialogAsync)"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large"
+                           FullWidth="true">
+                    Create Refund Order Details
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
 </MudGrid>
 
 <MudTable Hover="true" FixedHeader="true"
-          Filter="new Func<RefundOrderProductModel,bool>(FilterFunc)"
+          Filter="new Func<RefundOrderProductModel, bool>(FilterFunc)"
           CanCancelEdit="true"
           Items="@RefundOrderProductModels"
           GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
@@ -56,15 +56,15 @@
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">RefundOrderProducts</MudText>
-        <MudSpacer />
+        <MudSpacer/>
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
     </ColGroup>
     <HeaderContent>
         <MudTh>Product</MudTh>
@@ -81,7 +81,7 @@
         <MudTd DataLabel="Products">
             <MudSelect @bind-Value="context.ProductId"
                        T="Guid?"
-                       ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
+                       ToStringFunc="@(id => _allProductModels.FirstOrDefault(productModel => productModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Status"
                        Margin="Margin.Normal"
@@ -119,13 +119,13 @@
                        RequiredError="Please select a status">
                 @foreach (var orderState in _orderStates)
                 {
-                    <MudSelectItem Value="@orderState" />
+                    <MudSelectItem Value="@orderState"/>
                 }
             </MudSelect>
         </MudTd>
 
         <MudTd DataLabel="Quantity">
-            <MudTextField @bind-Value="context.Quantity" Required />
+            <MudTextField @bind-Value="context.Quantity" Required/>
         </MudTd>
     </RowEditingTemplate>
 
@@ -134,7 +134,7 @@
                        RowsPerPageString="Rows per page:"
                        InfoFormat="{first_item}-{last_item} of {all_items}"
                        AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right" />
+                       HorizontalAlignment="HorizontalAlignment.Right"/>
     </PagerContent>
 </MudTable>
 

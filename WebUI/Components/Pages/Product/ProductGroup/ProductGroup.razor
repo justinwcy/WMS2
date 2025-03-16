@@ -3,39 +3,39 @@
 @implements IPageComponent
 <MudGrid Class="mb-3">
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.ProductGroup)>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.ProductGroup)>
             @if (ShowDeleteButton)
-        {
-            <MudButton OnClick="@DeleteProductGroups"
-                       Color="Color.Error"
-                       Variant="Variant.Filled"
-                       Size="Size.Large"
-                       FullWidth="true"
-                       Disabled="_disableDelete">
-                Delete Product Group
-            </MudButton>
-        }
-             </AuthorizeView>
-            </MudItem>
-    <MudItem xs="2" />
+            {
+                <MudButton OnClick="@DeleteProductGroups"
+                           Color="Color.Error"
+                           Variant="Variant.Filled"
+                           Size="Size.Large"
+                           FullWidth="true"
+                           Disabled="_disableDelete">
+                    Delete Product Group
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
+    <MudItem xs="2"/>
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.ProductGroup)>
-        @if (ShowCreateButton)
-        {
-            <MudButton OnClick="@(OpenCreateProductGroupDialogAsync)"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="true">
-                Create Product Group
-            </MudButton>
-        }
-             </AuthorizeView>
-        </MudItem>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.ProductGroup)>
+            @if (ShowCreateButton)
+            {
+                <MudButton OnClick="@(OpenCreateProductGroupDialogAsync)"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large"
+                           FullWidth="true">
+                    Create Product Group
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
 </MudGrid>
 
 <MudTable Hover="true" FixedHeader="true"
-          Filter="new Func<ProductGroupModel,bool>(FilterFunc)"
+          Filter="new Func<ProductGroupModel, bool>(FilterFunc)"
           CanCancelEdit="true"
           Items="@ProductGroupModels"
           GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
@@ -56,23 +56,23 @@
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Product Groups</MudText>
-        <MudSpacer />
+        <MudSpacer/>
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col />
-        <col />
-        <col style="min-width:200px;" />
-        <col style="min-width:500px;" />
+        <col/>
+        <col/>
+        <col style="min-width:200px;"/>
+        <col style="min-width:500px;"/>
         @for (var i = 0; i < 2; i++)
         {
-            <col style="min-width:200px;" />
+            <col style="min-width:200px;"/>
         }
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<ProductGroupModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductGroupModel, object>(x => x.Name)">Name</MudTableSortLabel></MudTh>
         <MudTh>Photos</MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ProductGroupModel, object>(x=>x.Description)">Description</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductGroupModel, object>(x => x.Description)">Description</MudTableSortLabel></MudTh>
         <MudTh>Products</MudTh>
     </HeaderContent>
     <RowTemplate>
@@ -91,7 +91,7 @@
                                   Elevation="25"
                                   Height="150"
                                   Class="rounded-lg"
-                                  Src=@($"data:image/jpeg;base64,{_allPhotoBase64String[photoId]}") />
+                                  Src=@($"data:image/jpeg;base64,{_allPhotoBase64String[photoId]}")/>
                     </div>
                 </ItemTemplate>
             </MudCarousel>
@@ -110,7 +110,7 @@
 
     <RowEditingTemplate>
         <MudTd DataLabel="Name">
-            <MudTextField @bind-Value="context.Name" Required />
+            <MudTextField @bind-Value="context.Name" Required/>
         </MudTd>
 
         <MudTd DataLabel="Photos">
@@ -129,14 +129,14 @@
                                           Elevation="25"
                                           Height="150"
                                           Class="rounded-lg"
-                                          Src=@($"data:image/jpeg;base64,{_allPhotoBase64String[photoId]}") />
+                                          Src=@($"data:image/jpeg;base64,{_allPhotoBase64String[photoId]}")/>
                             </div>
                         </ItemTemplate>
                     </MudCarousel>
                 </MudItem>
 
                 <MudItem xs="4">
-                    <MudFileUpload T="IBrowserFile" OnFilesChanged="((e)=>AddPhotoAsync(context.Id, e))" Accept="image/png, image/jpeg">
+                    <MudFileUpload T="IBrowserFile" OnFilesChanged="((e) => AddPhotoAsync(context.Id, e))" Accept="image/png, image/jpeg">
                         <ActivatorContent>
                             <MudButton Class="ma-2"
                                        Variant="Variant.Filled"
@@ -147,7 +147,7 @@
                             </MudButton>
                         </ActivatorContent>
                     </MudFileUpload>
-                    <br />
+                    <br/>
                     <MudButton Class="ma-2"
                                Variant="Variant.Filled"
                                Color="Color.Error"
@@ -161,12 +161,12 @@
         </MudTd>
 
         <MudTd DataLabel="Description">
-            <MudTextField @bind-Value="context.Description" Required />
+            <MudTextField @bind-Value="context.Description" Required/>
         </MudTd>
 
         <MudTd DataLabel="Products">
             <MudSelect T="Guid?"
-                       ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
+                       ToStringFunc="@(id => _allProductModels.FirstOrDefault(productModel => productModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Product"
                        Margin="Margin.Normal"
@@ -180,11 +180,11 @@
                        Clearable="false"
                        Required="false"
                        RequiredError="Please select a product"
-                       SelectedValues="@(context.ProductIds.Select(x=>(Guid?)x))"
-                       SelectedValuesChanged="@(x=> context.ProductIds = x.Select(x=>x.Value).ToList())">
+                       SelectedValues="@(context.ProductIds.Select(x => (Guid?)x))"
+                       SelectedValuesChanged="@(x => context.ProductIds = x.Select(x => x.Value).ToList())">
                 @foreach (var productModel in _allProductModels)
                 {
-                    <MudSelectItem T="Guid?" Value="@productModel.Id" />
+                    <MudSelectItem T="Guid?" Value="@productModel.Id"/>
                 }
             </MudSelect>
         </MudTd>
@@ -195,7 +195,7 @@
                        RowsPerPageString="Rows per page:"
                        InfoFormat="{first_item}-{last_item} of {all_items}"
                        AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right" />
+                       HorizontalAlignment="HorizontalAlignment.Right"/>
     </PagerContent>
 </MudTable>
 

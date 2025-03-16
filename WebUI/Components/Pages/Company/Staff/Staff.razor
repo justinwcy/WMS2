@@ -3,41 +3,41 @@
 @implements IPageComponent
 <MudGrid Class="mb-3">
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Staff)>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Staff)>
             @if (ShowDeleteButton)
-        {
-            <MudButton OnClick="@DeleteStaffs"
-                       Color="Color.Error"
-                       Variant="Variant.Filled"
-                       Size="Size.Large"
-                       FullWidth="true"
-                       Disabled="_disableDelete">
-                Delete Staff
-            </MudButton>
-        }
-             </AuthorizeView>
-            </MudItem>
+            {
+                <MudButton OnClick="@DeleteStaffs"
+                           Color="Color.Error"
+                           Variant="Variant.Filled"
+                           Size="Size.Large"
+                           FullWidth="true"
+                           Disabled="_disableDelete">
+                    Delete Staff
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
     <MudItem xs="2"/>
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Staff)>
-        @if (ShowCreateButton)
-        {
-            <MudButton OnClick="@(OpenCreateStaffDialogAsync)"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="true">
-                Create Staff
-            </MudButton>
-        }
-             </AuthorizeView>
-        </MudItem>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Staff)>
+            @if (ShowCreateButton)
+            {
+                <MudButton OnClick="@(OpenCreateStaffDialogAsync)"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large"
+                           FullWidth="true">
+                    Create Staff
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
 </MudGrid>
 
 <MudTable Hover="true"
           FixedHeader="true"
           HorizontalScrollbar="true"
-          Filter="new Func<StaffModel,bool>(FilterFunc)"
+          Filter="new Func<StaffModel, bool>(FilterFunc)"
           CanCancelEdit="true"
           Items="@StaffModels"
           GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
@@ -58,21 +58,21 @@
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Staffs</MudText>
-        <MudSpacer />
+        <MudSpacer/>
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col />
-        <col />
+        <col/>
+        <col/>
         @for (var i = 0; i < 6; i++)
         {
-            <col style="min-width:200px;" />
+            <col style="min-width:200px;"/>
         }
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.FirstName)">First Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.LastName)">Last Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x=>x.Email)">Email</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x => x.FirstName)">First Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x => x.LastName)">Last Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<StaffModel, object>(x => x.Email)">Email</MudTableSortLabel></MudTh>
         <MudTh>Roles</MudTh>
         <MudTh>Company</MudTh>
         <MudTh>Zone</MudTh>
@@ -99,15 +99,15 @@
 
     <RowEditingTemplate>
         <MudTd DataLabel="First Name">
-            <MudTextField @bind-Value="context.FirstName" Required />
+            <MudTextField @bind-Value="context.FirstName" Required/>
         </MudTd>
 
         <MudTd DataLabel="Last Name">
-            <MudTextField @bind-Value="context.LastName" Required />
+            <MudTextField @bind-Value="context.LastName" Required/>
         </MudTd>
 
         <MudTd DataLabel="Email">
-            <MudTextField @bind-Value="context.Email" Required />
+            <MudTextField @bind-Value="context.Email" Required/>
         </MudTd>
 
         <MudTd DataLabel="Roles">
@@ -125,10 +125,10 @@
                        Required="true"
                        RequiredError="Please select a role"
                        SelectedValues="@(context.Roles)"
-                       SelectedValuesChanged="@(x=> context.Roles = x.ToList())">
+                       SelectedValuesChanged="@(x => context.Roles = x.ToList())">
                 @foreach (var staffRole in _allStaffRoles)
                 {
-                    <MudSelectItem T="string" Value="@staffRole" />
+                    <MudSelectItem T="string" Value="@staffRole"/>
                 }
             </MudSelect>
         </MudTd>
@@ -136,7 +136,7 @@
         <MudTd DataLabel="Company">
             <MudSelect @bind-Value="context.CompanyId"
                        T="Guid?"
-                       ToStringFunc="@(id=> _allCompanyModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.Name)"
+                       ToStringFunc="@(id => _allCompanyModels.FirstOrDefault(companyModel => companyModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Company"
                        Margin="Margin.Normal"
@@ -159,7 +159,7 @@
 
         <MudTd DataLabel="Zone">
             <MudSelect T="Guid?"
-                       ToStringFunc="@(id=> _allZoneModels.FirstOrDefault(zoneModel=>zoneModel.Id == id)?.Name)"
+                       ToStringFunc="@(id => _allZoneModels.FirstOrDefault(zoneModel => zoneModel.Id == id)?.Name)"
                        Variant="@_defaultVariant"
                        Label="Zone"
                        Margin="Margin.Normal"
@@ -173,22 +173,22 @@
                        Clearable="false"
                        Required="false"
                        RequiredError="Please select a staff"
-                       SelectedValues="@(context.ZoneIds?.Select(x=>(Guid?)x))"
-                       SelectedValuesChanged="@(x=> context.ZoneIds = x.Select(x=>x.Value).ToList())">
+                       SelectedValues="@(context.ZoneIds?.Select(x => (Guid?)x))"
+                       SelectedValuesChanged="@(x => context.ZoneIds = x.Select(x => x.Value).ToList())">
                 @foreach (var zoneModel in _allZoneModels)
                 {
-                    <MudSelectItem T="Guid?" Value="@zoneModel.Id" />
+                    <MudSelectItem T="Guid?" Value="@zoneModel.Id"/>
                 }
             </MudSelect>
         </MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
-        <MudTablePager PageSizeOptions="new [] { 10, 25, 50, 100, int.MaxValue }"
+        <MudTablePager PageSizeOptions="new[] { 10, 25, 50, 100, int.MaxValue }"
                        RowsPerPageString="Rows per page:"
                        InfoFormat="{first_item}-{last_item} of {all_items}"
                        AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right" />
+                       HorizontalAlignment="HorizontalAlignment.Right"/>
     </PagerContent>
 </MudTable>
 

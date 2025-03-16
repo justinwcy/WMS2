@@ -3,39 +3,39 @@
 @implements IPageComponent
 <MudGrid Class="mb-3">
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Customer)>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Customer)>
             @if (ShowDeleteButton)
-        {
-            <MudButton OnClick="@DeleteCustomers"
-                       Color="Color.Error"
-                       Variant="Variant.Filled"
-                       Size="Size.Large"
-                       FullWidth="true"
-                       Disabled="_disableDelete">
-                Delete Customer
-            </MudButton>
-        }
-             </AuthorizeView>
-            </MudItem>
-    <MudItem xs="2" />
+            {
+                <MudButton OnClick="@DeleteCustomers"
+                           Color="Color.Error"
+                           Variant="Variant.Filled"
+                           Size="Size.Large"
+                           FullWidth="true"
+                           Disabled="_disableDelete">
+                    Delete Customer
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
+    <MudItem xs="2"/>
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Customer)>
-        @if (ShowCreateButton)
-        {
-            <MudButton OnClick="@(OpenCreateCustomerDialogAsync)"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="true">
-                Create Customer
-            </MudButton>
-        }
-             </AuthorizeView>
-        </MudItem>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Customer)>
+            @if (ShowCreateButton)
+            {
+                <MudButton OnClick="@(OpenCreateCustomerDialogAsync)"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large"
+                           FullWidth="true">
+                    Create Customer
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
 </MudGrid>
 
 <MudTable Hover="true" FixedHeader="true"
-          Filter="new Func<CustomerModel,bool>(FilterFunc)"
+          Filter="new Func<CustomerModel, bool>(FilterFunc)"
           CanCancelEdit="true"
           Items="@CustomerModels"
           GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
@@ -56,27 +56,27 @@
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Customers</MudText>
-        <MudSpacer />
+        <MudSpacer/>
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col />
-        <col />
+        <col/>
+        <col/>
         @for (var i = 0; i < 2; i++)
         {
-            <col style="min-width:200px;" />
+            <col style="min-width:200px;"/>
         }
-        
+
         @for (var i = 0; i < 3; i++)
         {
-            <col style="min-width:250px;" />
+            <col style="min-width:250px;"/>
         }
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x=>x.FirstName)">First Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x=>x.LastName)">Last Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x=>x.Email)">Email</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x=>x.Address)">Address</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x => x.FirstName)">First Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x => x.LastName)">Last Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x => x.Email)">Email</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CustomerModel, object>(x => x.Address)">Address</MudTableSortLabel></MudTh>
         <MudTh>Customer Orders</MudTh>
     </HeaderContent>
     <RowTemplate>
@@ -97,19 +97,19 @@
 
     <RowEditingTemplate>
         <MudTd DataLabel="First Name">
-            <MudTextField @bind-Value="context.FirstName" Required />
+            <MudTextField @bind-Value="context.FirstName" Required/>
         </MudTd>
 
         <MudTd DataLabel="Last Name">
-            <MudTextField @bind-Value="context.LastName" Required />
+            <MudTextField @bind-Value="context.LastName" Required/>
         </MudTd>
 
         <MudTd DataLabel="Email">
-            <MudTextField @bind-Value="context.Email" Required />
+            <MudTextField @bind-Value="context.Email" Required/>
         </MudTd>
 
         <MudTd DataLabel="Address">
-            <MudTextField @bind-Value="context.Address" Required />
+            <MudTextField @bind-Value="context.Address" Required/>
         </MudTd>
 
         <MudTd DataLabel="Customer Orders">
@@ -128,7 +128,7 @@
                        RowsPerPageString="Rows per page:"
                        InfoFormat="{first_item}-{last_item} of {all_items}"
                        AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right" />
+                       HorizontalAlignment="HorizontalAlignment.Right"/>
     </PagerContent>
 </MudTable>
 

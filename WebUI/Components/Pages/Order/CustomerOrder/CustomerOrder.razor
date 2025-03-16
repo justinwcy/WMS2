@@ -3,39 +3,39 @@
 @implements IPageComponent
 <MudGrid Class="mb-3">
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.CustomerOrder)>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.CustomerOrder)>
             @if (ShowDeleteButton)
-        {
-            <MudButton OnClick="@DeleteCustomerOrders"
-                       Color="Color.Error"
-                       Variant="Variant.Filled"
-                       Size="Size.Large"
-                       FullWidth="true"
-                       Disabled="_disableDelete">
-                Delete Customer Order
-            </MudButton>
-        }
-             </AuthorizeView>
-            </MudItem>
-    <MudItem xs="2" />
+            {
+                <MudButton OnClick="@DeleteCustomerOrders"
+                           Color="Color.Error"
+                           Variant="Variant.Filled"
+                           Size="Size.Large"
+                           FullWidth="true"
+                           Disabled="_disableDelete">
+                    Delete Customer Order
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
+    <MudItem xs="2"/>
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.CustomerOrder)>
-        @if (ShowCreateButton)
-        {
-            <MudButton OnClick="@(OpenCreateCustomerOrderDialogAsync)"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="true">
-                Create Customer Order
-            </MudButton>
-        }
-             </AuthorizeView>
-        </MudItem>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.CustomerOrder)>
+            @if (ShowCreateButton)
+            {
+                <MudButton OnClick="@(OpenCreateCustomerOrderDialogAsync)"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large"
+                           FullWidth="true">
+                    Create Customer Order
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
 </MudGrid>
 
 <MudTable Hover="true" FixedHeader="true"
-          Filter="new Func<CustomerOrderModel,bool>(FilterFunc)"
+          Filter="new Func<CustomerOrderModel, bool>(FilterFunc)"
           CanCancelEdit="true"
           Items="@CustomerOrderModels"
           GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
@@ -56,15 +56,15 @@
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Customer Orders</MudText>
-        <MudSpacer />
+        <MudSpacer/>
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col />
-        <col />
+        <col/>
+        <col/>
         @for (var i = 0; i < 7; i++)
         {
-            <col style="min-width:250px;" />
+            <col style="min-width:250px;"/>
         }
     </ColGroup>
     <HeaderContent>
@@ -138,7 +138,7 @@
                        RequiredError="Please select a courier">
                 @foreach (var customerModel in _allCustomerModels)
                 {
-                    <MudSelectItem T="Guid?" Value="@customerModel.Id" />
+                    <MudSelectItem T="Guid?" Value="@customerModel.Id"/>
                 }
             </MudSelect>
         </MudTd>
@@ -147,7 +147,7 @@
             <MudDatePicker Label="Expected Arrival Date"
                            Editable="true"
                            @bind-Date="context.ExpectedArrivalDate"
-                           Placeholder="Expected Arrival Date" />
+                           Placeholder="Expected Arrival Date"/>
         </MudTd>
 
         <MudTd DataLabel="Courier">
@@ -169,7 +169,7 @@
                        RequiredError="Please select a courier">
                 @foreach (var courierModel in _allCourierModels)
                 {
-                    <MudSelectItem T="Guid?" Value="@courierModel.Id" />
+                    <MudSelectItem T="Guid?" Value="@courierModel.Id"/>
                 }
             </MudSelect>
         </MudTd>
@@ -178,11 +178,11 @@
             <MudDatePicker Label="Order Creation Date"
                            Editable="true"
                            @bind-Date="context.OrderCreationDate"
-                           Placeholder="Order Creation Date" />
+                           Placeholder="Order Creation Date"/>
         </MudTd>
 
         <MudTd DataLabel="Order Address">
-            <MudTextField @bind-Value="context.OrderAddress" Required />
+            <MudTextField @bind-Value="context.OrderAddress" Required/>
         </MudTd>
 
         <MudTd DataLabel="Bin">
@@ -204,7 +204,7 @@
                        RequiredError="Please select a bin">
                 @foreach (var binModel in _allBinModels)
                 {
-                    <MudSelectItem T="Guid?" Value="@binModel.Id" />
+                    <MudSelectItem T="Guid?" Value="@binModel.Id"/>
                 }
             </MudSelect>
         </MudTd>
@@ -225,7 +225,7 @@
                        RowsPerPageString="Rows per page:"
                        InfoFormat="{first_item}-{last_item} of {all_items}"
                        AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right" />
+                       HorizontalAlignment="HorizontalAlignment.Right"/>
     </PagerContent>
 </MudTable>
 

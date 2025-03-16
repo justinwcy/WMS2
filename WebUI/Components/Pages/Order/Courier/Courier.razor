@@ -3,39 +3,39 @@
 @implements IPageComponent
 <MudGrid Class="mb-3">
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Courier)>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Courier)>
             @if (ShowDeleteButton)
-        {
-            <MudButton OnClick="@DeleteCouriers"
-                       Color="Color.Error"
-                       Variant="Variant.Filled"
-                       Size="Size.Large"
-                       FullWidth="true"
-                       Disabled="_disableDelete">
-                Delete Courier
-            </MudButton>
-        }
-             </AuthorizeView>
-            </MudItem>
+            {
+                <MudButton OnClick="@DeleteCouriers"
+                           Color="Color.Error"
+                           Variant="Variant.Filled"
+                           Size="Size.Large"
+                           FullWidth="true"
+                           Disabled="_disableDelete">
+                    Delete Courier
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
     <MudItem xs="2"/>
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Courier)>
-        @if (ShowCreateButton)
-        {
-            <MudButton OnClick="@(OpenCreateCourierDialogAsync)"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="true">
-                Create Courier
-            </MudButton>
-        }
-             </AuthorizeView>
-        </MudItem>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Courier)>
+            @if (ShowCreateButton)
+            {
+                <MudButton OnClick="@(OpenCreateCourierDialogAsync)"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large"
+                           FullWidth="true">
+                    Create Courier
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
 </MudGrid>
 
 <MudTable Hover="true" FixedHeader="true"
-          Filter="new Func<CourierModel,bool>(FilterFunc)"
+          Filter="new Func<CourierModel, bool>(FilterFunc)"
           CanCancelEdit="true"
           Items="@CourierModels"
           GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
@@ -56,21 +56,21 @@
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Couriers</MudText>
-        <MudSpacer />
+        <MudSpacer/>
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
-        <col />
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<CourierModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<CourierModel, object>(x=>x.Price)">Price</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<CourierModel, object>(x=>x.Remark)">Remark</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CourierModel, object>(x => x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CourierModel, object>(x => x.Price)">Price</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<CourierModel, object>(x => x.Remark)">Remark</MudTableSortLabel></MudTh>
         <MudTh>Customer Orders</MudTh>
     </HeaderContent>
     <RowTemplate>
@@ -90,20 +90,20 @@
 
     <RowEditingTemplate>
         <MudTd DataLabel="Name">
-            <MudTextField @bind-Value="context.Name" Required />
+            <MudTextField @bind-Value="context.Name" Required/>
         </MudTd>
 
         <MudTd DataLabel="Price">
-            <MudTextField @bind-Value="context.Price" T="decimal" Required />
+            <MudTextField @bind-Value="context.Price" T="decimal" Required/>
         </MudTd>
 
         <MudTd DataLabel="Remark">
-            <MudTextField @bind-Value="context.Remark" Required />
+            <MudTextField @bind-Value="context.Remark" Required/>
         </MudTd>
 
         <MudTd DataLabel="Customer Orders">
             <MudSelect T="Guid?"
-                       ToStringFunc="@(id=> _allCustomerOrderModels.FirstOrDefault(customerOrderModel=>customerOrderModel.Id == id)?.OrderAddress)"
+                       ToStringFunc="@(id => _allCustomerOrderModels.FirstOrDefault(customerOrderModel => customerOrderModel.Id == id)?.OrderAddress)"
                        Variant="@_defaultVariant"
                        Label="Product"
                        Margin="Margin.Normal"
@@ -117,11 +117,11 @@
                        Clearable="false"
                        Required="false"
                        RequiredError="Please select a customer order"
-                       SelectedValues="@(context.CustomerOrderIds.Select(x=>(Guid?)x))"
-                       SelectedValuesChanged="@(x=> context.CustomerOrderIds = x.Select(x=>x.Value).ToList())">
+                       SelectedValues="@(context.CustomerOrderIds.Select(x => (Guid?)x))"
+                       SelectedValuesChanged="@(x => context.CustomerOrderIds = x.Select(x => x.Value).ToList())">
                 @foreach (var customerOrderModel in _allCustomerOrderModels)
                 {
-                    <MudSelectItem T="Guid?" Value="@customerOrderModel.Id" />
+                    <MudSelectItem T="Guid?" Value="@customerOrderModel.Id"/>
                 }
             </MudSelect>
         </MudTd>
@@ -132,7 +132,7 @@
                        RowsPerPageString="Rows per page:"
                        InfoFormat="{first_item}-{last_item} of {all_items}"
                        AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right" />
+                       HorizontalAlignment="HorizontalAlignment.Right"/>
     </PagerContent>
 </MudTable>
 

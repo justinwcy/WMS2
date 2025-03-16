@@ -3,39 +3,39 @@
 @implements IPageComponent
 <MudGrid Class="mb-3">
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Bin)>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Bin)>
             @if (ShowDeleteButton)
-        {
-            <MudButton OnClick="@DeleteBins"
-                       Color="Color.Error"
-                       Variant="Variant.Filled"
-                       Size="Size.Large"
-                       FullWidth="true"
-                       Disabled="_disableDelete">
-                Delete Bin
-            </MudButton>
-        }
-             </AuthorizeView>
-            </MudItem>
-    <MudItem xs="2" />
+            {
+                <MudButton OnClick="@DeleteBins"
+                           Color="Color.Error"
+                           Variant="Variant.Filled"
+                           Size="Size.Large"
+                           FullWidth="true"
+                           Disabled="_disableDelete">
+                    Delete Bin
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
+    <MudItem xs="2"/>
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Bin)>
-        @if (ShowCreateButton)
-        {
-            <MudButton OnClick="@(OpenCreateBinDialogAsync)"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="true">
-                Create Bin
-            </MudButton>
-        }
-             </AuthorizeView>
-        </MudItem>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Bin)>
+            @if (ShowCreateButton)
+            {
+                <MudButton OnClick="@(OpenCreateBinDialogAsync)"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large"
+                           FullWidth="true">
+                    Create Bin
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
 </MudGrid>
 
 <MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
-          Filter="new Func<BinModel,bool>(FilterFunc)"
+          Filter="new Func<BinModel, bool>(FilterFunc)"
           CanCancelEdit="true"
           Items="@BinModels"
           GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
@@ -56,19 +56,19 @@
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Bins</MudText>
-        <MudSpacer />
+        <MudSpacer/>
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col />
-        <col />
+        <col/>
+        <col/>
         @for (var i = 0; i < 2; i++)
         {
-            <col style="min-width:200px;" />
+            <col style="min-width:200px;"/>
         }
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<BinModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<BinModel, object>(x => x.Name)">Name</MudTableSortLabel></MudTh>
         <MudTh>Customer Orders</MudTh>
     </HeaderContent>
     <RowTemplate>
@@ -86,12 +86,12 @@
 
     <RowEditingTemplate>
         <MudTd DataLabel="Name">
-            <MudTextField @bind-Value="context.Name" Required />
+            <MudTextField @bind-Value="context.Name" Required/>
         </MudTd>
 
         <MudTd DataLabel="Customer Orders">
             <MudSelect T="Guid?"
-                       ToStringFunc="@(id=> _allCustomerOrderModels.FirstOrDefault(customerOrderModel=>customerOrderModel.Id == id)?.OrderAddress)"
+                       ToStringFunc="@(id => _allCustomerOrderModels.FirstOrDefault(customerOrderModel => customerOrderModel.Id == id)?.OrderAddress)"
                        Variant="@_defaultVariant"
                        Label="Customer Orders"
                        Margin="Margin.Normal"
@@ -105,11 +105,11 @@
                        Clearable="false"
                        Required="false"
                        RequiredError="Please select a customer order"
-                       SelectedValues="@(context.CustomerOrderIds.Select(x=>(Guid?)x))"
-                       SelectedValuesChanged="@(x=> context.CustomerOrderIds = x.Select(x=>x.Value).ToList())">
+                       SelectedValues="@(context.CustomerOrderIds.Select(x => (Guid?)x))"
+                       SelectedValuesChanged="@(x => context.CustomerOrderIds = x.Select(x => x.Value).ToList())">
                 @foreach (var customerOrderModel in _allCustomerOrderModels)
                 {
-                    <MudSelectItem T="Guid?" Value="@customerOrderModel.Id" />
+                    <MudSelectItem T="Guid?" Value="@customerOrderModel.Id"/>
                 }
             </MudSelect>
         </MudTd>
@@ -120,7 +120,7 @@
                        RowsPerPageString="Rows per page:"
                        InfoFormat="{first_item}-{last_item} of {all_items}"
                        AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right" />
+                       HorizontalAlignment="HorizontalAlignment.Right"/>
     </PagerContent>
 </MudTable>
 

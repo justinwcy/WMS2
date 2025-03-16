@@ -3,39 +3,39 @@
 @implements IPageComponent
 <MudGrid Class="mb-3">
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.IncomingOrder)>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.IncomingOrder)>
             @if (ShowDeleteButton)
-        {
-            <MudButton OnClick="@DeleteIncomingOrders"
-                       Color="Color.Error"
-                       Variant="Variant.Filled"
-                       Size="Size.Large"
-                       FullWidth="true"
-                       Disabled="_disableDelete">
-                Delete Incoming Order
-            </MudButton>
-        }
-             </AuthorizeView>
-            </MudItem>
+            {
+                <MudButton OnClick="@DeleteIncomingOrders"
+                           Color="Color.Error"
+                           Variant="Variant.Filled"
+                           Size="Size.Large"
+                           FullWidth="true"
+                           Disabled="_disableDelete">
+                    Delete Incoming Order
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
     <MudItem xs="2"/>
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.IncomingOrder)>
-        @if (ShowCreateButton)
-        {
-            <MudButton OnClick="@(OpenCreateIncomingOrderDialogAsync)"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="true">
-                Create Incoming Order
-            </MudButton>
-        }
-             </AuthorizeView>
-        </MudItem>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.IncomingOrder)>
+            @if (ShowCreateButton)
+            {
+                <MudButton OnClick="@(OpenCreateIncomingOrderDialogAsync)"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large"
+                           FullWidth="true">
+                    Create Incoming Order
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
 </MudGrid>
 
 <MudTable Hover="true" FixedHeader="true"
-          Filter="new Func<IncomingOrderModel,bool>(FilterFunc)"
+          Filter="new Func<IncomingOrderModel, bool>(FilterFunc)"
           CanCancelEdit="true"
           Items="@IncomingOrderModels"
           GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
@@ -56,22 +56,22 @@
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">IncomingOrders</MudText>
-        <MudSpacer />
+        <MudSpacer/>
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col />
-        <col />
+        <col/>
+        <col/>
         @for (var i = 0; i < 6; i++)
         {
-            <col style="min-width:250px;" />
+            <col style="min-width:250px;"/>
         }
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderModel, object>(x=>x.PONumber)">PO Number</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderModel, object>(x=>x.IncomingDate)">Incoming Date</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderModel, object>(x=>x.ReceivingDate)">Receiving Date</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderModel, object>(x=>x.Status)">Status</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderModel, object>(x => x.PONumber)">PO Number</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderModel, object>(x => x.IncomingDate)">Incoming Date</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderModel, object>(x => x.ReceivingDate)">Receiving Date</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<IncomingOrderModel, object>(x => x.Status)">Status</MudTableSortLabel></MudTh>
         <MudTh>Vendor</MudTh>
         <MudTh>Details</MudTh>
     </HeaderContent>
@@ -97,21 +97,21 @@
 
     <RowEditingTemplate>
         <MudTd DataLabel="PO Number">
-            <MudTextField @bind-Value="context.PONumber" Required />
+            <MudTextField @bind-Value="context.PONumber" Required/>
         </MudTd>
 
         <MudTd DataLabel="Incoming Date">
             <MudDatePicker Label="Incoming Order Date"
                            Editable="true"
                            @bind-Date="context.IncomingDate"
-                           Placeholder="Incoming Order Date" />
+                           Placeholder="Incoming Order Date"/>
         </MudTd>
 
         <MudTd DataLabel="Receiving Date">
             <MudDatePicker Label="Receiving Date"
                            Editable="true"
                            @bind-Date="context.ReceivingDate"
-                           Placeholder="Receiving Date" />
+                           Placeholder="Receiving Date"/>
         </MudTd>
 
         <MudTd DataLabel="Status">
@@ -139,7 +139,7 @@
         <MudTd DataLabel="Vendor">
             <MudSelect @bind-Value="context.VendorId"
                        T="Guid?"
-                       ToStringFunc="@(id=> $"{_allVendorModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.FirstName} {_allVendorModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.LastName}")"
+                       ToStringFunc="@(id => $"{_allVendorModels.FirstOrDefault(companyModel => companyModel.Id == id)?.FirstName} {_allVendorModels.FirstOrDefault(companyModel => companyModel.Id == id)?.LastName}")"
                        Variant="@_defaultVariant"
                        Label="Vendor"
                        Margin="Margin.Normal"
@@ -177,7 +177,7 @@
                        RowsPerPageString="Rows per page:"
                        InfoFormat="{first_item}-{last_item} of {all_items}"
                        AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right" />
+                       HorizontalAlignment="HorizontalAlignment.Right"/>
     </PagerContent>
 </MudTable>
 

@@ -3,80 +3,80 @@
 @implements IPageComponent
 <MudGrid Class="mb-3">
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Product)>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Product)>
             @if (ShowDeleteButton)
-        {
-            <MudButton OnClick="@DeleteProducts"
-            Color="Color.Error"
-            Variant="Variant.Filled"
-            Size="Size.Large"
-            FullWidth="true"
-            Disabled="_disableDelete">
-                Delete Product
-            </MudButton>
-        }
-             </AuthorizeView>
-            </MudItem>
+            {
+                <MudButton OnClick="@DeleteProducts"
+                           Color="Color.Error"
+                           Variant="Variant.Filled"
+                           Size="Size.Large"
+                           FullWidth="true"
+                           Disabled="_disableDelete">
+                    Delete Product
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
     <MudItem xs="2"/>
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Product)>
-        @if (ShowCreateButton)
-        {
-            <MudButton OnClick="@(OpenCreateProductDialogAsync)"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Large"
-            FullWidth="true">
-                Create Product
-            </MudButton>
-        }
-             </AuthorizeView>
-        </MudItem>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Product)>
+            @if (ShowCreateButton)
+            {
+                <MudButton OnClick="@(OpenCreateProductDialogAsync)"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large"
+                           FullWidth="true">
+                    Create Product
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
 </MudGrid>
 
 <MudTable Hover="true" FixedHeader="true"
-Filter="new Func<ProductModel,bool>(FilterFunc)"
-Items="@ProductModels"
-Dense="true"
-Bordered="true"
-Loading="@_loading" LoadingProgressColor="Color.Info"
-MultiSelection="true"
-@bind-SelectedItems="_selectedProducts"
-SelectOnRowClick="false"
-CanCancelEdit="true"
-CommitEditTooltip="Commit Edit"
-CancelEditTooltip="Cancel Edit"
-IsEditRowSwitchingBlocked="false"
-RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-RowEditCommit="ItemHasBeenCommitted"
-ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-EditButtonPosition="TableEditButtonPosition.StartAndEnd"
-EditTrigger="TableEditTrigger.RowClick">
+          Filter="new Func<ProductModel, bool>(FilterFunc)"
+          Items="@ProductModels"
+          Dense="true"
+          Bordered="true"
+          Loading="@_loading" LoadingProgressColor="Color.Info"
+          MultiSelection="true"
+          @bind-SelectedItems="_selectedProducts"
+          SelectOnRowClick="false"
+          CanCancelEdit="true"
+          CommitEditTooltip="Commit Edit"
+          CancelEditTooltip="Cancel Edit"
+          IsEditRowSwitchingBlocked="false"
+          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted"
+          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+          EditButtonPosition="TableEditButtonPosition.StartAndEnd"
+          EditTrigger="TableEditTrigger.RowClick">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Products</MudText>
-        <MudSpacer />
+        <MudSpacer/>
         <MudTextField @bind-Value="searchString"
-        Placeholder="Search"
-        Adornment="Adornment.Start"
-        AdornmentIcon="@Icons.Material.Filled.Search"
-        IconSize="Size.Medium" Class="mt-0" />
+                      Placeholder="Search"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      IconSize="Size.Medium" Class="mt-0"/>
     </ToolBarContent>
     <ColGroup>
-        <col />
-        <col />
+        <col/>
+        <col/>
         @for (var i = 0; i < 9; i++)
         {
-            <col style="min-width:200px;" />
+            <col style="min-width:200px;"/>
         }
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Sku)">SKU</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Description)">Description</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Price)">Price (RM)</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Tag)">Tag</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x=>x.Weight)">Weight (g)</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x => x.Sku)">SKU</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x => x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x => x.Description)">Description</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x => x.Price)">Price (RM)</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x => x.Tag)">Tag</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductModel, object>(x => x.Weight)">Weight (g)</MudTableSortLabel></MudTh>
         <MudTh>Dimensions</MudTh>
         <MudTh>Shop</MudTh>
         <MudTh>Product Group</MudTh>
@@ -92,19 +92,19 @@ EditTrigger="TableEditTrigger.RowClick">
         <MudTd DataLabel="Dimensions">@context.Length x @context.Width x @context.Height</MudTd>
         <MudTd DataLabel="Shop">
             <MudButton OnClick="@(() => OpenShopDialogAsync(context.ShopIds))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Large"
-            FullWidth="false">
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Large"
+                       FullWidth="false">
                 View (@context.ShopIds.Count)
             </MudButton>
         </MudTd>
         <MudTd DataLabel="Product Group">
             <MudButton OnClick="@(() => OpenProductGroupDialogAsync(context.ProductGroupIds))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Large"
-            FullWidth="false">
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Large"
+                       FullWidth="false">
                 View (@context.ProductGroupIds.Count)
             </MudButton>
         </MudTd>
@@ -112,73 +112,73 @@ EditTrigger="TableEditTrigger.RowClick">
 
     <RowEditingTemplate>
         <MudTd DataLabel="SKU">
-            <MudTextField @bind-Value="context.Sku" Required />
+            <MudTextField @bind-Value="context.Sku" Required/>
         </MudTd>
         <MudTd DataLabel="Name">
-            <MudTextField @bind-Value="context.Name" Required />
+            <MudTextField @bind-Value="context.Name" Required/>
         </MudTd>
         <MudTd DataLabel="Description">
-            <MudTextField @bind-Value="context.Description" Required />
+            <MudTextField @bind-Value="context.Description" Required/>
         </MudTd>
         <MudTd DataLabel="Price (RM)">
-            <MudTextField @bind-Value="context.Price" Required />
+            <MudTextField @bind-Value="context.Price" Required/>
         </MudTd>
         <MudTd DataLabel="Tag">
-            <MudTextField @bind-Value="context.Tag" Required />
+            <MudTextField @bind-Value="context.Tag" Required/>
         </MudTd>
         <MudTd DataLabel="Weight (g)">
-            <MudTextField @bind-Value="context.Weight" Required />
+            <MudTextField @bind-Value="context.Weight" Required/>
         </MudTd>
         <MudTd DataLabel="Dimensions">
-            <MudTextField Label="Length" @bind-Value="context.Length" Required />
-            <MudTextField Label="Width" @bind-Value="context.Width" Required />
-            <MudTextField Label="Height" @bind-Value="context.Height" Required />
+            <MudTextField Label="Length" @bind-Value="context.Length" Required/>
+            <MudTextField Label="Width" @bind-Value="context.Width" Required/>
+            <MudTextField Label="Height" @bind-Value="context.Height" Required/>
         </MudTd>
         <MudTd DataLabel="Shop">
             <MudSelect T="Guid?"
-            ToStringFunc="@(id=> _allShopModels.FirstOrDefault(shopModel=>shopModel.Id == id)?.Name)"
-            Variant="@_defaultVariant"
-            Label="Shop"
-            Margin="Margin.Normal"
-            Dense="false"
-            Disabled="false"
-            ReadOnly="false"
-            Placeholder=@("Shop")
-            MultiSelection="true"
-            HelperText=@("Please select a Shop")
-            HelperTextOnFocus="true"
-            Clearable="false"
-            Required="false"
-            RequiredError="Please select a Shop"
-            SelectedValues="@(context.ShopIds.Select(x=>(Guid?)x))"
-            SelectedValuesChanged="@(x=> context.ShopIds = x.Select(y=>y.Value).ToList())">
+                       ToStringFunc="@(id => _allShopModels.FirstOrDefault(shopModel => shopModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Shop"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Shop")
+                       MultiSelection="true"
+                       HelperText=@("Please select a Shop")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="false"
+                       RequiredError="Please select a Shop"
+                       SelectedValues="@(context.ShopIds.Select(x => (Guid?)x))"
+                       SelectedValuesChanged="@(x => context.ShopIds = x.Select(y => y.Value).ToList())">
                 @foreach (var shopModel in _allShopModels)
                 {
-                    <MudSelectItem T="Guid?" Value="@shopModel.Id" />
+                    <MudSelectItem T="Guid?" Value="@shopModel.Id"/>
                 }
             </MudSelect>
         </MudTd>
         <MudTd DataLabel="Product Group">
             <MudSelect T="Guid?"
-            ToStringFunc="@(id=> _allProductGroupModels.FirstOrDefault(productGroupModel=>productGroupModel.Id == id)?.Name)"
-            Variant="@_defaultVariant"
-            Label="Product Group"
-            Margin="Margin.Normal"
-            Dense="false"
-            Disabled="false"
-            ReadOnly="false"
-            Placeholder=@("Product Group")
-            MultiSelection="true"
-            HelperText=@("Please select a Product Group")
-            HelperTextOnFocus="true"
-            Clearable="false"
-            Required="false"
-            RequiredError="Please select a Product Group"
-            SelectedValues="@(context.ProductGroupIds.Select(x=>(Guid?)x))"
-            SelectedValuesChanged="@(x=> context.ProductGroupIds = x.Select(y=>y.Value).ToList())">
+                       ToStringFunc="@(id => _allProductGroupModels.FirstOrDefault(productGroupModel => productGroupModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Product Group"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Product Group")
+                       MultiSelection="true"
+                       HelperText=@("Please select a Product Group")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="false"
+                       RequiredError="Please select a Product Group"
+                       SelectedValues="@(context.ProductGroupIds.Select(x => (Guid?)x))"
+                       SelectedValuesChanged="@(x => context.ProductGroupIds = x.Select(y => y.Value).ToList())">
                 @foreach (var productGroupModel in _allProductGroupModels)
                 {
-                    <MudSelectItem T="Guid?" Value="@productGroupModel.Id" />
+                    <MudSelectItem T="Guid?" Value="@productGroupModel.Id"/>
                 }
             </MudSelect>
         </MudTd>
@@ -186,10 +186,10 @@ EditTrigger="TableEditTrigger.RowClick">
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-        RowsPerPageString="Rows per page:"
-        InfoFormat="{first_item}-{last_item} of {all_items}"
-        AllItemsText="All"
-        HorizontalAlignment="HorizontalAlignment.Right" />
+                       RowsPerPageString="Rows per page:"
+                       InfoFormat="{first_item}-{last_item} of {all_items}"
+                       AllItemsText="All"
+                       HorizontalAlignment="HorizontalAlignment.Right"/>
     </PagerContent>
 </MudTable>
 
