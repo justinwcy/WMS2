@@ -27,6 +27,7 @@
         CurrentStaff = await UserUtilities.GetCurrentUser(Mediator, AuthenticationStateProvider);
 
         var getAllCompanyIdsQuery = new GetAllCompanyIdsQuery();
-        CompanyIds = await Mediator.Send(getAllCompanyIdsQuery);
+        //CompanyIds = await Mediator.Send(getAllCompanyIdsQuery);
+        CompanyIds = new List<Guid> { CurrentStaff.CompanyId };
     }
 }

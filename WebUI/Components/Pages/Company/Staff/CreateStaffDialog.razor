@@ -136,17 +136,18 @@
     private async Task Submit()
     {
         var createStaffDTO = new CreateStaffRequestDTO()
-            {
-                CreatedBy = CurrentStaff.Id,
-                CompanyId = _staffModel.CompanyId,
-                FirstName = _staffModel.FirstName,
-                LastName = _staffModel.LastName,
-                Email = _staffModel.Email,
-                Roles = _staffModel.Roles,
-                Password = _staffModel.Password,
-                ConfirmPassword = _staffModel.ConfirmPassword,
-                ZoneIds = _staffModel.ZoneIds,
-            };
+        {
+            CreatedBy = CurrentStaff.Id,
+            CompanyId = _staffModel.CompanyId,
+            FirstName = _staffModel.FirstName,
+            LastName = _staffModel.LastName,
+            Email = _staffModel.Email,
+            Roles = _staffModel.Roles,
+            Password = _staffModel.Password,
+            ConfirmPassword = _staffModel.ConfirmPassword,
+            ZoneIds = _staffModel.ZoneIds,
+            Claims = new Dictionary<string, string>(),
+        };
         var createStaffCommand = new CreateStaffCommand(createStaffDTO);
         var createStaffResponseDTO = await Mediator.Send(createStaffCommand);
 
