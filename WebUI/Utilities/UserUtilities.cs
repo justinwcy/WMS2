@@ -29,6 +29,9 @@ namespace WebUI.Utilities
                 var currentUserModel = new CurrentUserModel()
                 {
                     Id = getStaffResponseDTO.Id,
+                    Email = getStaffResponseDTO.Email,
+                    FirstName = getStaffResponseDTO.FirstName,
+                    LastName = getStaffResponseDTO.LastName,
                     CompanyId = getStaffResponseDTO.CompanyId.Value,
                 };
 

@@ -1,6 +1,27 @@
 ﻿@inject IDialogService Dialog
 @implements IAsyncDisposable
 @implements IPageComponent
+
+@if (_isReadPolicyExpired)
+{
+    <MudGrid Spacing="6" Justify="Justify.Center">
+        <MudItem>
+            <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" 
+                     Class="pb-4" 
+                     Style="height:100px;width:100px;margin:auto" 
+                     Color="Color.Warning"/>
+        </MudItem>
+        <MudItem>
+            <MudText Typo="Typo.subtitle2">Error 403: Forbidden</MudText>
+            <MudText Typo="Typo.subtitle2">@DateTime.Now</MudText>
+            <MudText>You do not have permission to view this page.</MudText>
+            <MudText>For more information, contact your system administrator</MudText>
+        </MudItem>
+    </MudGrid>
+    
+    return;
+}
+
 <MudGrid Class="mb-3">
     <MudItem xs="5">
         <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Company)>
@@ -35,25 +56,25 @@
 </MudGrid>
 
 <MudTable ReadOnly="_isReadOnly"
-Hover="true" FixedHeader="true"
-Filter="new Func<CompanyModel, bool>(FilterFunc)"
-CanCancelEdit="true"
-Items="@CompanyModels"
-GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-GroupFooterClass="mb-4"
-Dense="true"
-Loading="@_loading" LoadingProgressColor="Color.Info"
-MultiSelection="true"
-@bind-SelectedItems="_selectedCompanies"
-SelectOnRowClick="false"
-CommitEditTooltip="Commit Edit"
-CancelEditTooltip="Cancel Edit"
-IsEditRowSwitchingBlocked="false"
-RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-RowEditCommit="ItemHasBeenCommitted"
-ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-@ref="_tableRef">
+          Hover="true" FixedHeader="true"
+          Filter="new Func<CompanyModel, bool>(FilterFunc)"
+          CanCancelEdit="true"
+          Items="@CompanyModels"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4"
+          Dense="true"
+          Loading="@_loading" LoadingProgressColor="Color.Info"
+          MultiSelection="true"
+          @bind-SelectedItems="_selectedCompanies"
+          SelectOnRowClick="false"
+          CommitEditTooltip="Commit Edit"
+          CancelEditTooltip="Cancel Edit"
+          IsEditRowSwitchingBlocked="false"
+          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted"
+          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+          @ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Companies</MudText>
@@ -214,6 +235,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         // check if user has read authorization
         var readPolicyString = DataAccessUtilities.GetPolicyString(AccessName.Read, DataTableName.Company);
         _isReadPolicyExpired = await DataAccessUtilities.CheckIfClaimExpired(AuthenticationStateProvider, readPolicyString);
+        _isReadPolicyExpired = true;
         if (_isReadPolicyExpired)
         {
             return;
