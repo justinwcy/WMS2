@@ -238,6 +238,14 @@
             return;
         }
 
+        // check if user has read authorization
+        var readPolicyString = DataAccessUtilities.GetPolicyString(AccessName.Read, DataTableName.IncomingOrder);
+        var readPolicyExpired = await DataAccessUtilities.CheckIfClaimExpired(AuthenticationStateProvider, readPolicyString);
+        if (readPolicyExpired)
+        {
+            return;
+        }
+
         _loading = true;
         await base.OnParametersSetAsync();
         var success = await FetchData();
