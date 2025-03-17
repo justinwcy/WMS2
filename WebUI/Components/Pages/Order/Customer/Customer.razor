@@ -165,6 +165,7 @@
     private CustomerModel _customerModelBeforeEdit { get; set; }
 
     private bool _isReadOnly = false;
+    private bool _isReadPolicyExpired = false;
     
     protected override async Task OnInitializedAsync()
     {
@@ -182,8 +183,8 @@
 
         // check if user has read authorization
         var readPolicyString = DataAccessUtilities.GetPolicyString(AccessName.Read, DataTableName.Customer);
-        var readPolicyExpired = await DataAccessUtilities.CheckIfClaimExpired(AuthenticationStateProvider, readPolicyString);
-        if (readPolicyExpired)
+        _isReadPolicyExpired = await DataAccessUtilities.CheckIfClaimExpired(AuthenticationStateProvider, readPolicyString);
+        if (_isReadPolicyExpired)
         {
             return;
         }

@@ -180,6 +180,7 @@
     private List<string> _orderStates { get; set; }
 
     private bool _isReadOnly = false;
+    private bool _isReadPolicyExpired = false;
     
     protected override async Task OnInitializedAsync()
     {
@@ -202,8 +203,8 @@
 
         // check if user has read authorization
         var readPolicyString = DataAccessUtilities.GetPolicyString(AccessName.Read, DataTableName.CustomerOrderDetail);
-        var readPolicyExpired = await DataAccessUtilities.CheckIfClaimExpired(AuthenticationStateProvider, readPolicyString);
-        if (readPolicyExpired)
+        _isReadPolicyExpired = await DataAccessUtilities.CheckIfClaimExpired(AuthenticationStateProvider, readPolicyString);
+        if (_isReadPolicyExpired)
         {
             return;
         }

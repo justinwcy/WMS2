@@ -160,6 +160,7 @@
     private List<CustomerOrderModel> _allCustomerOrderModels { get; set; } = [];
 
     private bool _isReadOnly = false;
+    private bool _isReadPolicyExpired = false;
     
     protected override async Task OnInitializedAsync()
     {
