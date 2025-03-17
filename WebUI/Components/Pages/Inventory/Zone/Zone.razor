@@ -2,6 +2,13 @@
 @implements IAsyncDisposable
 @implements IPageComponent
 
+@if (_isReadPolicyExpired)
+{
+    <ForbiddenError/>
+    return;
+}
+
+
 <MudGrid Class="mb-3">
     <MudItem xs="5">
             <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Zone)>
