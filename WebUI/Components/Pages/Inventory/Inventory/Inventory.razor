@@ -266,7 +266,7 @@
     protected override async Task OnInitializedAsync()
     {
         var updatePolicyString = DataAccessUtilities.GetPolicyString(AccessName.Update, DataTableName.Company);
-        _isReadOnly = await DataAccessUtilities.GetExpiryDateClaim(AuthenticationStateProvider, updatePolicyString);
+        _isReadOnly = await DataAccessUtilities.CheckIfClaimExpired(AuthenticationStateProvider, updatePolicyString);
     }
 
     protected override async Task OnParametersSetAsync()

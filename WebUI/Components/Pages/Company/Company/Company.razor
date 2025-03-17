@@ -199,7 +199,7 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     protected override async Task OnInitializedAsync()
     {
         var updatePolicyString = DataAccessUtilities.GetPolicyString(AccessName.Update, DataTableName.Company);
-        _isReadOnly = await DataAccessUtilities.GetExpiryDateClaim(AuthenticationStateProvider, updatePolicyString);
+        _isReadOnly = await DataAccessUtilities.CheckIfClaimExpired(AuthenticationStateProvider, updatePolicyString);
     }
 
     protected override async Task OnParametersSetAsync()
@@ -209,30 +209,6 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         {
             return;
         }
-
-        // var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        // var user = authState.User;
-
-        // var readPolicyString = DataAccessUtilities.GetPolicyString(AccessName.Read, DataTableName.Company);
-        // var readPolicyClaim = user.Claims.FirstOrDefault(claim => claim.Type == readPolicyString);
-        // if (readPolicyClaim != null)
-        // {
-        //     var expiryDateString = readPolicyClaim.Value;
-        //     var expiryDate = DateTime.ParseExact(
-        //         expiryDateString,
-        //         "yyyy/MMM/dd HH:mm:ss",
-        //         CultureInfo.InvariantCulture);
-        //     var dateNow = DateTime.Now;
-
-        //     if (expiryDate < dateNow)
-        //     {
-        //         return;
-        //     }
-        // }
-        // else
-        // {
-        //     return;
-        // }
 
         _loading = true;
         await base.OnParametersSetAsync();

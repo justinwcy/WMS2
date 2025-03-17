@@ -12,7 +12,7 @@ namespace Infrastructure.Extensions.Identity.Authorization
             return $"{PolicyConstant.DataAccessPrefix}{accessName}.{dataTableName}";
         }
 
-        public static async Task<bool> GetExpiryDateClaim(
+        public static async Task<bool> CheckIfClaimExpired(
             AuthenticationStateProvider authenticationStateProvider,
             string claimString)
         {
