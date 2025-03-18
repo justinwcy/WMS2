@@ -84,10 +84,10 @@
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Warehouse">
             <MudButton OnClick="@(() => OpenWarehouseDialogAsync(@context.WarehouseIds))"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            Size="Size.Small"
-            FullWidth="false">
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       FullWidth="false">
                 View (@context.WarehouseIds.Count)
             </MudButton>
         </MudTd>
@@ -109,22 +109,22 @@
 
         <MudTd DataLabel="Warehouse">
             <MudSelect T="Guid?"
-            ToStringFunc="@(id => _allWarehouseModels.FirstOrDefault(warehouseModel => warehouseModel.Id == id)?.Name)"
-            Variant="@_defaultVariant"
-            Label="Rack"
-            Margin="Margin.Normal"
-            Dense="false"
-            Disabled="false"
-            ReadOnly="false"
-            Placeholder=@("Warehouse")
-            MultiSelection="true"
-            HelperText=@("Please select a warehouse")
-            HelperTextOnFocus="true"
-            Clearable="false"
-            Required="false"
-            RequiredError="Please select a warehouse"
-            SelectedValues="@(context.WarehouseIds.Select(x => (Guid?)x))"
-            SelectedValuesChanged="@(x => context.WarehouseIds = x.Select(x => x.Value).ToList())">
+                       ToStringFunc="@(id => _allWarehouseModels.FirstOrDefault(warehouseModel => warehouseModel.Id == id)?.Name)"
+                       Variant="@_defaultVariant"
+                       Label="Rack"
+                       Margin="Margin.Normal"
+                       Dense="false"
+                       Disabled="false"
+                       ReadOnly="false"
+                       Placeholder=@("Warehouse")
+                       MultiSelection="true"
+                       HelperText=@("Please select a warehouse")
+                       HelperTextOnFocus="true"
+                       Clearable="false"
+                       Required="false"
+                       RequiredError="Please select a warehouse"
+                       SelectedValues="@(context.WarehouseIds.Select(x => (Guid?)x))"
+                       SelectedValuesChanged="@(x => context.WarehouseIds = x.Select(x => x.Value).ToList())">
                 @foreach (var warehouseModel in _allWarehouseModels)
                 {
                     <MudSelectItem T="Guid?" Value="@warehouseModel.Id"/>
