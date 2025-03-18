@@ -148,6 +148,7 @@ namespace Infrastructure.Repository
                 Password = "123asd!@#ASD",
                 Roles = new List<string> { StaffRole.MasterControl },
                 ConfirmPassword = "123asd!@#ASD",
+                Claims = new Dictionary<string, string>(),
             };
 
             await CreateStaffAsync(createStaffRequestDTO, true);

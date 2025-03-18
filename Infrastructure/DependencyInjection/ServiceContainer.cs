@@ -27,12 +27,18 @@ namespace Infrastructure.DependencyInjection
             services.AddSingleton<IFileStorage>(new LocalFileStorage(localStoragePath));
 
 
-            var connectionString = config.GetConnectionString("Default");
+            var connectionString = config.GetConnectionString("ProductionRemote");
 
             var serverVersion = new MariaDbServerVersion(new Version(10, 4, 32));
 
             services.AddDbContextFactory<WmsDbContext>(
-                option => option.UseMySql(connectionString, serverVersion),
+                option =>
+                {
+                    option.UseMySql(connectionString, serverVersion, mysqlOptions =>
+                    {
+                        mysqlOptions.EnableRetryOnFailure();
+                    });
+                },
                 ServiceLifetime.Transient);
             
             services.AddAuthentication(options =>
