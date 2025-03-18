@@ -10,57 +10,57 @@
 
 <MudGrid Class="mb-3">
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Warehouse)>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Warehouse)>
             @if (ShowDeleteButton)
-        {
-            <MudButton OnClick="@DeleteWarehouses"
-                       Color="Color.Error"
-                       Variant="Variant.Filled"
-                       Size="Size.Large"
-                       FullWidth="true"
-                       Disabled="_disableDelete">
-                Delete Warehouse
-            </MudButton>
-        }
-             </AuthorizeView>
-            </MudItem>
+            {
+                <MudButton OnClick="@DeleteWarehouses"
+                Color="Color.Error"
+                Variant="Variant.Filled"
+                Size="Size.Large"
+                FullWidth="true"
+                Disabled="_disableDelete">
+                    Delete Warehouse
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
     <MudItem xs="2"/>
     <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Warehouse)>
-        @if (ShowCreateButton)
-        {
-            <MudButton OnClick="@(OpenCreateWarehouseDialogAsync)"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="true">
-                Create Warehouse
-            </MudButton>
-        }
-             </AuthorizeView>
-        </MudItem>
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Warehouse)>
+            @if (ShowCreateButton)
+            {
+                <MudButton OnClick="@(OpenCreateWarehouseDialogAsync)"
+                Variant="Variant.Filled"
+                Color="Color.Primary"
+                Size="Size.Large"
+                FullWidth="true">
+                    Create Warehouse
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
 </MudGrid>
 
 <MudTable ReadOnly="_isReadOnly" 
-          Hover="true" FixedHeader="true"
-          Filter="new Func<WarehouseModel,bool>(FilterFunc)"
-          CanCancelEdit="true"
-          Items="@WarehouseModels"
-          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-          GroupFooterClass="mb-4"
-          Dense="true"
-          Loading="@_loading" LoadingProgressColor="Color.Info"
-          MultiSelection="true"
-          @bind-SelectedItems="_selectedWarehouses"
-          SelectOnRowClick="false"
-          CommitEditTooltip="Commit Edit"
-          CancelEditTooltip="Cancel Edit"
-          IsEditRowSwitchingBlocked="false"
-          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-          RowEditCommit="ItemHasBeenCommitted"
-          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-          @ref="_tableRef">
+Hover="true" FixedHeader="true"
+Filter="new Func<WarehouseModel,bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@WarehouseModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedWarehouses"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Warehouses</MudText>
@@ -85,14 +85,14 @@
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Address">@context.Address</MudTd>
         <MudTd DataLabel="Company">
-            @_allCompanyModels.FirstOrDefault(companyModel => companyModel.Id == @context.CompanyId)?.Name
+            @_currentCompanyModel.Name
         </MudTd>
         <MudTd DataLabel="Zone">
             <MudButton OnClick="@(() => OpenZoneDialogAsync(@context.ZoneIds))"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Small"
-                       FullWidth="false">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
                 View (@context.ZoneIds.Count)
             </MudButton>
         </MudTd>
@@ -108,38 +108,43 @@
         </MudTd>
 
         <MudTd DataLabel="Company">
-            <MudSelect @bind-Value="context.CompanyId"
-                       T="Guid?"
-                       ToStringFunc="@(id=> _allCompanyModels.FirstOrDefault(companyModel=>companyModel.Id == id)?.Name)"
-                       Variant="@_defaultVariant"
-                       Label="Company"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Company")
-                       MultiSelection="false"
-                       HelperText=@("Please select a company")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="true"
-                       RequiredError="Please select a company">
-                @foreach (var companyModel in _allCompanyModels)
-                {
-                    <MudSelectItem T="Guid?" Value="companyModel.Id"></MudSelectItem>
-                }
-            </MudSelect>
+            <MudText>@_currentCompanyModel.Name</MudText>
+        </MudTd>
 
-            <MudTd DataLabel="Zone"></MudTd>
+        <MudTd>
+            <MudTd DataLabel="Zone">
+                <MudSelect T="Guid?"
+                ToStringFunc="@(id=> _allZoneModels.FirstOrDefault(zoneModel=>zoneModel.Id == id)?.Name)"
+                Variant="@_defaultVariant"
+                Label="Zone"
+                Margin="Margin.Normal"
+                Dense="false"
+                Disabled="false"
+                ReadOnly="false"
+                Placeholder=@("Zone")
+                MultiSelection="true"
+                HelperText=@("Please select a zone")
+                HelperTextOnFocus="true"
+                Clearable="false"
+                Required="false"
+                RequiredError="Please select a zone"
+                SelectedValues="@(context.ZoneIds.Select(x=>(Guid?)x))"
+                SelectedValuesChanged="@(x=> context.ZoneIds = x.Select(y=>y.Value).ToList())">
+                    @foreach (var zoneModel in _allZoneModels)
+                    {
+                        <MudSelectItem T="Guid?" Value="@zoneModel.Id" />
+                    }
+                </MudSelect>
+            </MudTd>
         </MudTd>
     </RowEditingTemplate>
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-                       RowsPerPageString="Rows per page:"
-                       InfoFormat="{first_item}-{last_item} of {all_items}"
-                       AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right" />
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right" />
     </PagerContent>
 </MudTable>
 
@@ -175,11 +180,12 @@
     private WarehouseModel _warehouseModelBeforeEdit { get; set; }
     private static readonly Variant _defaultVariant = Theme.DefaultInputVariant();
 
-    private List<CompanyModel> _allCompanyModels { get; set; } = [];
+    private List<ZoneModel> _allZoneModels { get; set; } = [];
+    private CompanyModel _currentCompanyModel { get; set; } = new();
 
     private bool _isReadOnly = false;
     private bool _isReadPolicyExpired = false;
-    
+
     protected override async Task OnInitializedAsync()
     {
         var updatePolicyString = DataAccessUtilities.GetPolicyString(AccessName.Update, DataTableName.Company);
@@ -334,22 +340,36 @@
             WarehouseModels.Add(warehouseModel);
         }
 
-        var getAllCompanyIdsQuery = new GetAllCompanyIdsQuery();
-        var allCompanyIds = await Mediator.Send(getAllCompanyIdsQuery);
-        foreach (var companyId in allCompanyIds)
+        _allZoneModels.Clear();
+        var getAllZoneIdsQuery = new GetAllZoneIdsByCompanyIdQuery(CurrentStaff.CompanyId);
+        var allZoneIds = await Mediator.Send(getAllZoneIdsQuery);
+        foreach (var zoneId in allZoneIds)
         {
-            var getCompanyByIdQuery = new GetCompanyByIdQuery(companyId);
-            var getCompanyResponseDTO = await Mediator.Send(getCompanyByIdQuery);
-            var companyModel = new CompanyModel()
+            var getZoneByIdQuery = new GetZoneByIdQuery(zoneId);
+            var getZoneResponseDTO = await Mediator.Send(getZoneByIdQuery);
+            var zoneModel = new ZoneModel()
                 {
-                    Id = companyId,
-                    StaffIds = getCompanyResponseDTO.StaffIds,
-                    WarehouseIds = getCompanyResponseDTO.WarehouseIds,
-                    Name = getCompanyResponseDTO.Name,
+                    Id = zoneId,
+                    StaffIds = getZoneResponseDTO.StaffIds,
+                    Name = getZoneResponseDTO.Name,
+                    RackIds = getZoneResponseDTO.RackIds,
+                    WarehouseId = getZoneResponseDTO.WarehouseId,
                 };
 
-            _allCompanyModels.Add(companyModel);
+            _allZoneModels.Add(zoneModel);
         }
+
+        var getCompanyByIdQuery = new GetCompanyByIdQuery(CurrentStaff.CompanyId);
+        var getCompanyResponseDTO = await Mediator.Send(getCompanyByIdQuery);
+
+        _currentCompanyModel = new CompanyModel()
+        {
+            Name = getCompanyResponseDTO.Name,
+            Id = getCompanyResponseDTO.Id,
+            StaffIds = getCompanyResponseDTO.StaffIds,
+            WarehouseIds = getCompanyResponseDTO.WarehouseIds,
+        };
+        
         return true;
     }
 
