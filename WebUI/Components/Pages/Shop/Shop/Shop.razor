@@ -329,50 +329,10 @@
 
     public async Task<bool> FetchData()
     {
-        ShopModels.Clear();
-        foreach (var shopId in ShopIds)
-        {
-            var getShopByIdQuery = new GetShopByIdQuery(shopId);
-            var shopDTO = await Mediator.Send(getShopByIdQuery);
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        ShopModels = await databaseHelper.GetShops(ShopIds);
+        _allProductModels = await databaseHelper.GetAllProducts();
 
-            var shopModel = new ShopModel()
-                {
-                    ProductIds = shopDTO.ProductIds,
-                    Platform = shopDTO.Platform,
-                    Address = shopDTO.Address,
-                    Id = shopDTO.Id,
-                    Name = shopDTO.Name,
-                    Website = shopDTO.Website
-                };
-
-            ShopModels.Add(shopModel);
-        }
-
-        _allProductModels.Clear();
-        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var allProductIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
-        foreach (var productId in allProductIds)
-        {
-            var getProductByIdQuery = new GetProductByIdQuery(productId);
-            var getProductResponseDTO = await Mediator.Send(getProductByIdQuery);
-            var productModel = new ProductModel()
-            {
-                Id = getProductResponseDTO.Id,
-                Description = getProductResponseDTO.Description,
-                Height = getProductResponseDTO.Height,
-                Name = getProductResponseDTO.Name,
-                Length = getProductResponseDTO.Length,
-                Price = getProductResponseDTO.Price,
-                ShopIds = getProductResponseDTO.ShopIds,
-                Width = getProductResponseDTO.Width,
-                ProductGroupIds = getProductResponseDTO.ProductGroupIds,
-                Weight = getProductResponseDTO.Weight,
-                Sku = getProductResponseDTO.Sku,
-                Tag = getProductResponseDTO.Tag,
-            };
-
-            _allProductModels.Add(productModel);
-        }
         return true;
     }
 

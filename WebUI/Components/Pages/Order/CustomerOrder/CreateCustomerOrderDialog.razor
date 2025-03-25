@@ -108,55 +108,10 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        var getAllCustomerIdsByCompanyIdQuery = new GetAllCustomerIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var customerIds = await Mediator.Send(getAllCustomerIdsByCompanyIdQuery);
-        foreach (var customerId in customerIds)
-        {
-            var getCustomerByIdQuery = new GetCustomerByIdQuery(customerId);
-            var customerDTO = await Mediator.Send(getCustomerByIdQuery);
-            var customerModel = new CustomerModel()
-                {
-                    Id = customerDTO.Id,
-                    Address = customerDTO.Address,
-                    CustomerOrderIds = customerDTO.CustomerOrderIds,
-                    Email = customerDTO.Email,
-                    FirstName = customerDTO.FirstName,
-                    LastName = customerDTO.LastName,
-                };
-            _allCustomerModels.Add(customerModel);
-        }
-
-        var getAllBinIdsByCompanyIdQuery = new GetAllBinIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var binIds = await Mediator.Send(getAllBinIdsByCompanyIdQuery);
-        foreach (var binId in binIds)
-        {
-            var getBinByIdQuery = new GetBinByIdQuery(binId);
-            var binDTO = await Mediator.Send(getBinByIdQuery);
-            var binModel = new BinModel()
-                {
-                    Id = binDTO.Id,
-                    CustomerOrderIds = binDTO.CustomerOrderIds,
-                    Name = binDTO.Name,
-                };
-            _allBinModels.Add(binModel);
-        }
-
-        var getAllCourierIdsByCompanyIdQuery = new GetAllCourierIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var courierIds = await Mediator.Send(getAllCourierIdsByCompanyIdQuery);
-        foreach (var courierId in courierIds)
-        {
-            var getCourierByIdQuery = new GetCourierByIdQuery(courierId);
-            var courierDTO = await Mediator.Send(getCourierByIdQuery);
-            var courierModel = new CourierModel()
-                {
-                    Id = courierDTO.Id,
-                    CustomerOrderIds = courierDTO.CustomerOrderIds,
-                    Name = courierDTO.Name,
-                    Remark = courierDTO.Remark,
-                    Price = courierDTO.Price,
-                };
-            _allCourierModels.Add(courierModel);
-        }
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        _allCustomerModels = await databaseHelper.GetAllCustomers();
+        _allBinModels = await databaseHelper.GetAllBins();
+        _allCourierModels = await databaseHelper.GetAllCouriers();
     }
 
     private async Task Submit()

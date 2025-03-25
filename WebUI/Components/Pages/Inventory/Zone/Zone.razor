@@ -378,89 +378,11 @@
 
     public async Task<bool> FetchData()
     {
-        ZoneModels.Clear();
-        foreach (var zoneId in ZoneIds)
-        {
-            var getZoneByIdQuery = new GetZoneByIdQuery(zoneId);
-            var zoneDTO = await Mediator.Send(getZoneByIdQuery);
-
-            var zoneModel = new ZoneModel()
-                {
-                    Id = zoneDTO.Id,
-                    Name = zoneDTO.Name,
-                    StaffIds = zoneDTO.StaffIds,
-                    RackIds = zoneDTO.RackIds,
-                    WarehouseId = zoneDTO.WarehouseId,
-                };
-
-            ZoneModels.Add(zoneModel);
-        }
-
-        // set warehouse ids
-        _allWarehouseModels.Clear();
-        var getAllWarehouseIdsByCompanyIdQuery = new GetAllWarehouseIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var warehouseIds = await Mediator.Send(getAllWarehouseIdsByCompanyIdQuery);
-        foreach (var warehouseId in warehouseIds)
-        {
-            var getWarehouseByIdQuery = new GetWarehouseByIdQuery(warehouseId);
-            var warehouseDTO = await Mediator.Send(getWarehouseByIdQuery);
-
-            var warehouseModel = new WarehouseModel()
-                {
-                    Id = warehouseDTO.Id,
-                    Name = warehouseDTO.Name,
-                    Address = warehouseDTO.Address,
-                    ZoneIds = warehouseDTO.ZoneIds,
-                    CompanyId = warehouseDTO.CompanyId,
-                };
-            _allWarehouseModels.Add(warehouseModel);
-        }
-
-        // set staff models
-        _allStaffModels.Clear();
-        var getAllStaffIdsByCompanyIdQuery = new GetAllStaffIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var staffIds = await Mediator.Send(getAllStaffIdsByCompanyIdQuery);
-        foreach (var staffId in staffIds)
-        {
-            var getStaffByIdQuery = new GetStaffByIdQuery(staffId);
-            var getStaffResponseDTO = await Mediator.Send(getStaffByIdQuery);
-
-            var staffModel = new StaffModel()
-            {
-                Id = getStaffResponseDTO.Id,
-                Roles = getStaffResponseDTO.Roles,
-                Email = getStaffResponseDTO.Email,
-                FirstName = getStaffResponseDTO.FirstName,
-                LastName = getStaffResponseDTO.LastName,
-                ZoneIds = getStaffResponseDTO.ZoneIds,
-                CompanyId = getStaffResponseDTO.CompanyId.GetValueOrDefault(),
-            };
-            _allStaffModels.Add(staffModel);
-        }
-
-        // set rack models
-        _allRackModels.Clear();
-        var getAllRackIdsByCompanyIdQuery = new GetAllRackIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var rackIds = await Mediator.Send(getAllRackIdsByCompanyIdQuery);
-        foreach (var rackId in rackIds)
-        {
-            var getRackByIdQuery = new GetRackByIdQuery(rackId);
-            var getRackResponseDTO = await Mediator.Send(getRackByIdQuery);
-
-            var rackModel = new RackModel()
-                {
-                    Id = getRackResponseDTO.Id,
-                    Name = getRackResponseDTO.Name,
-                    ProductIds = getRackResponseDTO.ProductIds,
-                    Depth = getRackResponseDTO.Depth,
-                    MaxWeight = getRackResponseDTO.MaxWeight,
-                    Width = getRackResponseDTO.Width,
-                    Height = getRackResponseDTO.Height,
-                    ZoneId = getRackResponseDTO.ZoneId.GetValueOrDefault(),
-                };
-            _allRackModels.Add(rackModel);
-        }
-
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        ZoneModels = await databaseHelper.GetZones(ZoneIds);
+        _allWarehouseModels = await databaseHelper.GetAllWarehouses();
+        _allStaffModels = await databaseHelper.GetAllStaffs();
+        _allRackModels = await databaseHelper.GetAllRacks();
         return true;
     }
 

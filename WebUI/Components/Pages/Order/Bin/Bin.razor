@@ -297,44 +297,10 @@
 
     public async Task<bool> FetchData()
     {
-        BinModels.Clear();
-        foreach (var binId in BinIds)
-        {
-            var getBinByIdQuery = new GetBinByIdQuery(binId);
-            var binDTO = await Mediator.Send(getBinByIdQuery);
-
-            var binModel = new BinModel()
-                {
-                    Id = binDTO.Id,
-                    Name = binDTO.Name,
-                    CustomerOrderIds = binDTO.CustomerOrderIds
-                };
-
-            BinModels.Add(binModel);
-        }
-
-        _allCustomerOrderModels.Clear();
-        var getAllCustomerOrderIdsByCompanyIdQuery = new GetAllCustomerOrderIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var allCustomerOrderIds = await Mediator.Send(getAllCustomerOrderIdsByCompanyIdQuery);
-        foreach (var customerOrderId in allCustomerOrderIds)
-        {
-            var getCustomerOrderByIdQuery = new GetCustomerOrderByIdQuery(customerOrderId);
-            var getCustomerOrderResponseDTO = await Mediator.Send(getCustomerOrderByIdQuery);
-
-            var customerOrderModel = new CustomerOrderModel()
-                {
-                    Id = getCustomerOrderResponseDTO.Id,
-                    BinId = getCustomerOrderResponseDTO.BinId,
-                    CourierId = getCustomerOrderResponseDTO.CourierId,
-                    OrderAddress = getCustomerOrderResponseDTO.OrderAddress,
-                    CustomerId = getCustomerOrderResponseDTO.CustomerId,
-                    CustomerOrderDetailIds = getCustomerOrderResponseDTO.CustomerOrderDetailIds,
-                    ExpectedArrivalDate = getCustomerOrderResponseDTO.ExpectedArrivalDate,
-                    OrderCreationDate = getCustomerOrderResponseDTO.OrderCreationDate,
-                };
-
-            _allCustomerOrderModels.Add(customerOrderModel);
-        }
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        BinModels = await databaseHelper.GetBins(BinIds);
+        _allCustomerOrderModels = await databaseHelper.GetAllCustomerOrders();
+        
         return true;
     }
 

@@ -14,11 +14,11 @@
             @if (ShowDeleteButton)
             {
                 <MudButton OnClick="@DeleteIncomingOrders"
-                           Color="Color.Error"
-                           Variant="Variant.Filled"
-                           Size="Size.Large"
-                           FullWidth="true"
-                           Disabled="_disableDelete">
+                Color="Color.Error"
+                Variant="Variant.Filled"
+                Size="Size.Large"
+                FullWidth="true"
+                Disabled="_disableDelete">
                     Delete Incoming Order
                 </MudButton>
             }
@@ -30,10 +30,10 @@
             @if (ShowCreateButton)
             {
                 <MudButton OnClick="@(OpenCreateIncomingOrderDialogAsync)"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           Size="Size.Large"
-                           FullWidth="true">
+                Variant="Variant.Filled"
+                Color="Color.Primary"
+                Size="Size.Large"
+                FullWidth="true">
                     Create Incoming Order
                 </MudButton>
             }
@@ -42,25 +42,25 @@
 </MudGrid>
 
 <MudTable ReadOnly="_isReadOnly" 
-          Hover="true" FixedHeader="true"
-          Filter="new Func<IncomingOrderModel, bool>(FilterFunc)"
-          CanCancelEdit="true"
-          Items="@IncomingOrderModels"
-          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-          GroupFooterClass="mb-4"
-          Dense="true"
-          Loading="@_loading" LoadingProgressColor="Color.Info"
-          MultiSelection="true"
-          @bind-SelectedItems="_selectedIncomingOrders"
-          SelectOnRowClick="false"
-          CommitEditTooltip="Commit Edit"
-          CancelEditTooltip="Cancel Edit"
-          IsEditRowSwitchingBlocked="false"
-          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-          RowEditCommit="ItemHasBeenCommitted"
-          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-          @ref="_tableRef">
+Hover="true" FixedHeader="true"
+Filter="new Func<IncomingOrderModel, bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@IncomingOrderModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedIncomingOrders"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">IncomingOrders</MudText>
@@ -94,10 +94,10 @@
 
         <MudTd DataLabel="Details">
             <MudButton OnClick="@(() => OpenIncomingOrderProductDialogAsync(@context.Id, @context.IncomingOrderProductIds))"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Small"
-                       FullWidth="false">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
                 View (@context.IncomingOrderProductIds.Count)
             </MudButton>
         </MudTd>
@@ -110,33 +110,33 @@
 
         <MudTd DataLabel="Incoming Date">
             <MudDatePicker Label="Incoming Order Date"
-                           Editable="true"
-                           @bind-Date="context.IncomingDate"
-                           Placeholder="Incoming Order Date"/>
+            Editable="true"
+            @bind-Date="context.IncomingDate"
+            Placeholder="Incoming Order Date"/>
         </MudTd>
 
         <MudTd DataLabel="Receiving Date">
             <MudDatePicker Label="Receiving Date"
-                           Editable="true"
-                           @bind-Date="context.ReceivingDate"
-                           Placeholder="Receiving Date"/>
+            Editable="true"
+            @bind-Date="context.ReceivingDate"
+            Placeholder="Receiving Date"/>
         </MudTd>
 
         <MudTd DataLabel="Status">
             <MudSelect @bind-Value="context.Status"
-                       Variant="@_defaultVariant"
-                       Label="Status"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Status")
-                       MultiSelection="false"
-                       HelperText=@("Please select a status")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="true"
-                       RequiredError="Please select a status">
+            Variant="@_defaultVariant"
+            Label="Status"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Status")
+            MultiSelection="false"
+            HelperText=@("Please select a status")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="true"
+            RequiredError="Please select a status">
                 @foreach (var orderState in _orderStates)
                 {
                     <MudSelectItem Value="@orderState">@orderState</MudSelectItem>
@@ -146,21 +146,21 @@
 
         <MudTd DataLabel="Vendor">
             <MudSelect @bind-Value="context.VendorId"
-                       T="Guid?"
-                       ToStringFunc="@(id => $"{_allVendorModels.FirstOrDefault(companyModel => companyModel.Id == id)?.FirstName} {_allVendorModels.FirstOrDefault(companyModel => companyModel.Id == id)?.LastName}")"
-                       Variant="@_defaultVariant"
-                       Label="Vendor"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Vendor")
-                       MultiSelection="false"
-                       HelperText=@("Please select a vendor")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="true"
-                       RequiredError="Please select a vendor">
+            T="Guid?"
+            ToStringFunc="@(id => $"{_allVendorModels.FirstOrDefault(companyModel => companyModel.Id == id)?.FirstName} {_allVendorModels.FirstOrDefault(companyModel => companyModel.Id == id)?.LastName}")"
+            Variant="@_defaultVariant"
+            Label="Vendor"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Vendor")
+            MultiSelection="false"
+            HelperText=@("Please select a vendor")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="true"
+            RequiredError="Please select a vendor">
                 @foreach (var vendorModel in _allVendorModels)
                 {
                     <MudSelectItem T="Guid?" Value="vendorModel.Id"></MudSelectItem>
@@ -170,10 +170,10 @@
 
         <MudTd DataLabel="Details">
             <MudButton OnClick="@(() => OpenIncomingOrderProductDialogAsync(@context.Id, @context.IncomingOrderProductIds))"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Small"
-                       FullWidth="false">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
                 View (@context.IncomingOrderProductIds.Count)
             </MudButton>
         </MudTd>
@@ -182,10 +182,10 @@
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-                       RowsPerPageString="Rows per page:"
-                       InfoFormat="{first_item}-{last_item} of {all_items}"
-                       AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right"/>
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right"/>
     </PagerContent>
 </MudTable>
 
@@ -223,10 +223,10 @@
     private string searchString = "";
     private MudTable<IncomingOrderModel> _tableRef;
     private IncomingOrderModel _incomingOrderModelBeforeEdit { get; set; }
-    
+
     private bool _isReadOnly = false;
     private bool _isReadPolicyExpired = false;
-    
+
     protected override async Task OnInitializedAsync()
     {
         _orderStates = typeof(OrderState)
@@ -375,45 +375,10 @@
 
     public async Task<bool> FetchData()
     {
-        IncomingOrderModels.Clear();
-        foreach (var incomingOrderId in IncomingOrderIds)
-        {
-            var getIncomingOrderByIdQuery = new GetIncomingOrderByIdQuery(incomingOrderId);
-            var incomingOrderDTO = await Mediator.Send(getIncomingOrderByIdQuery);
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        IncomingOrderModels = await databaseHelper.GetIncomingOrders(IncomingOrderIds);
 
-            var incomingOrderModel = new IncomingOrderModel()
-                {
-                    Id = incomingOrderDTO.Id,
-                    IncomingOrderProductIds = incomingOrderDTO.IncomingOrderProductIds,
-                    IncomingDate = incomingOrderDTO.IncomingDate,
-                    PONumber = incomingOrderDTO.PONumber,
-                    ReceivingDate = incomingOrderDTO.ReceivingDate,
-                    Status = incomingOrderDTO.Status,
-                    VendorId = incomingOrderDTO.VendorId,
-                };
-
-            IncomingOrderModels.Add(incomingOrderModel);
-        }
-
-        var getAllVendorIdsByCompanyIdQuery = new GetAllVendorIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var vendorIds = await Mediator.Send(getAllVendorIdsByCompanyIdQuery);
-        foreach (var vendorId in vendorIds)
-        {
-            var getVendorByIdQuery = new GetVendorByIdQuery(vendorId);
-            var vendorDTO = await Mediator.Send(getVendorByIdQuery);
-
-            var vendorModel = new VendorModel()
-                {
-                    Id = vendorDTO.Id,
-                    Address = vendorDTO.Address,
-                    Email = vendorDTO.Email,
-                    FirstName = vendorDTO.FirstName,
-                    LastName = vendorDTO.LastName,
-                    PhoneNumber = vendorDTO.PhoneNumber,
-                    IncomingOrderIds = vendorDTO.IncomingOrderIds,
-                };
-            _allVendorModels.Add(vendorModel);
-        }
+        _allVendorModels = await databaseHelper.GetAllVendors();
 
         return true;
     }

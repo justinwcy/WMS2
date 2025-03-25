@@ -329,50 +329,9 @@
 
     public async Task<bool> FetchData()
     {
-        CustomerOrderDetailModels.Clear();
-        foreach (var customerOrderDetailId in CustomerOrderDetailIds)
-        {
-            var getCustomerOrderDetailByIdQuery = new GetCustomerOrderDetailByIdQuery(customerOrderDetailId);
-            var customerOrderDetailDTO = await Mediator.Send(getCustomerOrderDetailByIdQuery);
-
-            var customerOrderDetailModel = new CustomerOrderDetailModel()
-                {
-                    Id = customerOrderDetailDTO.Id,
-                    Status = customerOrderDetailDTO.Status,
-                    CustomerOrderId = customerOrderDetailDTO.CustomerOrderId,
-                    ProductId = customerOrderDetailDTO.ProductId,
-                    Quantity = customerOrderDetailDTO.Quantity
-                };
-
-            CustomerOrderDetailModels.Add(customerOrderDetailModel);
-        }
-
-
-        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
-
-        foreach (var productId in productIds)
-        {
-            var getProductByIdQuery = new GetProductByIdQuery(productId);
-            var productDTO = await Mediator.Send(getProductByIdQuery);
-
-            var productModel = new ProductModel()
-                {
-                    Id = productDTO.Id,
-                    Name = productDTO.Name,
-                    Description = productDTO.Description,
-                    Height = productDTO.Height,
-                    Length = productDTO.Length,
-                    Price = productDTO.Price,
-                    ProductGroupIds = productDTO.ProductGroupIds,
-                    ShopIds = productDTO.ShopIds,
-                    Sku = productDTO.Sku,
-                    Tag = productDTO.Tag,
-                    Weight = productDTO.Weight,
-                    Width = productDTO.Width,
-                };
-            _allProductModels.Add(productModel);
-        }
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        CustomerOrderDetailModels = await databaseHelper.GetCustomerOrderDetails(CustomerOrderDetailIds);
+        _allProductModels = await databaseHelper.GetAllProducts();
         return true;
     }
 

@@ -4,11 +4,34 @@ using WebUI.Components.Models;
 
 namespace WebUI.Utilities
 {
-    public class DatabaseHelper(IMediator mediator)
+    public class DatabaseHelper(IMediator mediator, Guid userCompanyId)
     {
-        public async Task<List<StaffModel>> GetAllStaffs(Guid companyId)
+        public async Task<List<CompanyModel>> GetAllCompanies()
         {
-            var getAllStaffIdsByCompanyIdQuery = new GetAllStaffIdsByCompanyIdQuery(companyId);
+            var getAllCompanyIdsQuery = new GetAllCompanyIdsQuery();
+            var companyIds = await mediator.Send(getAllCompanyIdsQuery);
+            return await GetCompanies(companyIds);
+        }
+
+        public async Task<List<CompanyModel>> GetCompanies(List<Guid> companyIds)
+        {
+            var getCompaniesByIdsQuery = new GetCompaniesByIdsQuery(companyIds);
+            var getCompanyResponseDTOs = await mediator.Send(getCompaniesByIdsQuery);
+            var companyModels = getCompanyResponseDTOs.Select(getCompanyResponseDTO =>
+                new CompanyModel()
+                {
+                    Id = getCompanyResponseDTO.Id,
+                    StaffIds = getCompanyResponseDTO.StaffIds,
+                    Name = getCompanyResponseDTO.Name,
+                    WarehouseIds = getCompanyResponseDTO.WarehouseIds,
+                }).ToList();
+
+            return companyModels;
+        }
+
+        public async Task<List<StaffModel>> GetAllStaffs()
+        {
+            var getAllStaffIdsByCompanyIdQuery = new GetAllStaffIdsByCompanyIdQuery(userCompanyId);
             var staffIds = await mediator.Send(getAllStaffIdsByCompanyIdQuery);
             return await GetStaffs(staffIds);
         }
@@ -34,9 +57,9 @@ namespace WebUI.Utilities
             return staffModels;
         }
 
-        public async Task<List<IncomingOrderModel>> GetAllIncomingOrders(Guid companyId)
+        public async Task<List<IncomingOrderModel>> GetAllIncomingOrders()
         {
-            var getAllIncomingOrderIdsByCompanyIdQuery = new GetAllIncomingOrderIdsByCompanyIdQuery(companyId);
+            var getAllIncomingOrderIdsByCompanyIdQuery = new GetAllIncomingOrderIdsByCompanyIdQuery(userCompanyId);
             var incomingOrderIds = await mediator.Send(getAllIncomingOrderIdsByCompanyIdQuery);
             return await GetIncomingOrders(incomingOrderIds);
         }
@@ -60,9 +83,9 @@ namespace WebUI.Utilities
             return incomingOrderModels;
         }
 
-        public async Task<List<IncomingOrderProductModel>> GetAllIncomingOrderProducts(Guid companyId)
+        public async Task<List<IncomingOrderProductModel>> GetAllIncomingOrderProducts()
         {
-            var getAllIncomingOrderProductIdsByCompanyIdQuery = new GetAllIncomingOrderProductIdsByCompanyIdQuery(companyId);
+            var getAllIncomingOrderProductIdsByCompanyIdQuery = new GetAllIncomingOrderProductIdsByCompanyIdQuery(userCompanyId);
             var incomingOrderProductIds = await mediator.Send(getAllIncomingOrderProductIdsByCompanyIdQuery);
             return await GetIncomingOrderProducts(incomingOrderProductIds);
         }
@@ -85,9 +108,9 @@ namespace WebUI.Utilities
             return incomingOrderProductModels;
         }
 
-        public async Task<List<VendorModel>> GetAllVendors(Guid companyId)
+        public async Task<List<VendorModel>> GetAllVendors()
         {
-            var getAllVendorIdsByCompanyIdQuery = new GetAllVendorIdsByCompanyIdQuery(companyId);
+            var getAllVendorIdsByCompanyIdQuery = new GetAllVendorIdsByCompanyIdQuery(userCompanyId);
             var vendorIds = await mediator.Send(getAllVendorIdsByCompanyIdQuery);
             return await GetVendors(vendorIds);
         }
@@ -111,9 +134,9 @@ namespace WebUI.Utilities
             return vendorModels;
         }
 
-        public async Task<List<InventoryModel>> GetAllInventories(Guid companyId)
+        public async Task<List<InventoryModel>> GetAllInventories()
         {
-            var getAllInventoryIdsByCompanyIdQuery = new GetAllInventoryIdsByCompanyIdQuery(companyId);
+            var getAllInventoryIdsByCompanyIdQuery = new GetAllInventoryIdsByCompanyIdQuery(userCompanyId);
             var inventoryIds = await mediator.Send(getAllInventoryIdsByCompanyIdQuery);
             return await GetInventories(inventoryIds);
         }
@@ -134,9 +157,9 @@ namespace WebUI.Utilities
             return inventoryModels;
         }
 
-        public async Task<List<RackModel>> GetAllRacks(Guid companyId)
+        public async Task<List<RackModel>> GetAllRacks()
         {
-            var getAllRackIdsByCompanyIdQuery = new GetAllRackIdsByCompanyIdQuery(companyId);
+            var getAllRackIdsByCompanyIdQuery = new GetAllRackIdsByCompanyIdQuery(userCompanyId);
             var rackIds = await mediator.Send(getAllRackIdsByCompanyIdQuery);
             return await GetRacks(rackIds);
         }
@@ -161,9 +184,9 @@ namespace WebUI.Utilities
             return rackModels;
         }
 
-        public async Task<List<WarehouseModel>> GetAllWarehouses(Guid companyId)
+        public async Task<List<WarehouseModel>> GetAllWarehouses()
         {
-            var getAllWarehouseIdsByCompanyIdQuery = new GetAllWarehouseIdsByCompanyIdQuery(companyId);
+            var getAllWarehouseIdsByCompanyIdQuery = new GetAllWarehouseIdsByCompanyIdQuery(userCompanyId);
             var warehouseIds = await mediator.Send(getAllWarehouseIdsByCompanyIdQuery);
             return await GetWarehouses(warehouseIds);
         }
@@ -185,9 +208,9 @@ namespace WebUI.Utilities
             return warehouseModels;
         }
 
-        public async Task<List<ZoneModel>> GetAllZones(Guid companyId)
+        public async Task<List<ZoneModel>> GetAllZones()
         {
-            var getAllZoneIdsByCompanyIdQuery = new GetAllZoneIdsByCompanyIdQuery(companyId);
+            var getAllZoneIdsByCompanyIdQuery = new GetAllZoneIdsByCompanyIdQuery(userCompanyId);
             var zoneIds = await mediator.Send(getAllZoneIdsByCompanyIdQuery);
             return await GetZones(zoneIds);
         }
@@ -209,9 +232,9 @@ namespace WebUI.Utilities
             return zoneModels;
         }
 
-        public async Task<List<BinModel>> GetAllBins(Guid companyId)
+        public async Task<List<BinModel>> GetAllBins()
         {
-            var getAllBinIdsByCompanyIdQuery = new GetAllBinIdsByCompanyIdQuery(companyId);
+            var getAllBinIdsByCompanyIdQuery = new GetAllBinIdsByCompanyIdQuery(userCompanyId);
             var binIds = await mediator.Send(getAllBinIdsByCompanyIdQuery);
             return await GetBins(binIds);
         }
@@ -231,9 +254,9 @@ namespace WebUI.Utilities
             return binModels;
         }
 
-        public async Task<List<CourierModel>> GetAllCouriers(Guid companyId)
+        public async Task<List<CourierModel>> GetAllCouriers()
         {
-            var getAllCourierIdsByCompanyIdQuery = new GetAllCourierIdsByCompanyIdQuery(companyId);
+            var getAllCourierIdsByCompanyIdQuery = new GetAllCourierIdsByCompanyIdQuery(userCompanyId);
             var courierIds = await mediator.Send(getAllCourierIdsByCompanyIdQuery);
             return await GetCouriers(courierIds);
         }
@@ -255,9 +278,9 @@ namespace WebUI.Utilities
             return courierModels;
         }
 
-        public async Task<List<CustomerModel>> GetAllCustomers(Guid companyId)
+        public async Task<List<CustomerModel>> GetAllCustomers()
         {
-            var getAllCustomerIdsByCompanyIdQuery = new GetAllCustomerIdsByCompanyIdQuery(companyId);
+            var getAllCustomerIdsByCompanyIdQuery = new GetAllCustomerIdsByCompanyIdQuery(userCompanyId);
             var customerIds = await mediator.Send(getAllCustomerIdsByCompanyIdQuery);
             return await GetCustomers(customerIds);
         }
@@ -281,9 +304,9 @@ namespace WebUI.Utilities
             return customerModels;
         }
 
-        public async Task<List<CustomerOrderModel>> GetAllCustomerOrders(Guid companyId)
+        public async Task<List<CustomerOrderModel>> GetAllCustomerOrders()
         {
-            var getAllCustomerOrderIdsByCompanyIdQuery = new GetAllCustomerOrderIdsByCompanyIdQuery(companyId);
+            var getAllCustomerOrderIdsByCompanyIdQuery = new GetAllCustomerOrderIdsByCompanyIdQuery(userCompanyId);
             var customerOrderIds = await mediator.Send(getAllCustomerOrderIdsByCompanyIdQuery);
             return await GetCustomerOrders(customerOrderIds);
         }
@@ -308,9 +331,9 @@ namespace WebUI.Utilities
             return customerOrderModels;
         }
 
-        public async Task<List<CustomerOrderDetailModel>> GetAllCustomerOrderDetails(Guid companyId)
+        public async Task<List<CustomerOrderDetailModel>> GetAllCustomerOrderDetails()
         {
-            var getAllCustomerOrderDetailIdsByCompanyIdQuery = new GetAllCustomerOrderDetailIdsByCompanyIdQuery(companyId);
+            var getAllCustomerOrderDetailIdsByCompanyIdQuery = new GetAllCustomerOrderDetailIdsByCompanyIdQuery(userCompanyId);
             var customerOrderDetailIds = await mediator.Send(getAllCustomerOrderDetailIdsByCompanyIdQuery);
             return await GetCustomerOrderDetails(customerOrderDetailIds);
         }
@@ -332,9 +355,9 @@ namespace WebUI.Utilities
             return customerOrderDetailModels;
         }
 
-        public async Task<List<ProductModel>> GetAllProducts(Guid companyId)
+        public async Task<List<ProductModel>> GetAllProducts()
         {
-            var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(companyId);
+            var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(userCompanyId);
             var productIds = await mediator.Send(getAllProductIdsByCompanyIdQuery);
             return await GetProducts(productIds);
         }
@@ -368,9 +391,9 @@ namespace WebUI.Utilities
             return productModels;
         }
 
-        public async Task<List<ProductGroupModel>> GetAllProductGroups(Guid companyId)
+        public async Task<List<ProductGroupModel>> GetAllProductGroups()
         {
-            var getAllProductGroupIdsByCompanyIdQuery = new GetAllProductGroupIdsByCompanyIdQuery(companyId);
+            var getAllProductGroupIdsByCompanyIdQuery = new GetAllProductGroupIdsByCompanyIdQuery(userCompanyId);
             var productGroupIds = await mediator.Send(getAllProductGroupIdsByCompanyIdQuery);
             return await GetProductGroups(productGroupIds);
         }
@@ -392,9 +415,9 @@ namespace WebUI.Utilities
             return productGroupModels;
         }
 
-        public async Task<List<RefundOrderModel>> GetAllRefundOrders(Guid companyId)
+        public async Task<List<RefundOrderModel>> GetAllRefundOrders()
         {
-            var getAllRefundOrderIdsByCompanyIdQuery = new GetAllRefundOrderIdsByCompanyIdQuery(companyId);
+            var getAllRefundOrderIdsByCompanyIdQuery = new GetAllRefundOrderIdsByCompanyIdQuery(userCompanyId);
             var refundOrderIds = await mediator.Send(getAllRefundOrderIdsByCompanyIdQuery);
             return await GetRefundOrders(refundOrderIds);
         }
@@ -416,9 +439,9 @@ namespace WebUI.Utilities
             return refundOrderModels;
         }
 
-        public async Task<List<RefundOrderProductModel>> GetAllRefundOrderProducts(Guid companyId)
+        public async Task<List<RefundOrderProductModel>> GetAllRefundOrderProducts()
         {
-            var getAllRefundOrderProductIdsByCompanyIdQuery = new GetAllRefundOrderProductIdsByCompanyIdQuery(companyId);
+            var getAllRefundOrderProductIdsByCompanyIdQuery = new GetAllRefundOrderProductIdsByCompanyIdQuery(userCompanyId);
             var refundOrderProductIds = await mediator.Send(getAllRefundOrderProductIdsByCompanyIdQuery);
             return await GetRefundOrderProducts(refundOrderProductIds);
         }
@@ -440,9 +463,9 @@ namespace WebUI.Utilities
             return refundOrderProductModels;
         }
 
-        public async Task<List<ShopModel>> GetAllShops(Guid companyId)
+        public async Task<List<ShopModel>> GetAllShops()
         {
-            var getAllShopIdsByCompanyIdQuery = new GetAllShopIdsByCompanyIdQuery(companyId);
+            var getAllShopIdsByCompanyIdQuery = new GetAllShopIdsByCompanyIdQuery(userCompanyId);
             var shopIds = await mediator.Send(getAllShopIdsByCompanyIdQuery);
             return await GetShops(shopIds);
         }

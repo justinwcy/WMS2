@@ -326,23 +326,9 @@
 
     public async Task<bool> FetchData()
     {
-        RefundOrderModels.Clear();
-        foreach (var refundOrderId in RefundOrderIds)
-        {
-            var getRefundOrderByIdQuery = new GetRefundOrderByIdQuery(refundOrderId);
-            var refundOrderDTO = await Mediator.Send(getRefundOrderByIdQuery);
-
-            var refundOrderModel = new RefundOrderModel()
-                {
-                    Id = refundOrderDTO.Id,
-                    Status = refundOrderDTO.Status,
-                    RefundReason = refundOrderDTO.RefundReason,
-                    RefundDate = refundOrderDTO.RefundDate,
-                    RefundOrderProductIds = refundOrderDTO.RefundOrderProductIds,
-                };
-
-            RefundOrderModels.Add(refundOrderModel);
-        }
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        RefundOrderModels = await databaseHelper.GetRefundOrders(RefundOrderIds);
+        
         return true;
     }
 

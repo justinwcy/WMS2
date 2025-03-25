@@ -6,21 +6,21 @@
         <MudForm @bind-IsValid="@_isFormValid">
 
             <MudSelect @bind-Value="_incomingOrderProductModel.ProductId"
-                       T="Guid?"
-                       ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
-                       Variant="@_defaultVariant"
-                       Label="Status"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Product")
-                       MultiSelection="false"
-                       HelperText=@("Please select a product")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="true"
-                       RequiredError="Please select a product">
+            T="Guid?"
+            ToStringFunc="@(id=> _allProductModels.FirstOrDefault(productModel=>productModel.Id == id)?.Name)"
+            Variant="@_defaultVariant"
+            Label="Status"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Product")
+            MultiSelection="false"
+            HelperText=@("Please select a product")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="true"
+            RequiredError="Please select a product">
                 @foreach (var productModel in _allProductModels)
                 {
                     <MudSelectItem T="Guid?" Value="@productModel.Id"></MudSelectItem>
@@ -28,19 +28,19 @@
             </MudSelect>
 
             <MudSelect @bind-Value="_incomingOrderProductModel.Status"
-                       Variant="@_defaultVariant"
-                       Label="Status"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Status")
-                       MultiSelection="false"
-                       HelperText=@("Please select a status")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="true"
-                       RequiredError="Please select a status">
+            Variant="@_defaultVariant"
+            Label="Status"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Status")
+            MultiSelection="false"
+            HelperText=@("Please select a status")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="true"
+            RequiredError="Please select a status">
                 @foreach (var orderState in _orderStates)
                 {
                     <MudSelectItem Value="@orderState">@orderState</MudSelectItem>
@@ -48,11 +48,11 @@
             </MudSelect>
 
             <MudTextField @bind-value="_incomingOrderProductModel.Quantity"
-                          Variant="@_defaultVariant"
-                          T="int"
-                          Label="Quantity"
-                          Required="true" RequiredError="Quantity is required!"
-                          Margin="Margin.Dense" />
+            Variant="@_defaultVariant"
+            T="int"
+            Label="Quantity"
+            Required="true" RequiredError="Quantity is required!"
+            Margin="Margin.Dense" />
 
         </MudForm>
     </DialogContent>
@@ -82,33 +82,8 @@
     {
         _incomingOrderProductModel.IncomingOrderId = IncomingOrderId;
 
-        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
-
-        foreach (var productId in productIds)
-        {
-            var getProductByIdQuery = new GetProductByIdQuery(productId);
-            var productDTO = await Mediator.Send(getProductByIdQuery);
-
-            var productModel = new ProductModel()
-                {
-                    Id = productDTO.Id,
-                    Name = productDTO.Name,
-                    Description = productDTO.Description,
-                    Height = productDTO.Height,
-                    Length = productDTO.Length,
-                    Price = productDTO.Price,
-                    ProductGroupIds = productDTO.ProductGroupIds,
-                    ShopIds = productDTO.ShopIds,
-                    Sku = productDTO.Sku,
-                    Tag = productDTO.Tag,
-                    Weight = productDTO.Weight,
-                    Width = productDTO.Width,
-                };
-            _allProductModels.Add(productModel);
-
-
-        }
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        _allProductModels = await databaseHelper.GetAllProducts();
     }
 
     protected override async Task OnInitializedAsync()

@@ -57,24 +57,8 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        var getAllWarehouseIdsByCompanyIdQuery = new GetAllWarehouseIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var warehouseIds = await Mediator.Send(getAllWarehouseIdsByCompanyIdQuery);
-
-        foreach (var warehouseId in warehouseIds)
-        {
-            var getWarehouseByIdQuery = new GetWarehouseByIdQuery(warehouseId);
-            var warehouseDTO = await Mediator.Send(getWarehouseByIdQuery);
-
-            var warehouseModel = new WarehouseModel()
-                {
-                    Id = warehouseDTO.Id,
-                    Name = warehouseDTO.Name,
-                    Address = warehouseDTO.Address,
-                    ZoneIds = warehouseDTO.ZoneIds,
-                    CompanyId = warehouseDTO.CompanyId,
-                };
-            _allWarehouseModels.Add(warehouseModel);
-        }
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        _allWarehouseModels = await databaseHelper.GetAllWarehouses();
     }
 
     private async Task Submit()

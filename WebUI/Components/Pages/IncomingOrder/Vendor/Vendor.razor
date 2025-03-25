@@ -344,46 +344,10 @@
 
     public async Task<bool> FetchData()
     {
-        VendorModels.Clear();
-        foreach (var vendorId in VendorIds)
-        {
-            var getVendorByIdQuery = new GetVendorByIdQuery(vendorId);
-            var vendorDTO = await Mediator.Send(getVendorByIdQuery);
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        VendorModels = await databaseHelper.GetVendors(VendorIds);
 
-            var vendorModel = new VendorModel()
-                {
-                    Id = vendorDTO.Id,
-                    Address = vendorDTO.Address,
-                    FirstName = vendorDTO.FirstName,
-                    LastName = vendorDTO.LastName,
-                    Email = vendorDTO.Email,
-                    IncomingOrderIds = vendorDTO.IncomingOrderIds,
-                    PhoneNumber = vendorDTO.PhoneNumber,
-                };
-
-            VendorModels.Add(vendorModel);
-        }
-
-        _allIncomingOrderModels.Clear();
-        var getAllIncomingOrderIdsByCompanyIdQuery = new GetAllIncomingOrderIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var allIncomingOrderIds = await Mediator.Send(getAllIncomingOrderIdsByCompanyIdQuery);
-        foreach (var incomingOrderId in allIncomingOrderIds)
-        {
-            var getIncomingOrderByIdQuery = new GetIncomingOrderByIdQuery(incomingOrderId);
-            var getIncomingOrderResponseDTO = await Mediator.Send(getIncomingOrderByIdQuery);
-            var incomingOrderModel = new IncomingOrderModel()
-                {
-                    Id = getIncomingOrderResponseDTO.Id,
-                    IncomingDate = getIncomingOrderResponseDTO.IncomingDate,
-                    Status = getIncomingOrderResponseDTO.Status,
-                    IncomingOrderProductIds = getIncomingOrderResponseDTO.IncomingOrderProductIds,
-                    PONumber = getIncomingOrderResponseDTO.PONumber,
-                    VendorId = getIncomingOrderResponseDTO.VendorId,
-                    ReceivingDate = getIncomingOrderResponseDTO.ReceivingDate,
-                };
-            _allIncomingOrderModels.Add(incomingOrderModel);
-        }
-
+        _allIncomingOrderModels = await databaseHelper.GetAllIncomingOrders();
         return true;
     }
 

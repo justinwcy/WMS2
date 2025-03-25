@@ -79,56 +79,9 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        _allProductModels.Clear();
-        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
-
-        foreach (var productId in productIds)
-        {
-            var getProductByIdQuery = new GetProductByIdQuery(productId);
-            var productDTO = await Mediator.Send(getProductByIdQuery);
-
-            var productModel = new ProductModel()
-                {
-                    Id = productDTO.Id,
-                    Name = productDTO.Name,
-                    Description = productDTO.Description,
-                    Height = productDTO.Height,
-                    Length = productDTO.Length,
-                    Price = productDTO.Price,
-                    ProductGroupIds = productDTO.ProductGroupIds,
-                    ShopIds = productDTO.ShopIds,
-                    Sku = productDTO.Sku,
-                    Tag = productDTO.Tag,
-                    Weight = productDTO.Weight,
-                    Width = productDTO.Width,
-                };
-            _allProductModels.Add(productModel);
-        }
-
-        _allRackModels.Clear();
-        var getAllRackIdsByCompanyIdQuery = new GetAllRackIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var rackIds = await Mediator.Send(getAllRackIdsByCompanyIdQuery);
-
-        foreach (var rackId in rackIds)
-        {
-            var getRackByIdQuery = new GetRackByIdQuery(rackId);
-            var rackDTO = await Mediator.Send(getRackByIdQuery);
-
-            var rackModel = new RackModel()
-                {
-                    Id = rackDTO.Id,
-                    Name = rackDTO.Name,
-                    Height = rackDTO.Height,
-                    Width = rackDTO.Width,
-                    Depth = rackDTO.Depth,
-                    MaxWeight = rackDTO.MaxWeight,
-                    ProductIds = rackDTO.ProductIds,
-                    ZoneId = rackDTO.ZoneId,
-
-                };
-            _allRackModels.Add(rackModel);
-        }
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        _allProductModels = await databaseHelper.GetAllProducts();
+        _allRackModels = await databaseHelper.GetAllRacks();
     }
 
     private async Task Submit()

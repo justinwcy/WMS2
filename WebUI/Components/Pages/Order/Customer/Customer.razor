@@ -318,24 +318,8 @@
 
     public async Task<bool> FetchData()
     {
-        CustomerModels.Clear();
-        foreach (var customerId in CustomerIds)
-        {
-            var getCustomerByIdQuery = new GetCustomerByIdQuery(customerId);
-            var customerDTO = await Mediator.Send(getCustomerByIdQuery);
-
-            var customerModel = new CustomerModel()
-                {
-                    Id = customerDTO.Id,
-                    Address = customerDTO.Address,
-                    Email = customerDTO.Email,
-                    FirstName = customerDTO.FirstName,
-                    LastName = customerDTO.LastName,
-                    CustomerOrderIds = customerDTO.CustomerOrderIds,
-                };
-
-            CustomerModels.Add(customerModel);
-        }
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        CustomerModels = await databaseHelper.GetCustomers(CustomerIds);
         return true;
     }
 

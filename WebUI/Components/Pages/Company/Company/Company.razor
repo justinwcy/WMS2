@@ -336,36 +336,14 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     public async Task<bool> FetchData()
     {
-        var getCompaniesByIdsQuery = new GetCompaniesByIdsQuery(CompanyIds);
-        var getCompanyResponseDTOs = await Mediator.Send(getCompaniesByIdsQuery);
-        CompanyModels = getCompanyResponseDTOs.Select(getCompanyResponseDTO => 
-            new CompanyModel()
-            {
-                Id = getCompanyResponseDTO.Id,
-                Name = getCompanyResponseDTO.Name,
-                WarehouseIds = getCompanyResponseDTO.WarehouseIds,
-                StaffIds = getCompanyResponseDTO.StaffIds,
-            }).ToList();
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        CompanyModels = await databaseHelper.GetCompanies(CompanyIds);
 
         // set warehouse models
-        _allWarehouseModels = await GetAllUtilities.GetAllWarehouses(Mediator, CurrentStaff.CompanyId);
+        _allWarehouseModels = await databaseHelper.GetAllWarehouses();
 
         // set staff models
-        var getAllStaffIdsByCompanyIdQuery = new GetAllStaffIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var staffIds = await Mediator.Send(getAllStaffIdsByCompanyIdQuery);
-        var getStaffsByIdsQuery = new GetStaffsByIdsQuery(staffIds);
-        var getStaffResponseDTOs = await Mediator.Send(getStaffsByIdsQuery);
-        _allStaffModels = getStaffResponseDTOs.Select(getStaffResponseDTO =>
-            new StaffModel()
-            {
-                Id = getStaffResponseDTO.Id,
-                Roles = getStaffResponseDTO.Roles,
-                Email = getStaffResponseDTO.Email,
-                FirstName = getStaffResponseDTO.FirstName,
-                LastName = getStaffResponseDTO.LastName,
-                ZoneIds = getStaffResponseDTO.ZoneIds,
-                CompanyId = getStaffResponseDTO.CompanyId.Value,
-            }).ToList();
+        _allStaffModels = await databaseHelper.GetAllStaffs();
 
         return true;
     }

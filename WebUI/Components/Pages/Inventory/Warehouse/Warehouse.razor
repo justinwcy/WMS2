@@ -322,42 +322,12 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
 
     public async Task<bool> FetchData()
     {
-        WarehouseModels.Clear();
-        var getWarehousesByIdsQuery = new GetWarehousesByIdsQuery(WarehouseIds);
-        var getWarehouseResponseDTOs = await Mediator.Send(getWarehousesByIdsQuery);
-        WarehouseModels = getWarehouseResponseDTOs
-            .Select(getWarehouseResponseDTO => new WarehouseModel() 
-            {
-                Id = getWarehouseResponseDTO.Id,
-                Name = getWarehouseResponseDTO.Name,
-                Address = getWarehouseResponseDTO.Address,
-                CompanyId = getWarehouseResponseDTO.CompanyId,
-                ZoneIds = getWarehouseResponseDTO.ZoneIds,
-            })
-            .ToList();
-
-        _allZoneModels.Clear();
-        var getAllZoneIdsQuery = new GetAllZoneIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var allZoneIds = await Mediator.Send(getAllZoneIdsQuery);
-        foreach (var zoneId in allZoneIds)
-        {
-            var getZoneByIdQuery = new GetZoneByIdQuery(zoneId);
-            var getZoneResponseDTO = await Mediator.Send(getZoneByIdQuery);
-            var zoneModel = new ZoneModel()
-                {
-                    Id = zoneId,
-                    StaffIds = getZoneResponseDTO.StaffIds,
-                    Name = getZoneResponseDTO.Name,
-                    RackIds = getZoneResponseDTO.RackIds,
-                    WarehouseId = getZoneResponseDTO.WarehouseId,
-                };
-
-            _allZoneModels.Add(zoneModel);
-        }
-
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        WarehouseModels = await databaseHelper.GetWarehouses(WarehouseIds);
+        _allZoneModels = await databaseHelper.GetAllZones();
+        
         var getCompanyByIdQuery = new GetCompanyByIdQuery(CurrentStaff.CompanyId);
         var getCompanyResponseDTO = await Mediator.Send(getCompanyByIdQuery);
-
         _currentCompanyModel = new CompanyModel()
         {
             Name = getCompanyResponseDTO.Name,

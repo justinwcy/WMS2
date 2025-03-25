@@ -315,45 +315,9 @@
 
     public async Task<bool> FetchData()
     {
-        CourierModels.Clear();
-        foreach (var courierId in CourierIds)
-        {
-            var getCourierByIdQuery = new GetCourierByIdQuery(courierId);
-            var courierDTO = await Mediator.Send(getCourierByIdQuery);
-
-            var courierModel = new CourierModel()
-                {
-                    Id = courierDTO.Id,
-                    Name = courierDTO.Name,
-                    Price = courierDTO.Price,
-                    CustomerOrderIds = courierDTO.CustomerOrderIds,
-                    Remark = courierDTO.Remark,
-                };
-
-            CourierModels.Add(courierModel);
-        }
-
-        _allCustomerOrderModels.Clear();
-        var getAllCustomerOrderIdsByCompanyIdQuery = new GetAllCustomerOrderIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var allCustomerOrderIds = await Mediator.Send(getAllCustomerOrderIdsByCompanyIdQuery);
-        foreach (var customerOrderId in allCustomerOrderIds)
-        {
-            var getCustomerOrderByIdQuery = new GetCustomerOrderByIdQuery(customerOrderId);
-            var getCustomerOrderResponseDTO = await Mediator.Send(getCustomerOrderByIdQuery);
-            var customerOrderModel = new CustomerOrderModel()
-            {
-                Id = getCustomerOrderResponseDTO.Id,
-                BinId = getCustomerOrderResponseDTO.BinId,
-                OrderAddress = getCustomerOrderResponseDTO.OrderAddress,
-                CourierId = getCustomerOrderResponseDTO.CourierId,
-                CustomerId = getCustomerOrderResponseDTO.CustomerId,
-                CustomerOrderDetailIds = getCustomerOrderResponseDTO.CustomerOrderDetailIds,
-                ExpectedArrivalDate = getCustomerOrderResponseDTO.ExpectedArrivalDate,
-                OrderCreationDate = getCustomerOrderResponseDTO.OrderCreationDate,
-            };
-
-            _allCustomerOrderModels.Add(customerOrderModel);
-        }
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        CourierModels = await databaseHelper.GetCouriers(CourierIds);
+        _allCustomerOrderModels = await databaseHelper.GetAllCustomerOrders();
         return true;
     }
 

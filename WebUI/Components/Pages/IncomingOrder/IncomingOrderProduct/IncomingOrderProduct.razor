@@ -333,50 +333,9 @@
 
     public async Task<bool> FetchData()
     {
-        _allProductModels.Clear();
-        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
-
-        foreach (var productId in productIds)
-        {
-            var getProductByIdQuery = new GetProductByIdQuery(productId);
-            var productDTO = await Mediator.Send(getProductByIdQuery);
-
-            var productModel = new ProductModel()
-                {
-                    Id = productDTO.Id,
-                    Name = productDTO.Name,
-                    Description = productDTO.Description,
-                    Height = productDTO.Height,
-                    Length = productDTO.Length,
-                    Price = productDTO.Price,
-                    ProductGroupIds = productDTO.ProductGroupIds,
-                    ShopIds = productDTO.ShopIds,
-                    Sku = productDTO.Sku,
-                    Tag = productDTO.Tag,
-                    Weight = productDTO.Weight,
-                    Width = productDTO.Width,
-                };
-            _allProductModels.Add(productModel);
-        }
-
-        IncomingOrderProductModels.Clear();
-        foreach (var incomingOrderProductId in IncomingOrderProductIds)
-        {
-            var getIncomingOrderProductByIdQuery = new GetIncomingOrderProductByIdQuery(incomingOrderProductId);
-            var incomingOrderProductDTO = await Mediator.Send(getIncomingOrderProductByIdQuery);
-
-            var incomingOrderProductModel = new IncomingOrderProductModel()
-                {
-                    Id = incomingOrderProductDTO.Id,
-                    ProductId = incomingOrderProductDTO.ProductId,
-                    IncomingOrderId = incomingOrderProductDTO.IncomingOrderId,
-                    Quantity = incomingOrderProductDTO.Quantity,
-                    Status = incomingOrderProductDTO.Status,
-                };
-
-            IncomingOrderProductModels.Add(incomingOrderProductModel);
-        }
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        _allProductModels = await databaseHelper.GetAllProducts();
+        IncomingOrderProductModels = await databaseHelper.GetIncomingOrderProducts(IncomingOrderProductIds);
 
         return true;
     }

@@ -14,11 +14,11 @@
             @if (ShowDeleteButton)
             {
                 <MudButton OnClick="@DeleteCustomerOrders"
-                           Color="Color.Error"
-                           Variant="Variant.Filled"
-                           Size="Size.Large"
-                           FullWidth="true"
-                           Disabled="_disableDelete">
+                Color="Color.Error"
+                Variant="Variant.Filled"
+                Size="Size.Large"
+                FullWidth="true"
+                Disabled="_disableDelete">
                     Delete Customer Order
                 </MudButton>
             }
@@ -30,10 +30,10 @@
             @if (ShowCreateButton)
             {
                 <MudButton OnClick="@(OpenCreateCustomerOrderDialogAsync)"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           Size="Size.Large"
-                           FullWidth="true">
+                Variant="Variant.Filled"
+                Color="Color.Primary"
+                Size="Size.Large"
+                FullWidth="true">
                     Create Customer Order
                 </MudButton>
             }
@@ -42,25 +42,25 @@
 </MudGrid>
 
 <MudTable ReadOnly="_isReadOnly"
-          Hover="true" FixedHeader="true"
-          Filter="new Func<CustomerOrderModel, bool>(FilterFunc)"
-          CanCancelEdit="true"
-          Items="@CustomerOrderModels"
-          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-          GroupFooterClass="mb-4"
-          Dense="true"
-          Loading="@_loading" LoadingProgressColor="Color.Info"
-          MultiSelection="true"
-          @bind-SelectedItems="_selectedCustomerOrders"
-          SelectOnRowClick="false"
-          CommitEditTooltip="Commit Edit"
-          CancelEditTooltip="Cancel Edit"
-          IsEditRowSwitchingBlocked="false"
-          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-          RowEditCommit="ItemHasBeenCommitted"
-          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-          @ref="_tableRef">
+Hover="true" FixedHeader="true"
+Filter="new Func<CustomerOrderModel, bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@CustomerOrderModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedCustomerOrders"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Customer Orders</MudText>
@@ -117,10 +117,10 @@
         <MudTd DataLabel="Bin">@_allBinModels.FirstOrDefault(binModel => binModel.Id == context.BinId)?.Name</MudTd>
         <MudTd DataLabel="Details">
             <MudButton OnClick="@(() => OpenCustomerOrderDetailDialogAsync(@context.CustomerOrderDetailIds))"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Small"
-                       FullWidth="false">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
                 View (@context.CustomerOrderDetailIds.Count)
             </MudButton>
         </MudTd>
@@ -129,21 +129,21 @@
     <RowEditingTemplate>
         <MudTd DataLabel="Customer">
             <MudSelect @bind-Value="context.CustomerId"
-                       T="Guid?"
-                       ToStringFunc="@(id => $"{_allCustomerModels.FirstOrDefault(customerModel => customerModel.Id == id)?.FirstName} {_allCustomerModels.FirstOrDefault(customerModel => customerModel.Id == id)?.LastName}")"
-                       Variant="@_defaultVariant"
-                       Label="Status"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Customer")
-                       MultiSelection="false"
-                       HelperText=@("Please select a customer")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="true"
-                       RequiredError="Please select a courier">
+            T="Guid?"
+            ToStringFunc="@(id => $"{_allCustomerModels.FirstOrDefault(customerModel => customerModel.Id == id)?.FirstName} {_allCustomerModels.FirstOrDefault(customerModel => customerModel.Id == id)?.LastName}")"
+            Variant="@_defaultVariant"
+            Label="Status"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Customer")
+            MultiSelection="false"
+            HelperText=@("Please select a customer")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="true"
+            RequiredError="Please select a courier">
                 @foreach (var customerModel in _allCustomerModels)
                 {
                     <MudSelectItem T="Guid?" Value="@customerModel.Id"/>
@@ -153,28 +153,28 @@
 
         <MudTd DataLabel="Expected Arrival Date">
             <MudDatePicker Label="Expected Arrival Date"
-                           Editable="true"
-                           @bind-Date="context.ExpectedArrivalDate"
-                           Placeholder="Expected Arrival Date"/>
+            Editable="true"
+            @bind-Date="context.ExpectedArrivalDate"
+            Placeholder="Expected Arrival Date"/>
         </MudTd>
 
         <MudTd DataLabel="Courier">
             <MudSelect @bind-Value="context.CourierId"
-                       T="Guid?"
-                       ToStringFunc="@(id => _allCourierModels.FirstOrDefault(courierModel => courierModel.Id == id)?.Name)"
-                       Variant="@_defaultVariant"
-                       Label="Status"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Courier")
-                       MultiSelection="false"
-                       HelperText=@("Please select a courier")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="true"
-                       RequiredError="Please select a courier">
+            T="Guid?"
+            ToStringFunc="@(id => _allCourierModels.FirstOrDefault(courierModel => courierModel.Id == id)?.Name)"
+            Variant="@_defaultVariant"
+            Label="Status"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Courier")
+            MultiSelection="false"
+            HelperText=@("Please select a courier")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="true"
+            RequiredError="Please select a courier">
                 @foreach (var courierModel in _allCourierModels)
                 {
                     <MudSelectItem T="Guid?" Value="@courierModel.Id"/>
@@ -184,9 +184,9 @@
 
         <MudTd DataLabel="Order Creation Date">
             <MudDatePicker Label="Order Creation Date"
-                           Editable="true"
-                           @bind-Date="context.OrderCreationDate"
-                           Placeholder="Order Creation Date"/>
+            Editable="true"
+            @bind-Date="context.OrderCreationDate"
+            Placeholder="Order Creation Date"/>
         </MudTd>
 
         <MudTd DataLabel="Order Address">
@@ -195,21 +195,21 @@
 
         <MudTd DataLabel="Bin">
             <MudSelect @bind-Value="context.BinId"
-                       T="Guid?"
-                       ToStringFunc="@(id => _allBinModels.FirstOrDefault(binModel => binModel.Id == id)?.Name)"
-                       Variant="@_defaultVariant"
-                       Label="Bin"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Bin")
-                       MultiSelection="false"
-                       HelperText=@("Please select a bin")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="false"
-                       RequiredError="Please select a bin">
+            T="Guid?"
+            ToStringFunc="@(id => _allBinModels.FirstOrDefault(binModel => binModel.Id == id)?.Name)"
+            Variant="@_defaultVariant"
+            Label="Bin"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Bin")
+            MultiSelection="false"
+            HelperText=@("Please select a bin")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="false"
+            RequiredError="Please select a bin">
                 @foreach (var binModel in _allBinModels)
                 {
                     <MudSelectItem T="Guid?" Value="@binModel.Id"/>
@@ -219,10 +219,10 @@
 
         <MudTd DataLabel="Details">
             <MudButton OnClick="@(() => OpenCustomerOrderDetailDialogAsync(@context.CustomerOrderDetailIds))"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Small"
-                       FullWidth="false">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
                 View (@context.CustomerOrderDetailIds.Count)
             </MudButton>
         </MudTd>
@@ -230,10 +230,10 @@
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
-                       RowsPerPageString="Rows per page:"
-                       InfoFormat="{first_item}-{last_item} of {all_items}"
-                       AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right"/>
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right"/>
     </PagerContent>
 </MudTable>
 
@@ -275,7 +275,7 @@
 
     private bool _isReadOnly = false;
     private bool _isReadPolicyExpired = false;
-    
+
     protected override async Task OnInitializedAsync()
     {
         var updatePolicyString = DataAccessUtilities.GetPolicyString(AccessName.Update, DataTableName.Company);
@@ -419,76 +419,12 @@
 
     public async Task<bool> FetchData()
     {
-        CustomerOrderModels.Clear();
-        foreach (var customerOrderId in CustomerOrderIds)
-        {
-            var getCustomerOrderByIdQuery = new GetCustomerOrderByIdQuery(customerOrderId);
-            var customerOrderDTO = await Mediator.Send(getCustomerOrderByIdQuery);
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        CustomerOrderModels = await databaseHelper.GetCustomerOrders(CustomerOrderIds);
+        _allCustomerModels = await databaseHelper.GetAllCustomers();
+        _allBinModels = await databaseHelper.GetAllBins();
+        _allCourierModels = await databaseHelper.GetAllCouriers();
 
-            var customerOrderModel = new CustomerOrderModel()
-                {
-                    Id = customerOrderDTO.Id,
-                    OrderAddress = customerOrderDTO.OrderAddress,
-                    BinId = customerOrderDTO.BinId,
-                    CourierId = customerOrderDTO.CourierId,
-                    CustomerId = customerOrderDTO.CustomerId,
-                    CustomerOrderDetailIds = customerOrderDTO.CustomerOrderDetailIds,
-                    ExpectedArrivalDate = customerOrderDTO.ExpectedArrivalDate,
-                    OrderCreationDate = customerOrderDTO.OrderCreationDate
-                };
-
-            CustomerOrderModels.Add(customerOrderModel);
-        }
-
-        var getAllCustomerIdsByCompanyIdQuery = new GetAllCustomerIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var customerIds = await Mediator.Send(getAllCustomerIdsByCompanyIdQuery);
-        foreach (var customerId in customerIds)
-        {
-            var getCustomerByIdQuery = new GetCustomerByIdQuery(customerId);
-            var customerDTO = await Mediator.Send(getCustomerByIdQuery);
-            var customerModel = new CustomerModel()
-                {
-                    Id = customerDTO.Id,
-                    Address = customerDTO.Address,
-                    CustomerOrderIds = customerDTO.CustomerOrderIds,
-                    Email = customerDTO.Email,
-                    FirstName = customerDTO.FirstName,
-                    LastName = customerDTO.LastName,
-                };
-            _allCustomerModels.Add(customerModel);
-        }
-
-        var getAllBinIdsByCompanyIdQuery = new GetAllBinIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var binIds = await Mediator.Send(getAllBinIdsByCompanyIdQuery);
-        foreach (var binId in binIds)
-        {
-            var getBinByIdQuery = new GetBinByIdQuery(binId);
-            var binDTO = await Mediator.Send(getBinByIdQuery);
-            var binModel = new BinModel()
-                {
-                    Id = binDTO.Id,
-                    CustomerOrderIds = binDTO.CustomerOrderIds,
-                    Name = binDTO.Name,
-                };
-            _allBinModels.Add(binModel);
-        }
-
-        var getAllCourierIdsByCompanyIdQuery = new GetAllCourierIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var courierIds = await Mediator.Send(getAllCourierIdsByCompanyIdQuery);
-        foreach (var courierId in courierIds)
-        {
-            var getCourierByIdQuery = new GetCourierByIdQuery(courierId);
-            var courierDTO = await Mediator.Send(getCourierByIdQuery);
-            var courierModel = new CourierModel()
-                {
-                    Id = courierDTO.Id,
-                    CustomerOrderIds = courierDTO.CustomerOrderIds,
-                    Name = courierDTO.Name,
-                    Remark = courierDTO.Remark,
-                    Price = courierDTO.Price,
-                };
-            _allCourierModels.Add(courierModel);
-        }
         return true;
     }
 

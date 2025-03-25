@@ -366,68 +366,10 @@
 
     public async Task<bool> FetchData()
     {
-        RackModels.Clear();
-        foreach (var rackId in RackIds)
-        {
-            var getRackByIdQuery = new GetRackByIdQuery(rackId);
-            var rackDTO = await Mediator.Send(getRackByIdQuery);
-
-            var rackModel = new RackModel()
-                {
-                    Id = rackDTO.Id,
-                    ProductIds = rackDTO.ProductIds,
-                    Name = rackDTO.Name,
-                    MaxWeight = rackDTO.MaxWeight,
-                    Width = rackDTO.Width,
-                    Depth = rackDTO.Depth,
-                    Height = rackDTO.Height,
-                    ZoneId = rackDTO.ZoneId.GetValueOrDefault(),
-                };
-
-            RackModels.Add(rackModel);
-        }
-
-        var getAllZoneIdsByCompanyIdQuery = new GetAllZoneIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var allZoneIds = await Mediator.Send(getAllZoneIdsByCompanyIdQuery);
-        foreach (var zoneId in allZoneIds)
-        {
-            var getZoneByIdQuery = new GetZoneByIdQuery(zoneId);
-            var getZoneResponseDTO = await Mediator.Send(getZoneByIdQuery);
-            var zoneModel = new ZoneModel()
-                {
-                    Id = zoneId,
-                    StaffIds = getZoneResponseDTO.StaffIds,
-                    Name = getZoneResponseDTO.Name,
-                    RackIds = getZoneResponseDTO.RackIds,
-                    WarehouseId = getZoneResponseDTO.WarehouseId,
-                };
-
-            _allZoneModels.Add(zoneModel);
-        }
-
-        var getAllProductIdsByCompanyIdQuery = new GetAllProductIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var productIds = await Mediator.Send(getAllProductIdsByCompanyIdQuery);
-        foreach (var productId in productIds)
-        {
-            var getProductByIdQuery = new GetProductByIdQuery(productId);
-            var productDTO = await Mediator.Send(getProductByIdQuery);
-            var productModel = new ProductModel()
-                {
-                    Id = productDTO.Id,
-                    Name = productDTO.Name,
-                    Description = productDTO.Description,
-                    Height = productDTO.Height,
-                    Length = productDTO.Length,
-                    Price = productDTO.Price,
-                    ProductGroupIds = productDTO.ProductGroupIds,
-                    ShopIds = productDTO.ShopIds,
-                    Sku = productDTO.Sku,
-                    Tag = productDTO.Tag,
-                    Weight = productDTO.Weight,
-                    Width = productDTO.Width,
-                };
-            _allProductModels.Add(productModel);
-        }
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        RackModels = await databaseHelper.GetRacks(RackIds);
+        _allZoneModels = await databaseHelper.GetAllZones();
+        _allProductModels = await databaseHelper.GetAllProducts();
         return true;
     }
 

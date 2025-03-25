@@ -6,21 +6,21 @@
         <MudForm @bind-IsValid="@_isFormValid">
 
             <MudSelect @bind-Value="_rackModel.ZoneId"
-                       T="Guid?"
-                       ToStringFunc="@(id=> _allZoneModels.FirstOrDefault(zoneModel=>zoneModel.Id == id)?.Name)"
-                       Variant="@_defaultVariant"
-                       Label="Status"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Zone")
-                       MultiSelection="false"
-                       HelperText=@("Please select a Zone")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="true"
-                       RequiredError="Please select a Zone">
+            T="Guid?"
+            ToStringFunc="@(id=> _allZoneModels.FirstOrDefault(zoneModel=>zoneModel.Id == id)?.Name)"
+            Variant="@_defaultVariant"
+            Label="Status"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Zone")
+            MultiSelection="false"
+            HelperText=@("Please select a Zone")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="true"
+            RequiredError="Please select a Zone">
                 @foreach (var zoneModel in _allZoneModels)
                 {
                     <MudSelectItem T="Guid?" Value="@zoneModel.Id" />
@@ -28,35 +28,35 @@
             </MudSelect>
 
             <MudTextField @bind-value="_rackModel.Name"
-                          Variant="@_defaultVariant"
-                          T="string"
-                          Label="Rack Name"
-                          Required="true" RequiredError="Name is required!"
-                          Margin="Margin.Dense" />
+            Variant="@_defaultVariant"
+            T="string"
+            Label="Rack Name"
+            Required="true" RequiredError="Name is required!"
+            Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_rackModel.MaxWeight"
-                          Variant="@_defaultVariant"
-                          T="double"
-                          Label="Max Weight"
-                          Margin="Margin.Dense" />
+            Variant="@_defaultVariant"
+            T="double"
+            Label="Max Weight"
+            Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_rackModel.Height"
-                          Variant="@_defaultVariant"
-                          T="double"
-                          Label="Height"
-                          Margin="Margin.Dense" />
+            Variant="@_defaultVariant"
+            T="double"
+            Label="Height"
+            Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_rackModel.Width"
-                          Variant="@_defaultVariant"
-                          T="double"
-                          Label="Width"
-                          Margin="Margin.Dense" />
+            Variant="@_defaultVariant"
+            T="double"
+            Label="Width"
+            Margin="Margin.Dense" />
 
             <MudTextField @bind-value="_rackModel.Depth"
-                          Variant="@_defaultVariant"
-                          T="double"
-                          Label="Depth"
-                          Margin="Margin.Dense" />
+            Variant="@_defaultVariant"
+            T="double"
+            Label="Depth"
+            Margin="Margin.Dense" />
 
         </MudForm>
     </DialogContent>
@@ -81,23 +81,8 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        var getAllZoneIdsByCompanyIdQuery = new GetAllZoneIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var zoneIds = await Mediator.Send(getAllZoneIdsByCompanyIdQuery);
-        foreach (var zoneId in zoneIds)
-        {
-            var getZoneByIdQuery = new GetZoneByIdQuery(zoneId);
-            var zoneDTO = await Mediator.Send(getZoneByIdQuery);
-
-            var zoneModel = new ZoneModel()
-                {
-                    Id = zoneDTO.Id,
-                    Name = zoneDTO.Name,
-                    StaffIds = zoneDTO.StaffIds,
-                    RackIds = zoneDTO.RackIds,
-                    WarehouseId = zoneDTO.WarehouseId,
-                };
-            _allZoneModels.Add(zoneModel);
-        }
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        _allZoneModels = await databaseHelper.GetAllZones();
     }
 
     private async Task Submit()

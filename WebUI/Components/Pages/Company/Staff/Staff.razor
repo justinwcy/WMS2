@@ -14,11 +14,11 @@
             @if (ShowDeleteButton)
             {
                 <MudButton OnClick="@DeleteStaffs"
-                           Color="Color.Error"
-                           Variant="Variant.Filled"
-                           Size="Size.Large"
-                           FullWidth="true"
-                           Disabled="_disableDelete">
+                Color="Color.Error"
+                Variant="Variant.Filled"
+                Size="Size.Large"
+                FullWidth="true"
+                Disabled="_disableDelete">
                     Delete Staff
                 </MudButton>
             }
@@ -30,10 +30,10 @@
             @if (ShowCreateButton)
             {
                 <MudButton OnClick="@(OpenCreateStaffDialogAsync)"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           Size="Size.Large"
-                           FullWidth="true">
+                Variant="Variant.Filled"
+                Color="Color.Primary"
+                Size="Size.Large"
+                FullWidth="true">
                     Create Staff
                 </MudButton>
             }
@@ -42,27 +42,27 @@
 </MudGrid>
 
 <MudTable ReadOnly="_isReadOnly"
-          Hover="true"
-          FixedHeader="true"
-          HorizontalScrollbar="true"
-          Filter="new Func<StaffModel, bool>(FilterFunc)"
-          CanCancelEdit="true"
-          Items="@StaffModels"
-          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-          GroupFooterClass="mb-4"
-          Dense="true"
-          Loading="@_loading" LoadingProgressColor="Color.Info"
-          MultiSelection="true"
-          @bind-SelectedItems="_selectedStaffs"
-          SelectOnRowClick="false"
-          CommitEditTooltip="Commit Edit"
-          CancelEditTooltip="Cancel Edit"
-          IsEditRowSwitchingBlocked="false"
-          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-          RowEditCommit="ItemHasBeenCommitted"
-          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-          @ref="_tableRef">
+Hover="true"
+FixedHeader="true"
+HorizontalScrollbar="true"
+Filter="new Func<StaffModel, bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@StaffModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedStaffs"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Staffs</MudText>
@@ -96,10 +96,10 @@
 
         <MudTd DataLabel="Zone">
             <MudButton OnClick="@(() => OpenZoneDialogAsync(@context.ZoneIds))"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Small"
-                       FullWidth="false">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
                 View (@context.ZoneIds.Count)
             </MudButton>
         </MudTd>
@@ -120,20 +120,20 @@
 
         <MudTd DataLabel="Roles">
             <MudSelect T="string" Variant="@_defaultVariant"
-                       Label="Role"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Role")
-                       MultiSelection="true"
-                       HelperText=@("Please select a role")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="true"
-                       RequiredError="Please select a role"
-                       SelectedValues="@(context.Roles)"
-                       SelectedValuesChanged="@(x => context.Roles = x.ToList())">
+            Label="Role"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Role")
+            MultiSelection="true"
+            HelperText=@("Please select a role")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="true"
+            RequiredError="Please select a role"
+            SelectedValues="@(context.Roles)"
+            SelectedValuesChanged="@(x => context.Roles = x.ToList())">
                 @foreach (var staffRole in _allStaffRoles)
                 {
                     <MudSelectItem T="string" Value="@staffRole"/>
@@ -143,21 +143,21 @@
 
         <MudTd DataLabel="Company">
             <MudSelect @bind-Value="context.CompanyId"
-                       T="Guid?"
-                       ToStringFunc="@(id => _allCompanyModels.FirstOrDefault(companyModel => companyModel.Id == id)?.Name)"
-                       Variant="@_defaultVariant"
-                       Label="Company"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Company")
-                       MultiSelection="false"
-                       HelperText=@("Please select a company")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="true"
-                       RequiredError="Please select a company">
+            T="Guid?"
+            ToStringFunc="@(id => _allCompanyModels.FirstOrDefault(companyModel => companyModel.Id == id)?.Name)"
+            Variant="@_defaultVariant"
+            Label="Company"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Company")
+            MultiSelection="false"
+            HelperText=@("Please select a company")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="true"
+            RequiredError="Please select a company">
                 @foreach (var companyModel in _allCompanyModels)
                 {
                     <MudSelectItem T="Guid?" Value="companyModel.Id"></MudSelectItem>
@@ -167,22 +167,22 @@
 
         <MudTd DataLabel="Zone">
             <MudSelect T="Guid?"
-                       ToStringFunc="@(id => _allZoneModels.FirstOrDefault(zoneModel => zoneModel.Id == id)?.Name)"
-                       Variant="@_defaultVariant"
-                       Label="Zone"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Zone")
-                       MultiSelection="true"
-                       HelperText=@("Please select a zone")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="false"
-                       RequiredError="Please select a staff"
-                       SelectedValues="@(context.ZoneIds?.Select(x => (Guid?)x))"
-                       SelectedValuesChanged="@(x => context.ZoneIds = x.Select(x => x.Value).ToList())">
+            ToStringFunc="@(id => _allZoneModels.FirstOrDefault(zoneModel => zoneModel.Id == id)?.Name)"
+            Variant="@_defaultVariant"
+            Label="Zone"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Zone")
+            MultiSelection="true"
+            HelperText=@("Please select a zone")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="false"
+            RequiredError="Please select a staff"
+            SelectedValues="@(context.ZoneIds?.Select(x => (Guid?)x))"
+            SelectedValuesChanged="@(x => context.ZoneIds = x.Select(x => x.Value).ToList())">
                 @foreach (var zoneModel in _allZoneModels)
                 {
                     <MudSelectItem T="Guid?" Value="@zoneModel.Id"/>
@@ -193,10 +193,10 @@
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new[] { 10, 25, 50, 100, int.MaxValue }"
-                       RowsPerPageString="Rows per page:"
-                       InfoFormat="{first_item}-{last_item} of {all_items}"
-                       AllItemsText="All"
-                       HorizontalAlignment="HorizontalAlignment.Right"/>
+        RowsPerPageString="Rows per page:"
+        InfoFormat="{first_item}-{last_item} of {all_items}"
+        AllItemsText="All"
+        HorizontalAlignment="HorizontalAlignment.Right"/>
     </PagerContent>
 </MudTable>
 
@@ -238,7 +238,7 @@
 
     private bool _isReadOnly = false;
     private bool _isReadPolicyExpired = false;
-    
+
     protected override async Task OnInitializedAsync()
     {
         var updatePolicyString = DataAccessUtilities.GetPolicyString(AccessName.Update, DataTableName.Company);
@@ -392,67 +392,17 @@
 
     public async Task<bool> FetchData()
     {
-        StaffModels.Clear();
-        foreach (var staffId in StaffIds)
-        {
-            var getStaffByIdQuery = new GetStaffByIdQuery(staffId);
-            var staffDTO = await Mediator.Send(getStaffByIdQuery);
+        var databaseHelper = new DatabaseHelper(Mediator, CurrentStaff.CompanyId);
+        StaffModels = await databaseHelper.GetStaffs(StaffIds);
 
-            var staffModel = new StaffModel()
-                {
-                    Id = staffDTO.Id,
-                    CompanyId = staffDTO.CompanyId.GetValueOrDefault(),
-                    FirstName = staffDTO.FirstName,
-                    LastName = staffDTO.LastName,
-                    Email = staffDTO.Email,
-                    Roles = staffDTO.Roles,
-                    ZoneIds = staffDTO.ZoneIds
-                };
-
-            StaffModels.Add(staffModel);
-        }
-
-        _allCompanyModels.Clear();
-        var getAllCompanyIdsQuery = new GetAllCompanyIdsQuery();
-        var allCompanyIds = await Mediator.Send(getAllCompanyIdsQuery);
-        foreach (var companyId in allCompanyIds)
-        {
-            var getCompanyByIdQuery = new GetCompanyByIdQuery(companyId);
-            var getCompanyResponseDTO = await Mediator.Send(getCompanyByIdQuery);
-            var companyModel = new CompanyModel()
-                {
-                    Id = companyId,
-                    StaffIds = getCompanyResponseDTO.StaffIds,
-                    WarehouseIds = getCompanyResponseDTO.WarehouseIds,
-                    Name = getCompanyResponseDTO.Name,
-                };
-
-            _allCompanyModels.Add(companyModel);
-        }
+        _allCompanyModels = await databaseHelper.GetAllCompanies();
 
         _allStaffRoles.Clear();
         var getAllStaffRolesQuery = new GetAllStaffRolesQuery();
         var allStaffRoles = await Mediator.Send(getAllStaffRolesQuery);
         _allStaffRoles = allStaffRoles.ToList();
 
-        _allZoneModels.Clear();
-        var getAllZoneIdsByCompanyIdQuery = new GetAllZoneIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var allZoneIds = await Mediator.Send(getAllZoneIdsByCompanyIdQuery);
-        foreach (var zoneId in allZoneIds)
-        {
-            var getZoneByIdQuery = new GetZoneByIdQuery(zoneId);
-            var getZoneResponseDTO = await Mediator.Send(getZoneByIdQuery);
-            var zoneModel = new ZoneModel()
-                {
-                    Id = zoneId,
-                    StaffIds = getZoneResponseDTO.StaffIds,
-                    Name = getZoneResponseDTO.Name,
-                    RackIds = getZoneResponseDTO.RackIds,
-                    WarehouseId = getZoneResponseDTO.WarehouseId,
-                };
-
-            _allZoneModels.Add(zoneModel);
-        }
+        _allZoneModels = await databaseHelper.GetAllZones();
 
         return true;
     }
