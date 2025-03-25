@@ -20,7 +20,7 @@ namespace Infrastructure.Repository
                 .FirstAsync(rack=>rack.Id == request.Id, cancellationToken);
 
             var result = rackFound.Adapt<GetRackResponseDTO>();
-            result.ProductIds = rackFound.Products.Select(product=>product.Id).ToList();
+            result.ProductIds = rackFound.Products?.Select(product=>product.Id).ToList();
             result.ZoneId = rackFound.ZoneId;
 
             return result;

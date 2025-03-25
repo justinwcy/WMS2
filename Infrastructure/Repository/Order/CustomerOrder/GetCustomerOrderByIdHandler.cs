@@ -23,7 +23,7 @@ namespace Infrastructure.Repository
             result.BinId = customerOrderFound.BinId;
             result.CourierId = customerOrderFound.CourierId;
             result.CustomerId = customerOrderFound.CustomerId;
-            result.CustomerOrderDetailIds = customerOrderFound.CustomerOrderDetails
+            result.CustomerOrderDetailIds = customerOrderFound.CustomerOrderDetails?
                 .Select(customerOrderDetail => customerOrderDetail.Id).ToList();
             return result;
         }

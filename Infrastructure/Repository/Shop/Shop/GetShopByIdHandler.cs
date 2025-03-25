@@ -20,7 +20,7 @@ namespace Infrastructure.Repository
                 .FirstAsync(shop=>shop.Id == request.Id, cancellationToken);
 
             var result = shopFound.Adapt<GetShopResponseDTO>();
-            result.ProductIds = shopFound.Products.Select(product => product.Id).ToList();
+            result.ProductIds = shopFound.Products?.Select(product => product.Id).ToList();
             
             return result;
         }

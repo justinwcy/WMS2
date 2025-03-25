@@ -42,25 +42,25 @@
 </MudGrid>
 
 <MudTable ReadOnly="_isReadOnly"
-          Hover="true" FixedHeader="true"
-          Filter="new Func<CompanyModel, bool>(FilterFunc)"
-          CanCancelEdit="true"
-          Items="@CompanyModels"
-          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-          GroupFooterClass="mb-4"
-          Dense="true"
-          Loading="@_loading" LoadingProgressColor="Color.Info"
-          MultiSelection="true"
-          @bind-SelectedItems="_selectedCompanies"
-          SelectOnRowClick="false"
-          CommitEditTooltip="Commit Edit"
-          CancelEditTooltip="Cancel Edit"
-          IsEditRowSwitchingBlocked="false"
-          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-          RowEditCommit="ItemHasBeenCommitted"
-          ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
-          EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
-          @ref="_tableRef">
+Hover="true" FixedHeader="true"
+Filter="new Func<CompanyModel, bool>(FilterFunc)"
+CanCancelEdit="true"
+Items="@CompanyModels"
+GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+GroupFooterClass="mb-4"
+Dense="true"
+Loading="@_loading" LoadingProgressColor="Color.Info"
+MultiSelection="true"
+@bind-SelectedItems="_selectedCompanies"
+SelectOnRowClick="false"
+CommitEditTooltip="Commit Edit"
+CancelEditTooltip="Cancel Edit"
+IsEditRowSwitchingBlocked="false"
+RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.StartAndEnd"
+EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditTrigger.RowClick"
+@ref="_tableRef">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">Companies</MudText>
@@ -84,10 +84,10 @@
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Warehouse">
             <MudButton OnClick="@(() => OpenWarehouseDialogAsync(@context.WarehouseIds))"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Small"
-                       FullWidth="false">
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            Size="Size.Small"
+            FullWidth="false">
                 View (@context.WarehouseIds.Count)
             </MudButton>
         </MudTd>
@@ -109,22 +109,22 @@
 
         <MudTd DataLabel="Warehouse">
             <MudSelect T="Guid?"
-                       ToStringFunc="@(id => _allWarehouseModels.FirstOrDefault(warehouseModel => warehouseModel.Id == id)?.Name)"
-                       Variant="@_defaultVariant"
-                       Label="Rack"
-                       Margin="Margin.Normal"
-                       Dense="false"
-                       Disabled="false"
-                       ReadOnly="false"
-                       Placeholder=@("Warehouse")
-                       MultiSelection="true"
-                       HelperText=@("Please select a warehouse")
-                       HelperTextOnFocus="true"
-                       Clearable="false"
-                       Required="false"
-                       RequiredError="Please select a warehouse"
-                       SelectedValues="@(context.WarehouseIds.Select(x => (Guid?)x))"
-                       SelectedValuesChanged="@(x => context.WarehouseIds = x.Select(x => x.Value).ToList())">
+            ToStringFunc="@(id => _allWarehouseModels.FirstOrDefault(warehouseModel => warehouseModel.Id == id)?.Name)"
+            Variant="@_defaultVariant"
+            Label="Rack"
+            Margin="Margin.Normal"
+            Dense="false"
+            Disabled="false"
+            ReadOnly="false"
+            Placeholder=@("Warehouse")
+            MultiSelection="true"
+            HelperText=@("Please select a warehouse")
+            HelperTextOnFocus="true"
+            Clearable="false"
+            Required="false"
+            RequiredError="Please select a warehouse"
+            SelectedValues="@(context.WarehouseIds.Select(x => (Guid?)x))"
+            SelectedValuesChanged="@(x => context.WarehouseIds = x.Select(x => x.Value).ToList())">
                 @foreach (var warehouseModel in _allWarehouseModels)
                 {
                     <MudSelectItem T="Guid?" Value="@warehouseModel.Id"/>
@@ -336,65 +336,36 @@
 
     public async Task<bool> FetchData()
     {
-        CompanyModels.Clear();
-        foreach (var companyId in CompanyIds)
-        {
-            var getCompanyByIdQuery = new GetCompanyByIdQuery(companyId);
-            var companyDTO = await Mediator.Send(getCompanyByIdQuery);
-
-            var companyModel = new CompanyModel()
-                {
-                    Id = companyDTO.Id,
-                    Name = companyDTO.Name,
-                    WarehouseIds = companyDTO.WarehouseIds,
-                    StaffIds = companyDTO.StaffIds,
-                };
-
-            CompanyModels.Add(companyModel);
-        }
+        var getCompaniesByIdsQuery = new GetCompaniesByIdsQuery(CompanyIds);
+        var getCompanyResponseDTOs = await Mediator.Send(getCompaniesByIdsQuery);
+        CompanyModels = getCompanyResponseDTOs.Select(getCompanyResponseDTO => 
+            new CompanyModel()
+            {
+                Id = getCompanyResponseDTO.Id,
+                Name = getCompanyResponseDTO.Name,
+                WarehouseIds = getCompanyResponseDTO.WarehouseIds,
+                StaffIds = getCompanyResponseDTO.StaffIds,
+            }).ToList();
 
         // set warehouse models
-        _allWarehouseModels.Clear();
-        var getAllWarehouseIdsByCompanyIdQuery = new GetAllWarehouseIdsByCompanyIdQuery(CurrentStaff.CompanyId);
-        var warehouseIds = await Mediator.Send(getAllWarehouseIdsByCompanyIdQuery);
-        foreach (var warehouseId in warehouseIds)
-        {
-            var getWarehouseByIdQuery = new GetWarehouseByIdQuery(warehouseId);
-            var getWarehouseResponseDTO = await Mediator.Send(getWarehouseByIdQuery);
-
-            var warehouseModel = new WarehouseModel()
-                {
-                    Id = getWarehouseResponseDTO.Id,
-                    Name = getWarehouseResponseDTO.Name,
-                    Address = getWarehouseResponseDTO.Address,
-                    ZoneIds = getWarehouseResponseDTO.ZoneIds,
-                    CompanyId = getWarehouseResponseDTO.CompanyId,
-                };
-            _allWarehouseModels.Add(warehouseModel);
-        }
+        _allWarehouseModels = await GetAllUtilities.GetAllWarehouses(Mediator, CurrentStaff.CompanyId);
 
         // set staff models
-        _allStaffModels.Clear();
         var getAllStaffIdsByCompanyIdQuery = new GetAllStaffIdsByCompanyIdQuery(CurrentStaff.CompanyId);
         var staffIds = await Mediator.Send(getAllStaffIdsByCompanyIdQuery);
-        foreach (var staffId in staffIds)
-        {
-            var getStaffByIdQuery = new GetStaffByIdQuery(staffId);
-            var getStaffResponseDTO = await Mediator.Send(getStaffByIdQuery);
-
-            var staffModel = new StaffModel()
-                {
-                    Id = getStaffResponseDTO.Id,
-                    Roles = getStaffResponseDTO.Roles,
-                    Email = getStaffResponseDTO.Email,
-                    FirstName = getStaffResponseDTO.FirstName,
-                    LastName = getStaffResponseDTO.LastName,
-                    ZoneIds = getStaffResponseDTO.ZoneIds,
-                    CompanyId = getStaffResponseDTO.CompanyId.Value,
-                };
-            _allStaffModels.Add(staffModel);
-        }
-
+        var getStaffsByIdsQuery = new GetStaffsByIdsQuery(staffIds);
+        var getStaffResponseDTOs = await Mediator.Send(getStaffsByIdsQuery);
+        _allStaffModels = getStaffResponseDTOs.Select(getStaffResponseDTO =>
+            new StaffModel()
+            {
+                Id = getStaffResponseDTO.Id,
+                Roles = getStaffResponseDTO.Roles,
+                Email = getStaffResponseDTO.Email,
+                FirstName = getStaffResponseDTO.FirstName,
+                LastName = getStaffResponseDTO.LastName,
+                ZoneIds = getStaffResponseDTO.ZoneIds,
+                CompanyId = getStaffResponseDTO.CompanyId.Value,
+            }).ToList();
 
         return true;
     }

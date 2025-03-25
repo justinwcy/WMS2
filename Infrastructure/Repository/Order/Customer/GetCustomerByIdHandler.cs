@@ -20,7 +20,8 @@ namespace Infrastructure.Repository
                 .FirstAsync(customer=>customer.Id == request.Id, cancellationToken);
 
             var result = customerFound.Adapt<GetCustomerResponseDTO>();
-            result.CustomerOrderIds = customerFound.CustomerOrders.Select(customerOrder => customerOrder.Id).ToList();
+            result.CustomerOrderIds = customerFound.CustomerOrders?
+                .Select(customerOrder => customerOrder.Id).ToList();
             return result;
         }
     }

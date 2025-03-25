@@ -323,22 +323,18 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
     public async Task<bool> FetchData()
     {
         WarehouseModels.Clear();
-        foreach (var warehouseId in WarehouseIds)
-        {
-            var getWarehouseByIdQuery = new GetWarehouseByIdQuery(warehouseId);
-            var warehouseDTO = await Mediator.Send(getWarehouseByIdQuery);
-
-            var warehouseModel = new WarehouseModel()
-                {
-                    Id = warehouseDTO.Id,
-                    Name = warehouseDTO.Name,
-                    Address = warehouseDTO.Address,
-                    CompanyId = warehouseDTO.CompanyId,
-                    ZoneIds = warehouseDTO.ZoneIds,
-                };
-
-            WarehouseModels.Add(warehouseModel);
-        }
+        var getWarehousesByIdsQuery = new GetWarehousesByIdsQuery(WarehouseIds);
+        var getWarehouseResponseDTOs = await Mediator.Send(getWarehousesByIdsQuery);
+        WarehouseModels = getWarehouseResponseDTOs
+            .Select(getWarehouseResponseDTO => new WarehouseModel() 
+            {
+                Id = getWarehouseResponseDTO.Id,
+                Name = getWarehouseResponseDTO.Name,
+                Address = getWarehouseResponseDTO.Address,
+                CompanyId = getWarehouseResponseDTO.CompanyId,
+                ZoneIds = getWarehouseResponseDTO.ZoneIds,
+            })
+            .ToList();
 
         _allZoneModels.Clear();
         var getAllZoneIdsQuery = new GetAllZoneIdsByCompanyIdQuery(CurrentStaff.CompanyId);

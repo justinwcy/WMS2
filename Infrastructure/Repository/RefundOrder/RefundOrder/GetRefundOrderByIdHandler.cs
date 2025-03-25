@@ -20,7 +20,8 @@ namespace Infrastructure.Repository
                 .FirstAsync(refundOrder=>refundOrder.Id == request.Id, cancellationToken);
 
             var result = refundOrderFound.Adapt<GetRefundOrderResponseDTO>();
-            result.RefundOrderProductIds = refundOrderFound.RefundOrderProducts.Select(refundOrderProduct=> refundOrderProduct.Id).ToList();
+            result.RefundOrderProductIds = refundOrderFound.RefundOrderProducts?
+                .Select(refundOrderProduct => refundOrderProduct.Id).ToList();
             return result;
         }
     }

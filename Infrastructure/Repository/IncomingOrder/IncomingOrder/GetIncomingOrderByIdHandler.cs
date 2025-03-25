@@ -20,8 +20,7 @@ namespace Infrastructure.Repository
                 .FirstAsync(incomingOrder=>incomingOrder.Id == request.Id, cancellationToken);
 
             var result = incomingOrderFound.Adapt<GetIncomingOrderResponseDTO>();
-            result.VendorId = incomingOrderFound.VendorId;
-            result.IncomingOrderProductIds = incomingOrderFound.IncomingOrderProducts
+            result.IncomingOrderProductIds = incomingOrderFound.IncomingOrderProducts?
                 .Select(incomingOrderProduct => incomingOrderProduct.Id)
                 .ToList();
             return result;

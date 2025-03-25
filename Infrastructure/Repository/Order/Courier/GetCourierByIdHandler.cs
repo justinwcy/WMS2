@@ -19,7 +19,8 @@ namespace Infrastructure.Repository
                 .FirstAsync(courier=>courier.Id == request.Id, cancellationToken);
 
             var result = courierFound.Adapt<GetCourierResponseDTO>();
-            result.CustomerOrderIds = courierFound.CustomerOrders.Select(customerOrder => customerOrder.Id).ToList();
+            result.CustomerOrderIds = courierFound.CustomerOrders?
+                .Select(customerOrder => customerOrder.Id).ToList();
             
             return result;
         }

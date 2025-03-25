@@ -92,6 +92,9 @@ using (var scope = app.Services.CreateScope())
 
     var accountService = scope.ServiceProvider.GetRequiredService<IAccountService>();
     await accountService.SetUpAsync();
+
+    var temp = new GetStaffsByIdsQuery(new List<Guid>() { DebugConstants.AdminId });
+    await mediator.Send(temp);
 }
 
 app.Run();

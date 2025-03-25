@@ -21,8 +21,8 @@ namespace Infrastructure.Repository
                 .FirstAsync(zone=>zone.Id == request.Id, cancellationToken);
 
             var result = zoneFound.Adapt<GetZoneResponseDTO>();
-            result.StaffIds = zoneFound.Staffs.Select(staff=>staff.Id).ToList();
-            result.RackIds = zoneFound.Racks.Select(rack =>rack.Id).ToList();
+            result.StaffIds = zoneFound.Staffs?.Select(staff => staff.Id).ToList();
+            result.RackIds = zoneFound.Racks?.Select(rack => rack.Id).ToList();
             result.WarehouseId = zoneFound.WarehouseId;
 
             return result;

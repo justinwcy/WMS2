@@ -20,7 +20,8 @@ namespace Infrastructure.Repository
                 .FirstAsync(vendor=>vendor.Id == request.Id, cancellationToken);
 
             var result = vendorFound.Adapt<GetVendorResponseDTO>();
-            result.IncomingOrderIds = vendorFound.IncomingOrders.Select(incomingOrder => incomingOrder.Id).ToList();
+            result.IncomingOrderIds = 
+                vendorFound.IncomingOrders?.Select(incomingOrder => incomingOrder.Id).ToList();
             return result;
         }
     }
