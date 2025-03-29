@@ -2,14 +2,16 @@ using Application.DTO.Response;
 using Application.Service.Commands;
 
 using Infrastructure.Data;
-
+using Infrastructure.Event;
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repository
 {
-    public class UpdateWarehouseHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : IRequestHandler<UpdateWarehouseCommand, ServiceResponse>
+    public class UpdateWarehouseHandler(
+        IWmsDbContextFactory<WmsDbContext> contextFactory,
+        IPublisher publisher) : IRequestHandler<UpdateWarehouseCommand, ServiceResponse>
     {
         public async Task<ServiceResponse> Handle(UpdateWarehouseCommand request, CancellationToken cancellationToken)
         {
@@ -49,6 +51,17 @@ namespace Infrastructure.Repository
                 }
 
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
+
+                //var warehouseUpdatedEvent = new WarehouseUpdatedEvent()
+                //{
+                //    Id = request.Model.Id,
+                //    Address = request.Model.Address,
+                //    CompanyId = request.Model.CompanyId,
+                //    CreatedBy = request.Model.CreatedBy,
+                //    Name = request.Model.Name,
+                //    ZoneIds = request.Model.ZoneIds,
+                //};
+                //await publisher.Publish(warehouseUpdatedEvent, cancellationToken);
                 return GeneralDbResponses.ItemUpdated("Warehouse");
             }
             catch (Exception ex)

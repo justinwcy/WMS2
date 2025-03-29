@@ -2,14 +2,16 @@ using Application.DTO.Response;
 using Application.Service.Commands;
 
 using Infrastructure.Data;
-
+using Infrastructure.Event;
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repository
 {
-    public class DeleteWarehouseHandler(IWmsDbContextFactory<WmsDbContext> contextFactory) : 
+    public class DeleteWarehouseHandler(
+        IWmsDbContextFactory<WmsDbContext> contextFactory, 
+        IPublisher publisher) : 
         IRequestHandler<DeleteWarehouseCommand, ServiceResponse>
     {
         public async Task<ServiceResponse> Handle(DeleteWarehouseCommand request, CancellationToken cancellationToken)
@@ -27,6 +29,13 @@ namespace Infrastructure.Repository
 
                 wmsDbContext.Warehouses.Remove(foundWarehouse);
                 await wmsDbContext.SaveChangesAsync(cancellationToken);
+
+                //var warehouseDeletedEvent = new WarehouseDeletedEvent()
+                //{
+                //    Id = request.Id,
+                //};
+                //await publisher.Publish(warehouseDeletedEvent, cancellationToken);
+
                 return GeneralDbResponses.ItemDeleted("Warehouse");
             }
             catch (Exception ex)

@@ -2,6 +2,8 @@
 using Application.Constants;
 using Application.Interface;
 using Application.Interface.Identity;
+using Infrastructure.Behaviour;
+using Infrastructure.Caching;
 using Infrastructure.Data;
 using Infrastructure.Extensions;
 using Infrastructure.Extensions.Identity;
@@ -94,10 +96,17 @@ namespace Infrastructure.DependencyInjection
 
             services.AddCascadingAuthenticationState();
             services.AddScoped<IAccountService, AccountService>();
-            services.AddMediatR(config => config.RegisterServicesFromAssemblies(typeof(CreateCompanyHandler).Assembly));
+            services.AddMediatR(config =>
+            {
+                config.RegisterServicesFromAssemblies(typeof(CreateCompanyHandler).Assembly);
+                config.AddOpenBehavior(typeof(QueryCachingPipelineBehaviour<,>));
+            });
             services.AddScoped<IWmsDbContextFactory<WmsDbContext>, DbContextFactory<WmsDbContext>>(); 
             services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
-
+            
+            // Adding caching capabilities but no cache for now, just in case
+            services.AddMemoryCache();
+            services.AddSingleton<ICachedService, CacheService>();
             return services;
         }
     }
