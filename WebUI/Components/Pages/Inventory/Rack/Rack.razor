@@ -399,6 +399,38 @@
         }
     }
 
+    private async Task UploadRackCsv(IBrowserFile file)
+    {
+        var createRackFromCsvRequestDTO = new CreateRackFromCsvRequestDTO()
+        {
+            CsvFileStream = file.OpenReadStream(),
+            CreatedBy = CurrentStaff.CompanyId,
+        };
+        var createRackFromCsvCommand = new CreateRackFromCsvCommand(createRackFromCsvRequestDTO);
+        var racksCreated = await Mediator.Send(createRackFromCsvCommand);
+    
+        foreach (var rackCreated in racksCreated)
+        {
+            var rackModel = new RackModel()
+            {
+                Id = rackCreated.Id,
+                Name = rackCreated.Name,
+                ProductIds = rackCreated.ProductIds,
+                Depth = rackCreated.Depth,
+                Height = rackCreated.Height,
+                MaxWeight = rackCreated.MaxWeight,
+                Width = rackCreated.Width,
+                ZoneId = rackCreated.ZoneId
+                StaffIds = rackCreated.StaffIds,
+            };
+    
+            RackIds.Add(rackCreated.Id);
+            RackModels.Add(rackModel);
+        }
+        StateHasChanged();
+        SnackBar.Add($"{racksCreated.Count} racks created");
+    }
+
     public async ValueTask DisposeAsync()
     {
         PageComponents.Remove(this);

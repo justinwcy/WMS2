@@ -339,6 +339,34 @@
         return true;
     }
 
+    private async Task UploadRefundOrderProductCsv(IBrowserFile file)
+    {
+        var createRefundOrderProductFromCsvRequestDTO = new CreateRefundOrderProductFromCsvRequestDTO()
+        {
+            CsvFileStream = file.OpenReadStream(),
+            CreatedBy = CurrentStaff.CompanyId,
+        };
+        var createRefundOrderProductFromCsvCommand = new CreateRefundOrderProductFromCsvCommand(createRefundOrderProductFromCsvRequestDTO);
+        var refundOrderProductsCreated = await Mediator.Send(createRefundOrderProductFromCsvCommand);
+    
+        foreach (var refundOrderProductCreated in refundOrderProductsCreated)
+        {
+            var refundOrderProductModel = new RefundOrderProductModel()
+            {
+                Id = refundOrderProductCreated.Id,
+                ProductId = refundOrderProductCreated.Id,
+                Status = refundOrderProductCreated.Status,
+                Quantity = refundOrderProductCreated.Quantity,
+                RefundOrderId = refundOrderProductCreated.RefundOrderId,
+            };
+    
+            RefundOrderProductIds.Add(refundOrderProductCreated.Id);
+            RefundOrderProductModels.Add(refundOrderProductModel);
+        }
+        StateHasChanged();
+        SnackBar.Add($"{refundOrderProductsCreated.Count} refundOrderProducts created");
+    }
+
     public async ValueTask DisposeAsync()
     {
         PageComponents.Remove(this);

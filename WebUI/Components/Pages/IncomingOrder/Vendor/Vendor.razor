@@ -364,6 +364,37 @@
         }
     }
 
+    private async Task UploadVendorCsv(IBrowserFile file)
+    {
+        var createVendorFromCsvRequestDTO = new CreateVendorFromCsvRequestDTO()
+        {
+            CsvFileStream = file.OpenReadStream(),
+            CreatedBy = CurrentStaff.CompanyId,
+        };
+        var createVendorFromCsvCommand = new CreateVendorFromCsvCommand(createVendorFromCsvRequestDTO);
+        var vendorsCreated = await Mediator.Send(createVendorFromCsvCommand);
+    
+        foreach (var vendorCreated in vendorsCreated)
+        {
+            var vendorModel = new VendorModel()
+            {
+                Id = vendorCreated.Id,
+                Address = vendorCreated.Address,
+                Email = vendorCreated.Email,
+                FirstName = vendorCreated.FirstName,
+                LastName = vendorCreated.LastName,
+                IncomingOrderIds = vendorCreated.IncomingOrderIds,
+                PhoneNumber = vendorCreated.PhoneNumber,
+
+            };
+    
+            VendorIds.Add(vendorCreated.Id);
+            VendorModels.Add(vendorModel);
+        }
+        StateHasChanged();
+        SnackBar.Add($"{vendorsCreated.Count} vendors created");
+    }
+
     public async ValueTask DisposeAsync()
     {
         PageComponents.Remove(this);

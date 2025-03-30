@@ -365,6 +365,34 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         }
     }
 
+    private async Task UploadWarehouseCsv(IBrowserFile file)
+    {
+        var createWarehouseFromCsvRequestDTO = new CreateWarehouseFromCsvRequestDTO()
+        {
+            CsvFileStream = file.OpenReadStream(),
+            CreatedBy = CurrentStaff.CompanyId,
+        };
+        var createWarehouseFromCsvCommand = new CreateWarehouseFromCsvCommand(createWarehouseFromCsvRequestDTO);
+        var warehousesCreated = await Mediator.Send(createWarehouseFromCsvCommand);
+    
+        foreach (var warehouseCreated in warehousesCreated)
+        {
+            var warehouseModel = new WarehouseModel()
+            {
+                Id = warehouseCreated.Id,
+                Name = warehouseCreated.Name,
+                CompanyId = warehouseCreated.CompanyId,
+                Address = warehouseCreated.Address,
+                ZoneIds = warehouseCreated.ZoneIds,
+            };
+    
+            WarehouseIds.Add(warehouseCreated.Id);
+            WarehouseModels.Add(warehouseModel);
+        }
+        StateHasChanged();
+        SnackBar.Add($"{warehousesCreated.Count} warehouses created");
+    }
+
     public async ValueTask DisposeAsync()
     {
         PageComponents.Remove(this);

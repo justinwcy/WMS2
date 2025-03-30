@@ -345,6 +345,34 @@
         }
     }
 
+    private async Task UploadRefundOrderCsv(IBrowserFile file)
+    {
+        var createRefundOrderFromCsvRequestDTO = new CreateRefundOrderFromCsvRequestDTO()
+        {
+            CsvFileStream = file.OpenReadStream(),
+            CreatedBy = CurrentStaff.CompanyId,
+        };
+        var createRefundOrderFromCsvCommand = new CreateRefundOrderFromCsvCommand(createRefundOrderFromCsvRequestDTO);
+        var refundOrdersCreated = await Mediator.Send(createRefundOrderFromCsvCommand);
+    
+        foreach (var refundOrderCreated in refundOrdersCreated)
+        {
+            var refundOrderModel = new RefundOrderModel()
+            {
+                Id = refundOrderCreated.Id,
+                Status = refundOrderCreated.Status,
+                RefundDate = refundOrderCreated.RefundDate,
+                RefundOrderProductIds = refundOrderCreated.RefundOrderProductIds,
+                RefundReason = refundOrderCreated.RefundReason,
+            };
+    
+            RefundOrderIds.Add(refundOrderCreated.Id);
+            RefundOrderModels.Add(refundOrderModel);
+        }
+        StateHasChanged();
+        SnackBar.Add($"{refundOrdersCreated.Count} refundOrders created");
+    }
+
     public async ValueTask DisposeAsync()
     {
         PageComponents.Remove(this);

@@ -8,7 +8,6 @@
     return;
 }
 
-
 <MudGrid Class="mb-3">
     <MudItem xs="3" Class="d-flex align-center">
         <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Zone)>
@@ -410,6 +409,34 @@
                 var success = await pageComponent.FetchData();
             }
         }
+    }
+
+    private async Task UploadZoneCsv(IBrowserFile file)
+    {
+        var createZoneFromCsvRequestDTO = new CreateZoneFromCsvRequestDTO()
+        {
+            CsvFileStream = file.OpenReadStream(),
+            CreatedBy = CurrentStaff.CompanyId,
+        };
+        var createZoneFromCsvCommand = new CreateZoneFromCsvCommand(createZoneFromCsvRequestDTO);
+        var zonesCreated = await Mediator.Send(createZoneFromCsvCommand);
+    
+        foreach (var zoneCreated in zonesCreated)
+        {
+            var zoneModel = new ZoneModel()
+            {
+                Id = zoneCreated.Id,
+                Name = zoneCreated.Name,
+                StaffIds = zoneCreated.StaffIds,
+                RackIds = zoneCreated.RackIds,
+                WarehouseId = zoneCreated.WarehouseId,
+            };
+    
+            ZoneIds.Add(zoneCreated.Id);
+            ZoneModels.Add(zoneModel);
+        }
+        StateHasChanged();
+        SnackBar.Add($"{zonesCreated.Count} zones created");
     }
 
     public async ValueTask DisposeAsync()

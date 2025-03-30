@@ -452,6 +452,34 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         }
     }
 
+    private async Task UploadInventoryCsv(IBrowserFile file)
+    {
+        var createInventoryFromCsvRequestDTO = new CreateInventoryFromCsvRequestDTO()
+        {
+            CsvFileStream = file.OpenReadStream(),
+            CreatedBy = CurrentStaff.CompanyId,
+        };
+        var createInventoryFromCsvCommand = new CreateInventoryFromCsvCommand(createInventoryFromCsvRequestDTO);
+        var inventorysCreated = await Mediator.Send(createInventoryFromCsvCommand);
+    
+        foreach (var inventoryCreated in inventorysCreated)
+        {
+            var inventoryModel = new InventoryModel()
+            {
+                Id = inventoryCreated.Id,
+                Quantity = inventoryCreated.Quantity,
+                ProductId = inventoryCreated.ProductId,
+                RackId = inventoryCreated.RackId,
+                
+            };
+    
+            InventoryIds.Add(inventoryCreated.Id);
+            InventoryModels.Add(inventoryModel);
+        }
+        StateHasChanged();
+        SnackBar.Add($"{inventorysCreated.Count} inventories created");
+    }
+
     public async ValueTask DisposeAsync()
     {
         PageComponents.Remove(this);

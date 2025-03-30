@@ -336,6 +336,36 @@
         }
     }
 
+    private async Task UploadCustomerCsv(IBrowserFile file)
+    {
+        var createCustomerFromCsvRequestDTO = new CreateCustomerFromCsvRequestDTO()
+        {
+            CsvFileStream = file.OpenReadStream(),
+            CreatedBy = CurrentStaff.CompanyId,
+        };
+        var createCustomerFromCsvCommand = new CreateCustomerFromCsvCommand(createCustomerFromCsvRequestDTO);
+        var customersCreated = await Mediator.Send(createCustomerFromCsvCommand);
+    
+        foreach (var customerCreated in customersCreated)
+        {
+            var customerModel = new CustomerModel()
+            {
+                Id = customerCreated.Id,
+                Address = customerCreated.Address,
+                CustomerOrderIds = customerCreated.CustomerOrderIds,
+                Email = customerCreated.Email,
+                FirstName = customerCreated.FirstName,
+                LastName = customerCreated.LastName,
+                
+            };
+    
+            CustomerIds.Add(customerCreated.Id);
+            CustomerModels.Add(customerModel);
+        }
+        StateHasChanged();
+        SnackBar.Add($"{customersCreated.Count} customers created");
+    }
+
     public async ValueTask DisposeAsync()
     {
         PageComponents.Remove(this);

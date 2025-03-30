@@ -441,6 +441,37 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         }
     }
 
+    private async Task UploadCustomerOrderCsv(IBrowserFile file)
+    {
+        var createCustomerOrderFromCsvRequestDTO = new CreateCustomerOrderFromCsvRequestDTO()
+        {
+            CsvFileStream = file.OpenReadStream(),
+            CreatedBy = CurrentStaff.CompanyId,
+        };
+        var createCustomerOrderFromCsvCommand = new CreateCustomerOrderFromCsvCommand(createCustomerOrderFromCsvRequestDTO);
+        var customerOrdersCreated = await Mediator.Send(createCustomerOrderFromCsvCommand);
+    
+        foreach (var customerOrderCreated in customerOrdersCreated)
+        {
+            var customerOrderModel = new CustomerOrderModel()
+            {
+                Id = customerOrderCreated.Id,
+                CustomerOrderDetailIds = customerOrderCreated.CustomerOrderDetailIds,
+                CustomerId = customerOrderCreated.CustomerId,
+                BinId = customerOrderCreated.BinId,
+                CourierId = customerOrderCreated.CourierId,
+                ExpectedArrivalDate = customerOrderCreated.ExpectedArrivalDate,
+                OrderAddress = customerOrderCreated.OrderAddress,
+                OrderCreationDate = customerOrderCreated.OrderCreationDate,
+            };
+    
+            CustomerOrderIds.Add(customerOrderCreated.Id);
+            CustomerOrderModels.Add(customerOrderModel);
+        }
+        StateHasChanged();
+        SnackBar.Add($"{customerOrdersCreated.Count} customerOrders created");
+    }
+
     public async ValueTask DisposeAsync()
     {
         PageComponents.Remove(this);

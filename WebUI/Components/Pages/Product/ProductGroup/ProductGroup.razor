@@ -470,6 +470,34 @@ EditButtonPosition="TableEditButtonPosition.StartAndEnd" EditTrigger="TableEditT
         await Task.Delay(10);
     }
 
+    private async Task UploadProductGroupCsv(IBrowserFile file)
+    {
+        var createProductGroupFromCsvRequestDTO = new CreateProductGroupFromCsvRequestDTO()
+        {
+            CsvFileStream = file.OpenReadStream(),
+            CreatedBy = CurrentStaff.CompanyId,
+        };
+        var createProductGroupFromCsvCommand = new CreateProductGroupFromCsvCommand(createProductGroupFromCsvRequestDTO);
+        var productGroupsCreated = await Mediator.Send(createProductGroupFromCsvCommand);
+    
+        foreach (var productGroupCreated in productGroupsCreated)
+        {
+            var productGroupModel = new ProductGroupModel()
+            {
+                Id = productGroupCreated.Id,
+                Name = productGroupCreated.Name,
+                ProductIds = productGroupCreated.ProductIds,
+                Description = productGroupCreated.Description,
+                PhotoIds = new List<Guid>(),
+            };
+    
+            ProductGroupIds.Add(productGroupCreated.Id);
+            ProductGroupModels.Add(productGroupModel);
+        }
+        StateHasChanged();
+        SnackBar.Add($"{productGroupsCreated.Count} productGroups created");
+    }
+
     public async ValueTask DisposeAsync()
     {
         PageComponents.Remove(this);

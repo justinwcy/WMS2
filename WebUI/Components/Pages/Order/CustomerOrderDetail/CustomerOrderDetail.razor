@@ -335,6 +335,35 @@
         return true;
     }
 
+    private async Task UploadCustomerOrderDetailCsv(IBrowserFile file)
+    {
+        var createCustomerOrderDetailFromCsvRequestDTO = new CreateCustomerOrderDetailFromCsvRequestDTO()
+        {
+            CsvFileStream = file.OpenReadStream(),
+            CreatedBy = CurrentStaff.CompanyId,
+        };
+        var createCustomerOrderDetailFromCsvCommand = new CreateCustomerOrderDetailFromCsvCommand(createCustomerOrderDetailFromCsvRequestDTO);
+        var customerOrderDetailsCreated = await Mediator.Send(createCustomerOrderDetailFromCsvCommand);
+    
+        foreach (var customerOrderDetailCreated in customerOrderDetailsCreated)
+        {
+            var customerOrderDetailModel = new CustomerOrderDetailModel()
+            {
+                Id = customerOrderDetailCreated.Id,
+                ProductId = customerOrderDetailCreated.ProductId,
+                CustomerOrderId = customerOrderDetailCreated.CustomerOrderId,
+                Status = customerOrderDetailCreated.Status,
+                Quantity = customerOrderDetailCreated.Quantity,
+
+            };
+    
+            CustomerOrderDetailIds.Add(customerOrderDetailCreated.Id);
+            CustomerOrderDetailModels.Add(customerOrderDetailModel);
+        }
+        StateHasChanged();
+        SnackBar.Add($"{customerOrderDetailsCreated.Count} customerOrderDetails created");
+    }
+
     public async ValueTask DisposeAsync()
     {
         PageComponents.Remove(this);

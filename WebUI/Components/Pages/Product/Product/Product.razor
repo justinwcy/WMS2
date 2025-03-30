@@ -449,6 +449,47 @@ EditTrigger="TableEditTrigger.RowClick">
         }
     }
 
+    private async Task UploadProductCsv(IBrowserFile file)
+    {
+        var createProductFromCsvRequestDTO = new CreateProductFromCsvRequestDTO()
+        {
+            CsvFileStream = file.OpenReadStream(),
+            CreatedBy = CurrentStaff.CompanyId,
+        };
+        var createProductFromCsvCommand = new CreateProductFromCsvCommand(createProductFromCsvRequestDTO);
+        var productsCreated = await Mediator.Send(createProductFromCsvCommand);
+    
+        foreach (var productCreated in productsCreated)
+        {
+            var productModel = new ProductModel()
+            {
+                Id = productCreated.Id,
+                Name = productCreated.Name,
+                RackIds = productCreated.RackIds,
+                IncomingOrderIds = productCreated.IncomingOrderIds,
+                Price = productCreated.Price,
+                Height = productCreated.Height,
+                CustomerOrderDetailIds = productCreated.CustomerOrderDetailIds,
+                Width = productCreated.Width,
+                Description = productCreated.Description,
+                Length = productCreated.Length,
+                ProductGroupIds = productCreated.ProductGroupIds,
+                RefundOrderIds = productCreated.RefundOrderIds,
+                Sku = productCreated.Sku,
+                ShopIds = productCreated.ShopIds,
+                Tag = productCreated.Tag,
+                Weight = productCreated.Weight,
+                PhotoIds = new List<Guid>(),
+
+            };
+    
+            ProductIds.Add(productCreated.Id);
+            ProductModels.Add(productModel);
+        }
+        StateHasChanged();
+        SnackBar.Add($"{productsCreated.Count} products created");
+    }
+
     public async ValueTask DisposeAsync()
     {
         PageComponents.Remove(this);
