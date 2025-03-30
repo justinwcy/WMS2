@@ -25,20 +25,33 @@
         </AuthorizeView>
     </MudItem>
     <MudItem xs="3"/>
-    <MudItem xs="5">
-        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.ProductGroup)>
-            @if (ShowCreateButton)
-            {
+    
+    <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.ProductGroup)>
+        @if (ShowCreateButton)
+        {
+            <MudItem xs="3" Class="d-flex align-center">
                 <MudButton OnClick="@(OpenCreateProductGroupDialogAsync)"
                 Variant="Variant.Filled"
                 Color="Color.Primary"
                 Size="Size.Large"
                 FullWidth="true">
-                    Create Product Group
+                    Create ProductGroup
                 </MudButton>
-            }
-        </AuthorizeView>
-    </MudItem>
+            </MudItem>
+            <MudItem xs="3" Class="d-flex align-center">
+                <MudFileUpload T="IBrowserFile" FilesChanged="UploadProductGroupCsv">
+                    <ActivatorContent>
+                        <MudButton Variant="Variant.Filled"
+                        Color="Color.Success"
+                        StartIcon="@Icons.Material.Filled.CloudUpload">
+                            Import ProductGroup CSV
+                        </MudButton>
+                    </ActivatorContent>
+                </MudFileUpload>
+
+            </MudItem>
+        }
+    </AuthorizeView>
 </MudGrid>
 
 <MudTable ReadOnly="_isReadOnly"

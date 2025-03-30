@@ -25,20 +25,33 @@
         </AuthorizeView>
     </MudItem>
     <MudItem xs="3"/>
-    <MudItem xs="5">
-        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.IncomingOrderProduct)>
-            @if (ShowCreateButton)
-            {
+    
+    <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.IncomingOrderProduct)>
+        @if (ShowCreateButton)
+        {
+            <MudItem xs="3" Class="d-flex align-center">
                 <MudButton OnClick="@(OpenCreateIncomingOrderProductDialogAsync)"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           Size="Size.Large"
-                           FullWidth="true">
-                    Create Incoming Order Details
+                Variant="Variant.Filled"
+                Color="Color.Primary"
+                Size="Size.Large"
+                FullWidth="true">
+                    Create IncomingOrderProduct
                 </MudButton>
-            }
-        </AuthorizeView>
-    </MudItem>
+            </MudItem>
+            <MudItem xs="3" Class="d-flex align-center">
+                <MudFileUpload T="IBrowserFile" FilesChanged="UploadIncomingOrderProductCsv">
+                    <ActivatorContent>
+                        <MudButton Variant="Variant.Filled"
+                        Color="Color.Success"
+                        StartIcon="@Icons.Material.Filled.CloudUpload">
+                            Import IncomingOrderProduct CSV
+                        </MudButton>
+                    </ActivatorContent>
+                </MudFileUpload>
+
+            </MudItem>
+        }
+    </AuthorizeView>
 </MudGrid>
 
 <MudTable ReadOnly="_isReadOnly"

@@ -26,20 +26,33 @@
     </MudItem>
 
     <MudItem xs="3"/>
-    <MudItem xs="5">
-        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Vendor)>
-            @if (ShowCreateButton)
-            {
+    
+    <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Vendor)>
+        @if (ShowCreateButton)
+        {
+            <MudItem xs="3" Class="d-flex align-center">
                 <MudButton OnClick="@(OpenCreateVendorDialogAsync)"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           Size="Size.Large"
-                           FullWidth="true">
+                Variant="Variant.Filled"
+                Color="Color.Primary"
+                Size="Size.Large"
+                FullWidth="true">
                     Create Vendor
                 </MudButton>
-            }
-        </AuthorizeView>
-    </MudItem>
+            </MudItem>
+            <MudItem xs="3" Class="d-flex align-center">
+                <MudFileUpload T="IBrowserFile" FilesChanged="UploadVendorCsv">
+                    <ActivatorContent>
+                        <MudButton Variant="Variant.Filled"
+                        Color="Color.Success"
+                        StartIcon="@Icons.Material.Filled.CloudUpload">
+                            Import Vendor CSV
+                        </MudButton>
+                    </ActivatorContent>
+                </MudFileUpload>
+
+            </MudItem>
+        }
+    </AuthorizeView>
 </MudGrid>
 
 <MudTable ReadOnly="_isReadOnly" 

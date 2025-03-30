@@ -25,20 +25,33 @@
         </AuthorizeView>
     </MudItem>
     <MudItem xs="3"/>
-    <MudItem xs="5">
-        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Bin)>
-            @if (ShowCreateButton)
-            {
+    
+    <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Bin)>
+        @if (ShowCreateButton)
+        {
+            <MudItem xs="3" Class="d-flex align-center">
                 <MudButton OnClick="@(OpenCreateBinDialogAsync)"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           Size="Size.Large"
-                           FullWidth="true">
+                Variant="Variant.Filled"
+                Color="Color.Primary"
+                Size="Size.Large"
+                FullWidth="true">
                     Create Bin
                 </MudButton>
-            }
-        </AuthorizeView>
-    </MudItem>
+            </MudItem>
+            <MudItem xs="3" Class="d-flex align-center">
+                <MudFileUpload T="IBrowserFile" FilesChanged="UploadBinCsv">
+                    <ActivatorContent>
+                        <MudButton Variant="Variant.Filled"
+                        Color="Color.Success"
+                        StartIcon="@Icons.Material.Filled.CloudUpload">
+                            Import Bin CSV
+                        </MudButton>
+                    </ActivatorContent>
+                </MudFileUpload>
+
+            </MudItem>
+        }
+    </AuthorizeView>
 </MudGrid>
 
 <MudTable ReadOnly="_isReadOnly" 

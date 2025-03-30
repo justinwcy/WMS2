@@ -25,20 +25,33 @@
              </AuthorizeView>
             </MudItem>
     <MudItem xs="3"/>
-    <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Rack)>
+
+    <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Rack)>
         @if (ShowCreateButton)
         {
-            <MudButton OnClick="@(OpenCreateRackDialogAsync)"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Large"
-                       FullWidth="true">
-                Create Rack
-            </MudButton>
+            <MudItem xs="3" Class="d-flex align-center">
+                <MudButton OnClick="@(OpenCreateRackDialogAsync)"
+                Variant="Variant.Filled"
+                Color="Color.Primary"
+                Size="Size.Large"
+                FullWidth="true">
+                    Create Rack
+                </MudButton>
+            </MudItem>
+            <MudItem xs="3" Class="d-flex align-center">
+                <MudFileUpload T="IBrowserFile" FilesChanged="UploadRackCsv">
+                    <ActivatorContent>
+                        <MudButton Variant="Variant.Filled"
+                        Color="Color.Success"
+                        StartIcon="@Icons.Material.Filled.CloudUpload">
+                            Import Rack CSV
+                        </MudButton>
+                    </ActivatorContent>
+                </MudFileUpload>
+
+            </MudItem>
         }
-             </AuthorizeView>
-        </MudItem>
+    </AuthorizeView>
 </MudGrid>
 
 <MudTable ReadOnly="_isReadOnly" 
@@ -420,8 +433,7 @@
                 Height = rackCreated.Height,
                 MaxWeight = rackCreated.MaxWeight,
                 Width = rackCreated.Width,
-                ZoneId = rackCreated.ZoneId
-                StaffIds = rackCreated.StaffIds,
+                ZoneId = rackCreated.ZoneId,
             };
     
             RackIds.Add(rackCreated.Id);
