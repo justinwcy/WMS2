@@ -21,7 +21,7 @@ namespace Infrastructure.Repository
             var data = request.Model.Adapt<Shop>();
             var shopCreated = wmsDbContext.Shops.Add(data);
             await wmsDbContext.SaveChangesAsync(cancellationToken);
-            return new CreateShopResponseDTO() { Id = shopCreated.Entity.Id};
+            return new CreateShopResponseDTO() { Id = shopCreated.Entity.Id };
         }
     }
 }

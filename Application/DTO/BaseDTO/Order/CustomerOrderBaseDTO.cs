@@ -1,4 +1,7 @@
-﻿namespace Application.DTO.BaseDTO
+﻿using Application.CsvConverter;
+using CsvHelper.Configuration.Attributes;
+
+namespace Application.DTO.BaseDTO
 {
     public class CustomerOrderBaseDTO : BaseDTO
     {
@@ -11,6 +14,8 @@
         public Guid? CustomerId { get; set; }
         public Guid? CourierId { get; set; }
         public Guid? BinId { get; set; }
+
+        [TypeConverter(typeof(GuidListConverter))]
         public List<Guid>? CustomerOrderDetailIds { get; set; }
     }
 }

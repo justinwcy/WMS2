@@ -1,4 +1,7 @@
-﻿namespace Application.DTO.BaseDTO
+﻿using Application.CsvConverter;
+using CsvHelper.Configuration.Attributes;
+
+namespace Application.DTO.BaseDTO
 {
     public class ProductBaseDTO : BaseDTO
     {
@@ -20,12 +23,22 @@
 
         public string Sku { get; set; }
 
+        [TypeConverter(typeof(GuidListConverter))]
         public List<Guid> ProductGroupIds { get; set; }
 
+        [TypeConverter(typeof(GuidListConverter))]
         public List<Guid>? ShopIds { get; set; }
+
+        [TypeConverter(typeof(GuidListConverter))]
         public List<Guid>? IncomingOrderIds { get; set; }
+
+        [TypeConverter(typeof(GuidListConverter))]
         public List<Guid>? RefundOrderIds { get; set; }
+
+        [TypeConverter(typeof(GuidListConverter))]
         public List<Guid>? RackIds { get; set; }
+
+        [TypeConverter(typeof(GuidListConverter))]
         public List<Guid>? CustomerOrderDetailIds { get; set; }
         
     }

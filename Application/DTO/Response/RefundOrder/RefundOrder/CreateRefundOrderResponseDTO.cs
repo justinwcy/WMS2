@@ -1,8 +1,9 @@
+using Application.DTO.BaseDTO;
+
 namespace Application.DTO.Response
 {
-    public class CreateRefundOrderResponseDTO
+    public class CreateRefundOrderResponseDTO : RefundOrderBaseDTO
     {
         public Guid Id { get; set; }
     }
 }
-    
