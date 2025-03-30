@@ -24,7 +24,6 @@ namespace Infrastructure.Repository
             var staffsFound = await wmsDbContext.Staffs.AsNoTracking()
                 .Where(staff => request.StaffIds.Contains(staff.Id))
                 .Include(staff => staff.Zones)
-                .Include(staff => staff.StaffNotifications)
                 .ToListAsync(cancellationToken);
 
             var accountService = new AccountService(userManager, signInManager, roleManager, contextFactory);
@@ -44,10 +43,6 @@ namespace Infrastructure.Repository
                 getStaffResponseDTO.CompanyId = staffFound.CompanyId;
                 getStaffResponseDTO.CreatedBy = staffFound.CreatedBy;
                 getStaffResponseDTO.ZoneIds = staffFound.Zones.Select(zone => zone.Id).ToList();
-                getStaffResponseDTO.StaffNotificationIds = staffFound
-                    .StaffNotifications
-                    .Select(staffNotification => staffNotification.Id)
-                    .ToList();
 
                 result.Add(getStaffResponseDTO);
             }

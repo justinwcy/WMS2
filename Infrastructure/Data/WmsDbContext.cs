@@ -13,7 +13,6 @@ namespace Infrastructure.Data
 
         public DbSet<Company> Companies { get; set; }
         public DbSet<Staff> Staffs { get; set; }
-        public DbSet<StaffNotification> StaffNotifications { get; set; }
         public DbSet<IncomingOrder> IncomingOrders { get; set; }
         public DbSet<IncomingOrderProduct> IncomingOrderProducts { get; set; }
         public DbSet<Vendor> Vendors { get; set; }
@@ -181,13 +180,6 @@ namespace Infrastructure.Data
                 .HasMany(company => company.Staffs)
                 .WithOne(staff => staff.Company)
                 .HasForeignKey(staff => staff.CompanyId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder
-                .Entity<Staff>()
-                .HasMany(staff => staff.StaffNotifications)
-                .WithOne(staffNotification => staffNotification.Staff)
-                .HasForeignKey(staffNotification => staffNotification.StaffId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder

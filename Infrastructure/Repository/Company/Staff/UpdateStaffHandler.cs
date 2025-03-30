@@ -28,7 +28,6 @@ namespace Infrastructure.Repository
                 await using var wmsDbContext = contextFactory.CreateDbContext();
                 var staffFound = await wmsDbContext.Staffs
                     .Include(staff=>staff.Company)
-                    .Include(staff=>staff.StaffNotifications)
                     .Include(staff=>staff.Zones)
                     .FirstOrDefaultAsync(staff => staff.Id == request.Model.Id,
                         cancellationToken);
@@ -61,18 +60,6 @@ namespace Infrastructure.Repository
                     if ((bool) staffFound.Zones?.All(zone => zone.Id != zoneToAdd.Id))
                     {
                         staffFound.Zones.Add(zoneToAdd);
-                    }
-                }
-
-                var staffNotificationsToAdd = await wmsDbContext.StaffNotifications
-                    .Where(staffNotification => request.Model.StaffNotificationIds.Contains(staffNotification.Id))
-                    .ToListAsync(cancellationToken);
-                staffFound.StaffNotifications.RemoveAll(staffNotification => !request.Model.StaffNotificationIds.Contains(staffNotification.Id));
-                foreach (var staffNotificationToAdd in staffNotificationsToAdd)
-                {
-                    if (staffFound.StaffNotifications.All(staffNotification => staffNotification.Id != staffNotificationToAdd.Id))
-                    {
-                        staffFound.StaffNotifications.Add(staffNotificationToAdd);
                     }
                 }
 
