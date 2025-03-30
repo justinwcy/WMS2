@@ -9,7 +9,7 @@
 }
 
 <MudGrid Class="mb-3">
-    <MudItem xs="5">
+    <MudItem xs="3" Class="d-flex align-center">
         <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Shop)>
             @if (ShowDeleteButton)
             {
@@ -24,7 +24,7 @@
             }
         </AuthorizeView>
     </MudItem>
-    <MudItem xs="2"/>
+    <MudItem xs="3"/>
     <MudItem xs="5">
         <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Shop)>
             @if (ShowCreateButton)

@@ -10,22 +10,22 @@
 
 
 <MudGrid Class="mb-3">
-    <MudItem xs="5">
-            <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Zone)>
+    <MudItem xs="3" Class="d-flex align-center">
+        <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Delete, DataTableName.Zone)>
             @if (ShowDeleteButton)
-        {
-            <MudButton OnClick="@DeleteZones"
-                       Color="Color.Error"
-                       Variant="Variant.Filled"
-                       Size="Size.Large"
-                       FullWidth="true"
-                       Disabled="_disableDelete">
-                Delete Zone
-            </MudButton>
-        }
-             </AuthorizeView>
-            </MudItem>
-    <MudItem xs="2"/>
+            {
+                <MudButton OnClick="@DeleteZones"
+                           Color="Color.Error"
+                           Variant="Variant.Filled"
+                           Size="Size.Large"
+                           FullWidth="true"
+                           Disabled="_disableDelete">
+                    Delete Zone
+                </MudButton>
+            }
+        </AuthorizeView>
+    </MudItem>
+    <MudItem xs="3"/>
     <MudItem xs="5">
             <AuthorizeView Policy=@DataAccessUtilities.GetPolicyString(AccessName.Create, DataTableName.Zone)>
         @if (ShowCreateButton)
