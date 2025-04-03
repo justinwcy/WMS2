@@ -28,7 +28,7 @@ namespace Infrastructure.DependencyInjection
                 $@"..\{FileStorageConstants.MainFolder}");
             services.AddSingleton<IFileStorage>(new LocalFileStorage(localStoragePath));
 
-            var connectionString = config.GetConnectionString("Default");
+            var connectionString = config.GetConnectionString("YeahHostProduction");
 
             var serverVersion = new MariaDbServerVersion(new Version(10, 4, 32));
 
@@ -37,7 +37,7 @@ namespace Infrastructure.DependencyInjection
                 {
                     option.UseMySql(connectionString, serverVersion, mysqlOptions =>
                     {
-                        mysqlOptions.EnableRetryOnFailure();
+                        //mysqlOptions.EnableRetryOnFailure();
                     });
                 },
                 ServiceLifetime.Transient);
